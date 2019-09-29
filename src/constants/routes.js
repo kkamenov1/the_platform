@@ -18,7 +18,7 @@ export const NavigationRoutes = [
     path: SIGNUP
   },
   {
-    name: 'Login',
+    name: 'Log in',
     path: LOGIN
   }
 ]
