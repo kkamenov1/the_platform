@@ -6,6 +6,10 @@ export const LOGIN = '/login'
 
 export const NavigationRoutes = [
   {
+    name: 'Home',
+    path: '/'
+  },
+  {
     name: 'Become a trainer',
     path: JOIN_US
   },

@@ -6,7 +6,8 @@ import {
   Toolbar,
   Link as NavigationLink,
   Grid,
-  Button
+  Button,
+  Hidden
 } from '@material-ui/core'
 import { KeyboardArrowDown } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/core/styles'
@@ -48,12 +49,7 @@ const useStyles = makeStyles(theme => ({
     height: 34
   },
   navigationWrapper: {
-    height: 80,
-    display: 'none',
-
-    [theme.breakpoints.up('md')]: {
-      display: 'block'
-    }
+    height: 80
   },
   nav: {
     height: 'inherit'
@@ -80,8 +76,7 @@ const useStyles = makeStyles(theme => ({
       textDecoration: 'none'
     }
   },
-  logoLink: {
-    padding: 20,
+  logoBtn: {
     display: 'inline-block',
     height: 'inherit'
   },
@@ -122,6 +117,8 @@ const Navigation = () => {
     dispatch(toggleMobileNavigation(open))
   }
 
+  const [, ...navRoutesWithoutHome] = NavigationRoutes
+
   return (
     <div className={classes.root}>
       <MobileDrawerNavigation toggleDrawer={toggleDrawer} open={open} />
@@ -133,7 +130,7 @@ const Navigation = () => {
           <Grid container alignItems="center">
             <Grid item xs={6}>
               <Button
-                className={classes.logoLink}
+                className={classes.logoBtn}
                 onClick={toggleDrawer(!open)}
                 disableRipple
               >
@@ -150,35 +147,37 @@ const Navigation = () => {
               </Button>
             </Grid>
 
-            <Grid
-              item
-              xs={6}
-              className={classes.navigationWrapper}
-            >
+            <Hidden smDown>
               <Grid
-                container
-                component="nav"
-                justify="flex-end"
-                alignItems="center"
-                className={classes.nav}
+                item
+                xs={6}
+                className={classes.navigationWrapper}
               >
-                {NavigationRoutes.map(navRoute => (
-                  <Grid
-                    item 
-                    key={navRoute.name}
-                    className={classes.navLinkWrapper}
-                  >
-                    <NavigationLink
-                      component={Link}
-                      to={navRoute.path}
-                      className={classes.navigationLink}
+                <Grid
+                  container
+                  component="nav"
+                  justify="flex-end"
+                  alignItems="center"
+                  className={classes.nav}
+                >
+                  {navRoutesWithoutHome.map(navRoute => (
+                    <Grid
+                      item 
+                      key={navRoute.name}
+                      className={classes.navLinkWrapper}
                     >
-                      {navRoute.name}
-                    </NavigationLink>
-                  </Grid>
-                ))}
+                      <NavigationLink
+                        component={Link}
+                        to={navRoute.path}
+                        className={classes.navigationLink}
+                      >
+                        {navRoute.name}
+                      </NavigationLink>
+                    </Grid>
+                  ))}
+                </Grid>
               </Grid>
-            </Grid>
+            </Hidden>
           </Grid>
 
         </Toolbar>

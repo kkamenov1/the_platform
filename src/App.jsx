@@ -8,6 +8,7 @@ import Header from './pages/Header'
 import Landing from './pages/Landing'
 
 const App = () => (
+  
   <Router>
     <div>
       <CssBaseline />
