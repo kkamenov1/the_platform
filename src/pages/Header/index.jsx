@@ -1,4 +1,5 @@
 import React from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import classnames from 'classnames'
 import {
   AppBar,
@@ -12,6 +13,9 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Link } from 'react-router-dom'
 import { ReactComponent as Logo } from '../../svg/logo.svg'
 import { NavigationRoutes } from '../../constants/routes'
+import MobileDrawerNavigation from '../../components/mobile-drawer-navigation'
+import { toggleMobileNavigation } from './actions'
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -61,6 +65,10 @@ const useStyles = makeStyles(theme => ({
       borderBottom: '2px solid white'
     }
   },
+  mobileNavOpen: {
+    zIndex: 9999,
+    backgroundColor: theme.palette.common.white
+  },
   navigationLink: {
     color: theme.palette.common.white,
     display: 'flex',
@@ -83,26 +91,61 @@ const useStyles = makeStyles(theme => ({
     }
   },
   arrow: {
-    paddingBottom: 5
+    transform: 'rotate(0)',
+    transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms',
+    verticalAlign: 'super'
+  },
+  rotateArrow: {
+    transform: 'rotate(180deg)',
+    transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms',
+    fill: 'rgb(118, 118, 118)'
+  },
+  orangeLogo: {
+    '& path': {
+      fill: 'rgb(255, 90, 95)'
+    }
   }
 }))
 
 const Navigation = () => {
   const classes = useStyles()
+  const dispatch = useDispatch()
+  const open = useSelector(state => state.header.isMobileNavigationOpen)
+
+  const toggleDrawer = open => event => {
+    if (window.innerWidth > 960) return
+
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return
+    }
+
+    dispatch(toggleMobileNavigation(open))
+  }
 
   return (
     <div className={classes.root}>
-      <AppBar position="static" className={classes.appBar}>
+      <MobileDrawerNavigation toggleDrawer={toggleDrawer} open={open} />
+      <AppBar position="static" className={classnames(
+        classes.appBar, { [classes.mobileNavOpen]: open }
+      )}>
         <Toolbar className={classes.toolBar}>
 
           <Grid container alignItems="center">
             <Grid item xs={6}>
-              <Button className={classes.logoLink}>
+              <Button
+                className={classes.logoLink}
+                onClick={toggleDrawer(!open)}
+                disableRipple
+              >
                 <div className={classes.logoWrapper}>
-                  <Logo className={classes.logo}/>
+                  <Logo className={classnames(
+                    classes.logo, { [classes.orangeLogo]: open }
+                  )} />
                 </div>
                 <div className={classnames(classes.logoWrapper, classes.arrowWrapper)}>
-                  <KeyboardArrowDown className={classes.arrow}/>
+                  <KeyboardArrowDown className={classnames(
+                    classes.arrow, { [classes.rotateArrow]: open }
+                  )} />
                 </div>
               </Button>
             </Grid>

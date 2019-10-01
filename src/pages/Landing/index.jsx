@@ -53,32 +53,34 @@ const Landing = () => {
   const classes = useStyles()
 
   return (
-    <main>
-      <div className={classes.outerContainer}>
-        <div className={classes.innerContainer}>
-          <div className={classes.outerImageContainer}>
-            <div className={classes.innerImageContainer}>
-              <img
-                alt="landing"
-                className={classes.image}
-                srcSet="https://res.cloudinary.com/dl766ebzy/image/upload/w_600/v1569695325/landing_epec9x.jpg 600w,
-                        https://res.cloudinary.com/dl766ebzy/image/upload/w_960/v1569695325/landing_epec9x.jpg 960w,
-                        https://res.cloudinary.com/dl766ebzy/image/upload/w_1280/v1569695325/landing_epec9x.jpg 1280w,
-                        https://res.cloudinary.com/dl766ebzy/image/upload/w_1600/v1569695325/landing_epec9x.jpg 1600w,
-                        https://res.cloudinary.com/dl766ebzy/image/upload/w_2700/v1569695325/landing_epec9x.jpg 2700w"
-                sizes="(max-width: 600px) 800px,
-                       (max-width: 960px) 960px,
-                       (max-width: 1280px) 1280px,
-                       (max-width: 1600px) 1600px,
-                       (min-width: 1601px) 2700px"
-                src="https://res.cloudinary.com/dl766ebzy/image/upload/w_2700/v1569695325/landing_epec9x.jpg"
-              />
+    <React.Fragment>
+      <main>
+        <div className={classes.outerContainer}>
+          <div className={classes.innerContainer}>
+            <div className={classes.outerImageContainer}>
+              <div className={classes.innerImageContainer}>
+                <img
+                  alt="landing"
+                  className={classes.image}
+                  srcSet="https://res.cloudinary.com/dl766ebzy/image/upload/w_600/v1569695325/landing_epec9x.jpg 600w,
+                          https://res.cloudinary.com/dl766ebzy/image/upload/w_960/v1569695325/landing_epec9x.jpg 960w,
+                          https://res.cloudinary.com/dl766ebzy/image/upload/w_1280/v1569695325/landing_epec9x.jpg 1280w,
+                          https://res.cloudinary.com/dl766ebzy/image/upload/w_1600/v1569695325/landing_epec9x.jpg 1600w,
+                          https://res.cloudinary.com/dl766ebzy/image/upload/w_2700/v1569695325/landing_epec9x.jpg 2700w"
+                  sizes="(max-width: 600px) 800px,
+                        (max-width: 960px) 960px,
+                        (max-width: 1280px) 1280px,
+                        (max-width: 1600px) 1600px,
+                        (min-width: 1601px) 2700px"
+                  src="https://res.cloudinary.com/dl766ebzy/image/upload/w_2700/v1569695325/landing_epec9x.jpg"
+                />
+              </div>
             </div>
+            <SearchTrainersWindow />
           </div>
-          <SearchTrainersWindow />
         </div>
-      </div>
-    </main>
+      </main>
+    </React.Fragment>
   )
 }
 
