@@ -12,7 +12,8 @@ const useStyles = makeStyles(theme => ({
 const InputWithLabel = ({
   id,
   placeholder,
-  label
+  label,
+  other
 }) => {
   const classes = useStyles()
 
@@ -27,6 +28,7 @@ const InputWithLabel = ({
         placeholder={placeholder}
         margin="dense"
         className={classes.input}
+        {...other}
       />
     </div>
   )

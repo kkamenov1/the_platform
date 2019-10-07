@@ -1,21 +1,24 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTheme } from '@material-ui/core/styles'
 import classnames from 'classnames'
 import {
   AppBar,
   Toolbar,
-  Link as NavigationLink,
   Grid,
   Button,
-  Hidden
+  Hidden,
+  Typography,
+  useMediaQuery
 } from '@material-ui/core'
 import { KeyboardArrowDown } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/core/styles'
-import { Link } from 'react-router-dom'
 import { ReactComponent as Logo } from '../../svg/logo.svg'
 import { NavigationRoutes } from '../../constants/routes'
 import MobileDrawerNavigation from '../../components/mobile-drawer-navigation'
-import { toggleMobileNavigation } from './actions'
+import SignUpForm from '../../components/sign-up-form'
+import Modal from '../../core/components/modal'
+import { toggleMobileNavigation, toggleHeaderModal } from './actions'
 
 
 const useStyles = makeStyles(theme => ({
@@ -54,7 +57,7 @@ const useStyles = makeStyles(theme => ({
   nav: {
     height: 'inherit'
   },
-  navLinkWrapper: {
+  navBtnWrapper: {
     height: 'inherit',
 
     '&:hover': {
@@ -65,12 +68,13 @@ const useStyles = makeStyles(theme => ({
     zIndex: 9999,
     backgroundColor: theme.palette.common.white
   },
-  navigationLink: {
+  navBtn: {
     color: theme.palette.common.white,
     display: 'flex',
     alignItems: 'center',
     height: 'inherit',
     padding: '0 20px',
+    textTransform: 'none',
 
     '&:hover': {
       textDecoration: 'none'
@@ -99,13 +103,22 @@ const useStyles = makeStyles(theme => ({
     '& path': {
       fill: 'rgb(255, 90, 95)'
     }
+  },
+  headerModalHeading: {
+    fontWeight: 300,
+    textAlign: 'center',
+    marginBottom: 16
   }
 }))
 
 const Navigation = () => {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const open = useSelector(state => state.header.isMobileNavigationOpen)
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+
+  const isMobileNavigationOpen = useSelector(state => state.header.isMobileNavigationOpen)
+  const isHeaderModalOpen = useSelector(state => state.header.isHeaderModalOpen)
 
   const toggleDrawer = open => event => {
     if (window.innerWidth > 960) return
@@ -117,13 +130,31 @@ const Navigation = () => {
     dispatch(toggleMobileNavigation(open))
   }
 
+  const toggleModal = open => {
+    dispatch(toggleHeaderModal(open))
+  }
+
   const [, ...navRoutesWithoutHome] = NavigationRoutes
 
   return (
     <div className={classes.root}>
-      <MobileDrawerNavigation toggleDrawer={toggleDrawer} open={open} />
+      <Modal
+        fullScreen={isMobile}
+        open={isHeaderModalOpen}
+        onClose={() => toggleModal(false)}
+      >
+        <Typography 
+          variant="h3"
+          component="h3"
+          className={classes.headerModalHeading}
+        >
+          Sign Up
+        </Typography>
+        <SignUpForm />
+      </Modal>
+      <MobileDrawerNavigation toggleDrawer={toggleDrawer} open={isMobileNavigationOpen} />
       <AppBar position="static" className={classnames(
-        classes.appBar, { [classes.mobileNavOpen]: open }
+        classes.appBar, { [classes.mobileNavOpen]: isMobileNavigationOpen }
       )}>
         <Toolbar className={classes.toolBar}>
 
@@ -131,17 +162,17 @@ const Navigation = () => {
             <Grid item xs={6}>
               <Button
                 className={classes.logoBtn}
-                onClick={toggleDrawer(!open)}
+                onClick={toggleDrawer(!isMobileNavigationOpen)}
                 disableRipple
               >
                 <div className={classes.logoWrapper}>
                   <Logo className={classnames(
-                    classes.logo, { [classes.orangeLogo]: open }
+                    classes.logo, { [classes.orangeLogo]: isMobileNavigationOpen }
                   )} />
                 </div>
                 <div className={classnames(classes.logoWrapper, classes.arrowWrapper)}>
                   <KeyboardArrowDown className={classnames(
-                    classes.arrow, { [classes.rotateArrow]: open }
+                    classes.arrow, { [classes.rotateArrow]: isMobileNavigationOpen }
                   )} />
                 </div>
               </Button>
@@ -164,15 +195,15 @@ const Navigation = () => {
                     <Grid
                       item 
                       key={navRoute.name}
-                      className={classes.navLinkWrapper}
+                      className={classes.navBtnWrapper}
                     >
-                      <NavigationLink
-                        component={Link}
-                        to={navRoute.path}
-                        className={classes.navigationLink}
+                      <Button
+                        className={classes.navBtn}
+                        disableRipple
+                        onClick={() => toggleModal(true)}
                       >
                         {navRoute.name}
-                      </NavigationLink>
+                      </Button>
                     </Grid>
                   ))}
                 </Grid>
