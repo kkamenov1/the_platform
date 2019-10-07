@@ -1,10 +1,10 @@
-import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import { Typography, Button } from '@material-ui/core'
-import InputWithLabel from '../../core/components/input-with-label'
-import SimpleSelect from '../../core/components/simple-select'
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import { Typography, Button } from '@material-ui/core';
+import InputWithLabel from '../../core/components/input-with-label';
+import SimpleSelect from '../../core/components/simple-select';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   outerModalContainer: {
     position: 'relative',
     padding: 0,
@@ -14,8 +14,8 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.up('md')]: {
       position: 'absolute',
       top: 120,
-      padding: '0 60px'
-    }
+      padding: '0 60px',
+    },
   },
   innerModalContainer: {
     borderRadius: 4,
@@ -26,52 +26,52 @@ const useStyles = makeStyles(theme => ({
 
     [theme.breakpoints.up('md')]: {
       width: 441,
-      padding: '32px 32px 24px 32px'
-    }
+      padding: '32px 32px 24px 32px',
+    },
   },
   modalHeader: {
     margin: 0,
-    color: 'rgb(72, 72, 72)'
+    color: 'rgb(72, 72, 72)',
   },
   form: {
-    marginTop: 15
+    marginTop: 15,
   },
   searchBtnWrapper: {
     textAlign: 'right',
-    marginTop: 25
+    marginTop: 25,
   },
   searchButton: {
     backgroundColor: 'rgb(255, 90, 95)',
     width: '100%',
 
     '&:hover': {
-      backgroundColor: 'rgb(255, 90, 95)'
+      backgroundColor: 'rgb(255, 90, 95)',
     },
 
     [theme.breakpoints.up('md')]: {
-      width: '30%'
-    }
-  }
-}))
+      width: '30%',
+    },
+  },
+}));
 
 const selectOptions = [
   {
     name: 'Bodybuilding',
-    value: 'bodybuilding'
+    value: 'bodybuilding',
   },
   {
     name: 'Crossfit',
-    value: 'crossfit'
-  }
-]
+    value: 'crossfit',
+  },
+];
 
 const SearchTrainersWindow = () => {
-  const classes = useStyles()
-  const [value, setSelectValue] = React.useState('')
+  const classes = useStyles();
+  const [value, setSelectValue] = React.useState('');
 
-  const onSportSelectChange = event => {
-    setSelectValue(event.target.value)
-  }
+  const onSportSelectChange = (event) => {
+    setSelectValue(event.target.value);
+  };
 
   return (
     <div className={classes.outerModalContainer}>
@@ -108,7 +108,7 @@ const SearchTrainersWindow = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SearchTrainersWindow
+export default SearchTrainersWindow;

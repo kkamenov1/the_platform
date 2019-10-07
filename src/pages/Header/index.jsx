@@ -1,7 +1,7 @@
-import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { useTheme } from '@material-ui/core/styles'
-import classnames from 'classnames'
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useTheme, makeStyles } from '@material-ui/core/styles';
+import classnames from 'classnames';
 import {
   AppBar,
   Toolbar,
@@ -9,19 +9,19 @@ import {
   Button,
   Hidden,
   Typography,
-  useMediaQuery
-} from '@material-ui/core'
-import { KeyboardArrowDown } from '@material-ui/icons'
-import { makeStyles } from '@material-ui/core/styles'
-import { ReactComponent as Logo } from '../../svg/logo.svg'
-import { NavigationRoutes } from '../../constants/routes'
-import MobileDrawerNavigation from '../../components/mobile-drawer-navigation'
-import SignUpForm from '../../components/sign-up-form'
-import Modal from '../../core/components/modal'
-import { toggleMobileNavigation, toggleHeaderModal } from './actions'
+  useMediaQuery,
+} from '@material-ui/core';
+import { KeyboardArrowDown } from '@material-ui/icons';
+
+import { ReactComponent as Logo } from '../../svg/logo.svg';
+import { NavigationRoutes } from '../../constants/routes';
+import MobileDrawerNavigation from '../../components/mobile-drawer-navigation';
+import SignUpForm from '../../components/sign-up-form';
+import Modal from '../../core/components/modal';
+import { toggleMobileNavigation, toggleHeaderModal } from './actions';
 
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
@@ -38,35 +38,35 @@ const useStyles = makeStyles(theme => ({
     left: 0,
     backgroundColor: 'transparent',
     boxShadow: 'none',
-    height: 80
+    height: 80,
   },
   toolBar: {
-    height: 'inherit'
+    height: 'inherit',
   },
   logoWrapper: {
     display: 'inline-block',
-    color: theme.palette.common.white
+    color: theme.palette.common.white,
   },
   logo: {
     width: 34,
-    height: 34
+    height: 34,
   },
   navigationWrapper: {
-    height: 80
+    height: 80,
   },
   nav: {
-    height: 'inherit'
+    height: 'inherit',
   },
   navBtnWrapper: {
     height: 'inherit',
 
     '&:hover': {
-      borderBottom: '2px solid white'
-    }
+      borderBottom: '2px solid white',
+    },
   },
   mobileNavOpen: {
     zIndex: 9999,
-    backgroundColor: theme.palette.common.white
+    backgroundColor: theme.palette.common.white,
   },
   navBtn: {
     color: theme.palette.common.white,
@@ -77,64 +77,64 @@ const useStyles = makeStyles(theme => ({
     textTransform: 'none',
 
     '&:hover': {
-      textDecoration: 'none'
-    }
+      textDecoration: 'none',
+    },
   },
   logoBtn: {
     display: 'inline-block',
-    height: 'inherit'
+    height: 'inherit',
   },
   [theme.breakpoints.up('md')]: {
     arrowWrapper: {
-      display: 'none'
-    }
+      display: 'none',
+    },
   },
   arrow: {
     transform: 'rotate(0)',
     transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms',
-    verticalAlign: 'super'
+    verticalAlign: 'super',
   },
   rotateArrow: {
     transform: 'rotate(180deg)',
     transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms',
-    fill: 'rgb(118, 118, 118)'
+    fill: 'rgb(118, 118, 118)',
   },
   orangeLogo: {
     '& path': {
-      fill: 'rgb(255, 90, 95)'
-    }
+      fill: 'rgb(255, 90, 95)',
+    },
   },
   headerModalHeading: {
     fontWeight: 300,
     textAlign: 'center',
-    marginBottom: 16
-  }
-}))
+    marginBottom: 16,
+  },
+}));
 
 const Navigation = () => {
-  const classes = useStyles()
-  const dispatch = useDispatch()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+  const classes = useStyles();
+  const dispatch = useDispatch();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const isMobileNavigationOpen = useSelector(state => state.header.isMobileNavigationOpen)
-  const isHeaderModalOpen = useSelector(state => state.header.isHeaderModalOpen)
+  const isMobileNavigationOpen = useSelector((state) => state.header.isMobileNavigationOpen);
+  const isHeaderModalOpen = useSelector((state) => state.header.isHeaderModalOpen);
 
-  const toggleDrawer = open => event => {
-    if (window.innerWidth > 960) return
+  const toggleDrawer = (open) => (event) => {
+    if (window.innerWidth > 960) return;
 
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-      return
+      return;
     }
 
-    dispatch(toggleMobileNavigation(open))
-  }
+    dispatch(toggleMobileNavigation(open));
+  };
 
-  const toggleModal = open => {
-    dispatch(toggleHeaderModal(open))
-  }
+  const toggleModal = (open) => {
+    dispatch(toggleHeaderModal(open));
+  };
 
-  const [, ...navRoutesWithoutHome] = NavigationRoutes
+  const [, ...navRoutesWithoutHome] = NavigationRoutes;
 
   return (
     <div className={classes.root}>
@@ -143,7 +143,7 @@ const Navigation = () => {
         open={isHeaderModalOpen}
         onClose={() => toggleModal(false)}
       >
-        <Typography 
+        <Typography
           variant="h3"
           component="h3"
           className={classes.headerModalHeading}
@@ -153,9 +153,12 @@ const Navigation = () => {
         <SignUpForm />
       </Modal>
       <MobileDrawerNavigation toggleDrawer={toggleDrawer} open={isMobileNavigationOpen} />
-      <AppBar position="static" className={classnames(
-        classes.appBar, { [classes.mobileNavOpen]: isMobileNavigationOpen }
-      )}>
+      <AppBar
+        position="static"
+        className={classnames(
+          classes.appBar, { [classes.mobileNavOpen]: isMobileNavigationOpen },
+        )}
+      >
         <Toolbar className={classes.toolBar}>
 
           <Grid container alignItems="center">
@@ -167,13 +170,15 @@ const Navigation = () => {
               >
                 <div className={classes.logoWrapper}>
                   <Logo className={classnames(
-                    classes.logo, { [classes.orangeLogo]: isMobileNavigationOpen }
-                  )} />
+                    classes.logo, { [classes.orangeLogo]: isMobileNavigationOpen },
+                  )}
+                  />
                 </div>
                 <div className={classnames(classes.logoWrapper, classes.arrowWrapper)}>
                   <KeyboardArrowDown className={classnames(
-                    classes.arrow, { [classes.rotateArrow]: isMobileNavigationOpen }
-                  )} />
+                    classes.arrow, { [classes.rotateArrow]: isMobileNavigationOpen },
+                  )}
+                  />
                 </div>
               </Button>
             </Grid>
@@ -191,9 +196,9 @@ const Navigation = () => {
                   alignItems="center"
                   className={classes.nav}
                 >
-                  {navRoutesWithoutHome.map(navRoute => (
+                  {navRoutesWithoutHome.map((navRoute) => (
                     <Grid
-                      item 
+                      item
                       key={navRoute.name}
                       className={classes.navBtnWrapper}
                     >
@@ -214,7 +219,7 @@ const Navigation = () => {
         </Toolbar>
       </AppBar>
     </div>
-  )
-}
+  );
+};
 
-export default Navigation
+export default Navigation;

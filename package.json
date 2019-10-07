@@ -5,8 +5,11 @@
   "dependencies": {
     "@material-ui/core": "^4.4.3",
     "@material-ui/icons": "^4.4.3",
+    "babel-plugin-transform-class-properties": "^6.24.1",
     "classnames": "^2.2.6",
+    "eslint-plugin-prettier": "^3.1.1",
     "firebase": "^7.0.0",
+    "prop-types": "^15.7.2",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-redux": "^7.1.1",
@@ -14,13 +17,15 @@
     "react-scripts": "3.1.2",
     "recompose": "^0.30.0",
     "redux": "^4.0.4",
+    "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint --ignore-path .gitignore src/**/*.js src/**/*.jsx"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -38,6 +43,16 @@
     ]
   },
   "devDependencies": {
-    "redux-devtools-extension": "^2.13.8"
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.5.1",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-react-app": "^5.0.2",
+    "eslint-plugin-class-property": "^1.1.0",
+    "eslint-plugin-flowtype": "^4.3.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.16.0",
+    "eslint-plugin-react-hooks": "^2.1.2",
+    "prettier": "^1.18.2"
   }
 }

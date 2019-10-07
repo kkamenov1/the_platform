@@ -1,28 +1,28 @@
-export const LANDING = '/'
-export const JOIN_US = '/join-us'
-export const HELP = '/help'
-export const SIGNUP = '/signup'
-export const LOGIN = '/login'
+export const LANDING = '/';
+export const JOIN_US = '/join-us';
+export const HELP = '/help';
+export const SIGNUP = '/signup';
+export const LOGIN = '/login';
 
 export const NavigationRoutes = [
   {
     name: 'Home',
-    path: '/'
+    path: '/',
   },
   {
     name: 'Become a trainer',
-    path: JOIN_US
+    path: JOIN_US,
   },
   {
     name: 'Help',
-    path: HELP
+    path: HELP,
   },
   {
     name: 'Sign up',
-    path: SIGNUP
+    path: SIGNUP,
   },
   {
     name: 'Log in',
-    path: LOGIN
-  }
-]
+    path: LOGIN,
+  },
+];

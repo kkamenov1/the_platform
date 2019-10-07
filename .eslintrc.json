@@ -1,0 +1,9 @@
+{
+  "extends": ["react-app", "airbnb"],
+  "plugins": ["prettier"],
+  "rules": {
+    "max-len": [1, 110, 2],
+    "react/jsx-props-no-spreading": 0,
+    "react/no-array-index-key": 0
+  }
+}
