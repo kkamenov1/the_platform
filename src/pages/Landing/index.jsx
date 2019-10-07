@@ -1,20 +1,20 @@
-import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import SearchTrainersWindow from '../../components/search-trainers-window'
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import SearchTrainersWindow from '../../components/search-trainers-window';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   outerContainer: {
     height: '100vh',
     minHeight: 650,
     maxHeight: 1500,
-    position: 'relative'
+    position: 'relative',
   },
   innerContainer: {
     height: '100vh',
     minHeight: 650,
     maxHeight: 1500,
     position: 'relative',
-    width: '100%'
+    width: '100%',
   },
   outerImageContainer: {
     position: 'relative',
@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
       top: 0,
       left: 0,
       height: '100%',
-    }
+    },
   },
   innerImageContainer: {
     display: 'inline-block',
@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
     height: '100%',
     width: '100%',
     backgroundPosition: '50% 50%',
-    backgroundRepeat: 'no-repeat'
+    backgroundRepeat: 'no-repeat',
   },
   image: {
     height: 'auto',
@@ -44,16 +44,16 @@ const useStyles = makeStyles(theme => ({
     position: 'static',
 
     [theme.breakpoints.up('md')]: {
-      height: '100%'
-    }
-  }
-}))
+      height: '100%',
+    },
+  },
+}));
 
 const Landing = () => {
-  const classes = useStyles()
+  const classes = useStyles();
 
   return (
-    <React.Fragment>
+    <>
       <main>
         <div className={classes.outerContainer}>
           <div className={classes.innerContainer}>
@@ -80,8 +80,8 @@ const Landing = () => {
           </div>
         </div>
       </main>
-    </React.Fragment>
-  )
-}
+    </>
+  );
+};
 
-export default Landing
+export default Landing;

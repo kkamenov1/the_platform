@@ -1,16 +1,17 @@
-import React, { useState } from 'react'
-import { withFirebase } from '../../core/lib/Firebase'
-import { Button, TextField, FormControl } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { Button, TextField, FormControl } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { withFirebase } from '../../core/lib/Firebase';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   formControl: {
-    margin: '8px 0'
+    margin: '8px 0',
   },
   input: {
     '& input': {
-      padding: '13.5px 14px'
-    }
+      padding: '13.5px 14px',
+    },
   },
   submitBtn: {
     backgroundColor: 'rgb(255, 90, 95)',
@@ -21,60 +22,51 @@ const useStyles = makeStyles(theme => ({
     fontWeight: 800,
 
     '&:hover': {
-      backgroundColor: 'rgb(255, 90, 95)'
-    }
-  }
-}))
+      backgroundColor: 'rgb(255, 90, 95)',
+    },
+  },
+}));
 
-const SignUpLink = () => (
-  <p>
-    Don't have an account? <Button>Sign Up</Button>
-  </p>
-)
+const SignUpLink = () => <Button>Sign Up</Button>;
 
 const INITIAL_STATE = {
   email: '',
   firstName: '',
   lastName: '',
   passwordOne: '',
-  passwordTwo: ''
-}
+  passwordTwo: '',
+};
 
 const SignUpForm = ({ firebase }) => {
-  const classes = useStyles()
-  const [inputValues, setInputValues] = useState(INITIAL_STATE)
-  const [error, setError] = useState(null)
+  const classes = useStyles();
+  const [inputValues, setInputValues] = useState(INITIAL_STATE);
+  const [error, setError] = useState(null);
 
-  const isInvalid =
-    inputValues.passwordOne !== inputValues.passwordTwo ||
-    inputValues.passwordOne === '' ||
-    inputValues.email === '' ||
-    inputValues.username === ''
+  const isInvalid = inputValues.passwordOne !== inputValues.passwordTwo
+    || inputValues.passwordOne === ''
+    || inputValues.email === ''
+    || inputValues.username === '';
 
-  const onSubmit = event => {
-    const { email, passwordOne } = inputValues
-    console.log(firebase)
+  const onSubmit = (event) => {
+    event.preventDefault();
+    const { email, passwordOne } = inputValues;
 
     firebase
       .doCreateUserWithEmailAndPassword(email, passwordOne)
-      .then(authUser => {
-        setInputValues(INITIAL_STATE)
-        console.log('success')
+      .then(() => {
+        setInputValues(INITIAL_STATE);
       })
-      .catch(error => {
-        setError({ error })
-        console.log(error)
-      })
+      .catch((err) => {
+        setError({ err });
+      });
+  };
 
-    event.preventDefault()
-  }
-
-  const onChange = event => {
+  const onChange = (event) => {
     setInputValues({
       ...inputValues,
-      [event.target.name]: event.target.value
-    })
-  }
+      [event.target.name]: event.target.value,
+    });
+  };
 
   return (
     <form>
@@ -151,8 +143,14 @@ const SignUpForm = ({ firebase }) => {
 
       {error && <p>{error.message}</p>}
     </form>
-  )
-}
+  );
+};
 
-export { SignUpLink }
-export default withFirebase(SignUpForm)
+SignUpForm.propTypes = {
+  firebase: PropTypes.shape({
+    doCreateUserWithEmailAndPassword: PropTypes.func.isRequired,
+  }).isRequired,
+};
+
+export { SignUpLink };
+export default withFirebase(SignUpForm);

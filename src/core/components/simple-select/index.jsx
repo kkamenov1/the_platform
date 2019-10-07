@@ -1,36 +1,37 @@
-import React, { useEffect } from 'react'
-import { makeStyles } from '@material-ui/core/styles'
+import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { makeStyles } from '@material-ui/core/styles';
 import {
   Select,
   InputLabel,
   Typography,
   FormControl,
-  MenuItem
-} from '@material-ui/core'
+  MenuItem,
+} from '@material-ui/core';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
   formControl: {
-    marginTop: 20
+    marginTop: 20,
   },
   label: {
-    transform: 'translate(14px, 10px) scale(1)'
-  }
-}))
+    transform: 'translate(14px, 10px) scale(1)',
+  },
+});
 
 const SimpleSelect = ({
   id,
   label,
   options,
   onChange,
-  selectedValue
+  selectedValue,
 }) => {
-  const classes = useStyles()
-  const inputLabel = React.useRef(null)
-  const [labelWidth, setLabelWidth] = React.useState(0)
+  const classes = useStyles();
+  const inputLabel = React.useRef(null);
+  const [labelWidth, setLabelWidth] = React.useState(0);
 
   useEffect(() => {
-    setLabelWidth(inputLabel.current.offsetWidth)
-  }, [])
+    setLabelWidth(inputLabel.current.offsetWidth);
+  }, []);
 
   return (
     <div>
@@ -44,13 +45,13 @@ const SimpleSelect = ({
           labelWidth={labelWidth}
           margin="dense"
           inputProps={{
-            id
+            id,
           }}
         >
           <MenuItem value="">
             <em>None</em>
           </MenuItem>
-          {options.map(option => (
+          {options.map((option) => (
             <MenuItem value={option.value} key={option.value}>
               {option.name}
             </MenuItem>
@@ -58,7 +59,18 @@ const SimpleSelect = ({
         </Select>
       </FormControl>
     </div>
-  )
-}
+  );
+};
 
-export default SimpleSelect
+SimpleSelect.propTypes = {
+  id: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  options: PropTypes.arrayOf(PropTypes.shape({
+    value: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+  })).isRequired,
+  onChange: PropTypes.func.isRequired,
+  selectedValue: PropTypes.string.isRequired,
+};
+
+export default SimpleSelect;

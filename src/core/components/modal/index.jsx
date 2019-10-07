@@ -1,21 +1,22 @@
-import React from 'react'
-import { Dialog } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Dialog } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
   modalWrapper: {
-    padding: 32
-  }
-}))
+    padding: 32,
+  },
+});
 
 const Modal = ({
   fullScreen,
   open,
   onClose,
   children,
-  other
+  other,
 }) => {
-  const classes = useStyles()
+  const classes = useStyles();
   return (
     <Dialog
       fullScreen={fullScreen}
@@ -27,7 +28,20 @@ const Modal = ({
         {children}
       </div>
     </Dialog>
-  )
-}
+  );
+};
 
-export default Modal
+Modal.defaultProps = {
+  fullScreen: false,
+  other: {},
+};
+
+Modal.propTypes = {
+  fullScreen: PropTypes.bool,
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  children: PropTypes.arrayOf(PropTypes.element).isRequired,
+  other: PropTypes.shape({}),
+};
+
+export default Modal;

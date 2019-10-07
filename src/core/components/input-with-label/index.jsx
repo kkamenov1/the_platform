@@ -1,21 +1,22 @@
-import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import { TextField, InputLabel, Typography } from '@material-ui/core'
+import React from 'react';
+import PropTypes from 'prop-types';
+import { makeStyles } from '@material-ui/core/styles';
+import { TextField, InputLabel, Typography } from '@material-ui/core';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
   input: {
     marginTop: 0,
-    width: '100%'
-  }
-}))
+    width: '100%',
+  },
+});
 
 const InputWithLabel = ({
   id,
   placeholder,
   label,
-  other
+  other,
 }) => {
-  const classes = useStyles()
+  const classes = useStyles();
 
   return (
     <div>
@@ -31,7 +32,18 @@ const InputWithLabel = ({
         {...other}
       />
     </div>
-  )
-}
+  );
+};
 
-export default InputWithLabel
+InputWithLabel.defaultProps = {
+  other: {},
+};
+
+InputWithLabel.propTypes = {
+  id: PropTypes.string.isRequired,
+  placeholder: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  other: PropTypes.shape({}),
+};
+
+export default InputWithLabel;
