@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Button, TextField, FormControl } from '@material-ui/core';
+import {
+  Button,
+  TextField,
+  FormControl,
+  Typography,
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { withFirebase } from '../../core/lib/Firebase';
 
@@ -19,7 +24,6 @@ const useStyles = makeStyles((theme) => ({
     textTransform: 'none',
     fontSize: 16,
     color: theme.palette.common.white,
-    fontWeight: 800,
 
     '&:hover': {
       backgroundColor: 'rgb(255, 90, 95)',
@@ -55,9 +59,11 @@ const SignUpForm = ({ firebase }) => {
       .doCreateUserWithEmailAndPassword(email, passwordOne)
       .then(() => {
         setInputValues(INITIAL_STATE);
+        setError(null);
       })
       .catch((err) => {
-        setError({ err });
+        console.log(err);
+        setError(err);
       });
   };
 
@@ -130,6 +136,8 @@ const SignUpForm = ({ firebase }) => {
         />
       </FormControl>
 
+      {error && <Typography color="error">{error.message}</Typography>}
+
       <FormControl fullWidth className={classes.formControl}>
         <Button
           variant="contained"
@@ -141,7 +149,6 @@ const SignUpForm = ({ firebase }) => {
         </Button>
       </FormControl>
 
-      {error && <p>{error.message}</p>}
     </form>
   );
 };
