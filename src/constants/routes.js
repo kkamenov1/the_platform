@@ -4,25 +4,31 @@ export const HELP = '/help';
 export const SIGNUP = '/signup';
 export const LOGIN = '/login';
 
+export const LOGIN_BTN_NAME = 'Log in';
+export const SIGNUP_BTN_NAME = 'Sign up';
+export const HELP_BTN_NAME = 'Help';
+export const BECOMEATRAINER_BTN_NAME = 'Become a trainer';
+export const HOME_BTN_NAME = 'Home';
+
 export const NavigationRoutes = [
   {
-    name: 'Home',
-    path: '/',
+    name: HOME_BTN_NAME,
+    path: LANDING,
   },
   {
-    name: 'Become a trainer',
+    name: BECOMEATRAINER_BTN_NAME,
     path: JOIN_US,
   },
   {
-    name: 'Help',
+    name: HELP_BTN_NAME,
     path: HELP,
   },
   {
-    name: 'Sign up',
+    name: SIGNUP_BTN_NAME,
     path: SIGNUP,
   },
   {
-    name: 'Log in',
+    name: LOGIN_BTN_NAME,
     path: LOGIN,
   },
 ];

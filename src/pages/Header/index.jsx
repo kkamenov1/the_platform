@@ -9,14 +9,23 @@ import {
   Button,
   Hidden,
   Typography,
+  CircularProgress,
   useMediaQuery,
 } from '@material-ui/core';
 import { KeyboardArrowDown } from '@material-ui/icons';
 
 import { ReactComponent as Logo } from '../../svg/logo.svg';
-import { NavigationRoutes } from '../../constants/routes';
+import {
+  NavigationRoutes,
+  LOGIN_BTN_NAME,
+  SIGNUP_BTN_NAME,
+  HOME_BTN_NAME,
+  BECOMEATRAINER_BTN_NAME,
+  HELP_BTN_NAME,
+} from '../../constants/routes';
 import MobileDrawerNavigation from '../../components/mobile-drawer-navigation';
 import SignUpForm from '../../components/sign-up-form';
+import SignInForm from '../../components/sign-in-form';
 import Modal from '../../core/components/modal';
 import { toggleMobileNavigation, toggleHeaderModal } from './actions';
 
@@ -119,6 +128,7 @@ const Navigation = () => {
 
   const isMobileNavigationOpen = useSelector((state) => state.header.isMobileNavigationOpen);
   const isHeaderModalOpen = useSelector((state) => state.header.isHeaderModalOpen);
+  const headerModalName = useSelector((state) => state.header.headerModalName);
 
   const toggleDrawer = (open) => (event) => {
     if (window.innerWidth > 960) return;
@@ -130,27 +140,51 @@ const Navigation = () => {
     dispatch(toggleMobileNavigation(open));
   };
 
-  const toggleModal = (open) => {
-    dispatch(toggleHeaderModal(open));
+  const toggleModal = (open, modalName) => {
+    if (
+      modalName !== HOME_BTN_NAME
+      && modalName !== HELP_BTN_NAME
+      && modalName !== BECOMEATRAINER_BTN_NAME
+    ) {
+      dispatch(toggleHeaderModal(open, modalName));
+    }
   };
 
   const [, ...navRoutesWithoutHome] = NavigationRoutes;
+
+  const ModalContent = () => {
+    if (headerModalName === LOGIN_BTN_NAME) {
+      return <SignInForm />;
+    }
+
+    if (headerModalName === SIGNUP_BTN_NAME) {
+      return (
+        <>
+          <Typography
+            variant="h3"
+            component="h3"
+            className={classes.headerModalHeading}
+          >
+            Sign Up
+          </Typography>
+          <SignUpForm />
+        </>
+      );
+    }
+
+    return (
+      <CircularProgress className={classes.progress} />
+    );
+  };
 
   return (
     <div className={classes.root}>
       <Modal
         fullScreen={isMobile}
         open={isHeaderModalOpen}
-        onClose={() => toggleModal(false)}
+        onClose={() => toggleModal(false, '')}
       >
-        <Typography
-          variant="h3"
-          component="h3"
-          className={classes.headerModalHeading}
-        >
-          Sign Up
-        </Typography>
-        <SignUpForm />
+        <ModalContent />
       </Modal>
       <MobileDrawerNavigation toggleDrawer={toggleDrawer} open={isMobileNavigationOpen} />
       <AppBar
@@ -205,7 +239,7 @@ const Navigation = () => {
                       <Button
                         className={classes.navBtn}
                         disableRipple
-                        onClick={() => toggleModal(true)}
+                        onClick={() => toggleModal(true, navRoute.name)}
                       >
                         {navRoute.name}
                       </Button>

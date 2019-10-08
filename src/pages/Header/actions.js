@@ -6,7 +6,8 @@ export const toggleMobileNavigation = (open) => ({
   open,
 });
 
-export const toggleHeaderModal = (open) => ({
+export const toggleHeaderModal = (open, modalName) => ({
   type: TOGGLE_HEADER_MODAL,
   open,
+  modalName,
 });

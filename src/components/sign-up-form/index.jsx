@@ -31,8 +31,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SignUpLink = () => <Button>Sign Up</Button>;
-
 const INITIAL_STATE = {
   email: '',
   firstName: '',
@@ -159,5 +157,4 @@ SignUpForm.propTypes = {
   }).isRequired,
 };
 
-export { SignUpLink };
 export default withFirebase(SignUpForm);

@@ -3,6 +3,7 @@ import { TOGGLE_MOBILE_NAVIGATION, TOGGLE_HEADER_MODAL } from './actions';
 export const defaultStore = {
   isMobileNavigationOpen: false,
   isHeaderModalOpen: false,
+  headerModalName: '',
 };
 
 export default (state = defaultStore, action) => {
@@ -17,6 +18,7 @@ export default (state = defaultStore, action) => {
       return {
         ...state,
         isHeaderModalOpen: action.open,
+        headerModalName: action.modalName,
       };
 
     default:
