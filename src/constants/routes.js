@@ -9,6 +9,7 @@ export const SIGNUP_BTN_NAME = 'Sign up';
 export const HELP_BTN_NAME = 'Help';
 export const BECOMEATRAINER_BTN_NAME = 'Become a trainer';
 export const HOME_BTN_NAME = 'Home';
+export const FORGOT_PASSWORD_BTN_NAME = 'Forgot password?';
 
 export const NavigationRoutes = [
   {

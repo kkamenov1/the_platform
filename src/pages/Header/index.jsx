@@ -22,10 +22,12 @@ import {
   HOME_BTN_NAME,
   BECOMEATRAINER_BTN_NAME,
   HELP_BTN_NAME,
+  FORGOT_PASSWORD_BTN_NAME,
 } from '../../constants/routes';
 import MobileDrawerNavigation from '../../components/mobile-drawer-navigation';
 import SignUpForm from '../../components/sign-up-form';
 import SignInForm from '../../components/sign-in-form';
+import ForgotPasswordForm from '../../components/forgot-password-form';
 import Modal from '../../core/components/modal';
 import { toggleMobileNavigation, toggleHeaderModal } from './actions';
 
@@ -117,13 +119,17 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   headerModalHeading: {
-    fontWeight: 300,
-    textAlign: 'center',
+    fontWeight: 600,
+    textAlign: 'left',
     marginBottom: 16,
+    color: 'rgb(72, 72, 72)',
+  },
+  infoText: {
+    marginBottom: 20,
   },
 }));
 
-const Navigation = () => {
+const Header = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -164,13 +170,32 @@ const Navigation = () => {
       return (
         <>
           <Typography
-            variant="h3"
-            component="h3"
+            variant="h5"
+            component="h5"
             className={classes.headerModalHeading}
           >
             Sign Up
           </Typography>
           <SignUpForm />
+        </>
+      );
+    }
+
+    if (headerModalName === FORGOT_PASSWORD_BTN_NAME) {
+      return (
+        <>
+          <Typography
+            variant="h5"
+            component="h5"
+            className={classes.headerModalHeading}
+          >
+            Reset password
+          </Typography>
+          <Typography className={classes.infoText}>
+            Enter the email address associated with your account,
+            and we’ll email you a link to reset your password.
+          </Typography>
+          <ForgotPasswordForm />
         </>
       );
     }
@@ -263,4 +288,4 @@ const Navigation = () => {
   );
 };
 
-export default Navigation;
+export default Header;

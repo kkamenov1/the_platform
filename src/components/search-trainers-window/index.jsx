@@ -1,8 +1,9 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Typography, Button } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import InputWithLabel from '../../core/components/input-with-label';
 import SimpleSelect from '../../core/components/simple-select';
+import SimpleButton from '../../core/components/simple-button';
 
 const useStyles = makeStyles((theme) => ({
   outerModalContainer: {
@@ -39,18 +40,6 @@ const useStyles = makeStyles((theme) => ({
   searchBtnWrapper: {
     textAlign: 'right',
     marginTop: 25,
-  },
-  searchButton: {
-    backgroundColor: 'rgb(255, 90, 95)',
-    width: '100%',
-
-    '&:hover': {
-      backgroundColor: 'rgb(255, 90, 95)',
-    },
-
-    [theme.breakpoints.up('md')]: {
-      width: '30%',
-    },
   },
 }));
 
@@ -95,14 +84,13 @@ const SearchTrainersWindow = () => {
               selectedValue={value}
             />
             <div className={classes.searchBtnWrapper}>
-              <Button
-                className={classes.searchButton}
+              <SimpleButton
                 size="large"
                 variant="contained"
                 color="primary"
               >
                 Search
-              </Button>
+              </SimpleButton>
             </div>
           </form>
         </div>

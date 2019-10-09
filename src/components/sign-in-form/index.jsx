@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   FormControl,
@@ -16,6 +17,9 @@ import { withFirebase } from '../../core/lib/Firebase';
 import LabelDivider from '../../core/components/label-divider';
 import LinkStyledButton from '../../core/components/link-styled-button';
 import SignUpLink from '../sign-up-link';
+import { FORGOT_PASSWORD_BTN_NAME } from '../../constants/routes';
+import { toggleHeaderModal } from '../../pages/Header/actions';
+
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -65,9 +69,14 @@ const INITIAL_STATE = {
 
 const SignInForm = ({ firebase }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const [inputValues, setInputValues] = useState(INITIAL_STATE);
   const [error, setError] = useState(null);
   const [showPassword, setShowPassword] = useState('password');
+
+  const openForgotPasswordModal = () => {
+    dispatch(toggleHeaderModal(true, FORGOT_PASSWORD_BTN_NAME));
+  };
 
   const onSubmit = (event) => {
     event.preventDefault();
@@ -174,8 +183,8 @@ const SignInForm = ({ firebase }) => {
           </FormControl>
 
           <div className={classes.forgotPasswordWrapper}>
-            <LinkStyledButton onClick={() => alert('hellooo')}>
-              Forgot password?
+            <LinkStyledButton onClick={openForgotPasswordModal}>
+              {FORGOT_PASSWORD_BTN_NAME}
             </LinkStyledButton>
           </div>
         </form>

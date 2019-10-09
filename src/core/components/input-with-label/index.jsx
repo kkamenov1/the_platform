@@ -14,7 +14,7 @@ const InputWithLabel = ({
   id,
   placeholder,
   label,
-  other,
+  ...other
 }) => {
   const classes = useStyles();
 
