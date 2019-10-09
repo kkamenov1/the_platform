@@ -77,6 +77,9 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 9999,
     backgroundColor: theme.palette.common.white,
   },
+  headerMobileModalOpen: {
+    zIndex: 1,
+  },
   navBtn: {
     color: theme.palette.common.white,
     display: 'flex',
@@ -190,7 +193,11 @@ const Navigation = () => {
       <AppBar
         position="static"
         className={classnames(
-          classes.appBar, { [classes.mobileNavOpen]: isMobileNavigationOpen },
+          classes.appBar,
+          {
+            [classes.mobileNavOpen]: isMobileNavigationOpen,
+            [classes.headerMobileModalOpen]: isHeaderModalOpen,
+          },
         )}
       >
         <Toolbar className={classes.toolBar}>

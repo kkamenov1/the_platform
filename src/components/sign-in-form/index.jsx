@@ -13,7 +13,7 @@ import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
 import { FacebookLoginButton, GoogleLoginButton } from 'react-social-login-buttons';
 import { makeStyles } from '@material-ui/core/styles';
 import { withFirebase } from '../../core/lib/Firebase';
-import OrDivider from '../../core/components/or-divider';
+import LabelDivider from '../../core/components/label-divider';
 import LinkStyledButton from '../../core/components/link-styled-button';
 import SignUpLink from '../sign-up-link';
 
@@ -113,7 +113,7 @@ const SignInForm = ({ firebase }) => {
         </GoogleLoginButton>
       </div>
       <div>
-        <OrDivider />
+        <LabelDivider label="or" />
         <form>
           <FormControl fullWidth className={classes.formControl}>
             <TextField

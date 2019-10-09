@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
@@ -38,18 +39,22 @@ const useStyles = makeStyles({
 });
 
 
-const OrDivider = () => {
+const LabelDivider = ({ label }) => {
   const classes = useStyles();
 
   return (
     <div className={classes.separatorOuter}>
       <div className={classes.separatorInner}>
         <span className={classes.textOuter}>
-          <span className={classes.textInner}>or</span>
+          <span className={classes.textInner}>{label}</span>
         </span>
       </div>
     </div>
   );
 };
 
-export default OrDivider;
+LabelDivider.propTypes = {
+  label: PropTypes.string.isRequired,
+};
+
+export default LabelDivider;
