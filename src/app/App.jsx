@@ -15,11 +15,14 @@ const App = ({ firebase }) => {
 
   useEffect(() => {
     firebase
-      .auth
-      .onAuthStateChanged((authUser) => (
-        authUser
-          ? dispatch(setAuthUser(authUser))
-          : dispatch(setAuthUser(null))));
+      .onAuthUserListener((authUser) => {
+        localStorage.setItem('authUser', JSON.stringify(authUser));
+        dispatch(setAuthUser(authUser));
+      },
+      () => {
+        localStorage.removeItem('authUser');
+        dispatch(setAuthUser(null));
+      });
   });
 
   return (
@@ -36,9 +39,7 @@ const App = ({ firebase }) => {
 
 App.propTypes = {
   firebase: PropTypes.shape({
-    auth: PropTypes.shape({
-      onAuthStateChanged: PropTypes.func.isRequired,
-    }),
+    onAuthUserListener: PropTypes.func.isRequired,
   }).isRequired,
 };
 

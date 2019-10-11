@@ -21,6 +21,26 @@ class Firebase {
     this.db = app.database();
   }
 
+  onAuthUserListener = (next, fallback) => this.auth.onAuthStateChanged((authUser) => {
+    if (authUser) {
+      this.user(authUser.uid)
+        .once('value')
+        .then((snapshot) => {
+          const dbUser = snapshot.val();
+          // merge auth and db user
+          const newAuthUser = {
+            /* if further information is needed from authUser ==> provide it here */
+            uid: authUser.uid,
+            email: authUser.email,
+            ...dbUser,
+          };
+          next(newAuthUser);
+        });
+    } else {
+      fallback();
+    }
+  });
+
   // *** Auth API ***
 
   doCreateUserWithEmailAndPassword = (email, password) => this.auth.createUserWithEmailAndPassword(email, password);

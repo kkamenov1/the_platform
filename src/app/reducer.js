@@ -1,7 +1,7 @@
 import { SET_AUTH_USER } from './actions';
 
 export const defaultStore = {
-  auth: null,
+  auth: JSON.parse(localStorage.getItem('authUser')),
 };
 
 export default (state = defaultStore, action) => {
