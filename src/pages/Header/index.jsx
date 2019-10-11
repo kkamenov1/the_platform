@@ -23,6 +23,7 @@ import {
   BECOMEATRAINER_BTN_NAME,
   HELP_BTN_NAME,
   FORGOT_PASSWORD_BTN_NAME,
+  POST_SIGNUP,
 } from '../../constants/routes';
 import MobileDrawerNavigation from '../../components/mobile-drawer-navigation';
 import SignUpForm from '../../components/sign-up-form';
@@ -167,17 +168,14 @@ const Header = () => {
     }
 
     if (headerModalName === SIGNUP_BTN_NAME) {
+      return <SignUpForm />;
+    }
+
+    if (headerModalName === POST_SIGNUP) {
       return (
-        <>
-          <Typography
-            variant="h5"
-            component="h5"
-            className={classes.headerModalHeading}
-          >
-            Sign Up
-          </Typography>
-          <SignUpForm />
-        </>
+        <Typography variant="h3" component="h3" align="center">
+          Thank you for signing up in GYMGURUS!
+        </Typography>
       );
     }
 

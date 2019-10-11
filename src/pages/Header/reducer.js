@@ -1,9 +1,16 @@
-import { TOGGLE_MOBILE_NAVIGATION, TOGGLE_HEADER_MODAL } from './actions';
+import {
+  TOGGLE_MOBILE_NAVIGATION,
+  TOGGLE_HEADER_MODAL,
+  SET_LOADING_SIGNUP_MODAL,
+} from './actions';
 
 export const defaultStore = {
   isMobileNavigationOpen: false,
   isHeaderModalOpen: false,
   headerModalName: '',
+  signupModal: {
+    loading: false,
+  },
 };
 
 export default (state = defaultStore, action) => {
@@ -19,6 +26,15 @@ export default (state = defaultStore, action) => {
         ...state,
         isHeaderModalOpen: action.open,
         headerModalName: action.modalName,
+      };
+
+    case SET_LOADING_SIGNUP_MODAL:
+      return {
+        ...state,
+        signupModal: {
+          ...state.signupModal,
+          loading: action.loading,
+        },
       };
 
     default:

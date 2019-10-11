@@ -11,7 +11,6 @@ import {
 } from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
-import { FacebookLoginButton, GoogleLoginButton } from 'react-social-login-buttons';
 import { makeStyles } from '@material-ui/core/styles';
 import { withFirebase } from '../../core/lib/Firebase';
 import LabelDivider from '../../core/components/label-divider';
@@ -19,7 +18,7 @@ import LinkStyledButton from '../../core/components/link-styled-button';
 import SignUpLink from '../sign-up-link';
 import { FORGOT_PASSWORD_BTN_NAME } from '../../constants/routes';
 import { toggleHeaderModal } from '../../pages/Header/actions';
-
+import SocialLoginButtons from '../social-login-buttons';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -56,12 +55,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const socialBtnStyles = {
-  margin: '8px 0',
-  width: '100%',
-  height: 46,
-};
-
 const INITIAL_STATE = {
   email: '',
   password: '',
@@ -72,7 +65,7 @@ const SignInForm = ({ firebase }) => {
   const dispatch = useDispatch();
   const [inputValues, setInputValues] = useState(INITIAL_STATE);
   const [error, setError] = useState(null);
-  const [showPassword, setShowPassword] = useState('password');
+  const [showPassword, setShowPassword] = useState(false);
 
   const openForgotPasswordModal = () => {
     dispatch(toggleHeaderModal(true, FORGOT_PASSWORD_BTN_NAME));
@@ -103,24 +96,7 @@ const SignInForm = ({ firebase }) => {
 
   return (
     <div>
-      <div>
-        <FacebookLoginButton
-          onClick={() => alert('Hello')}
-          style={socialBtnStyles}
-          align="center"
-          preventActiveStyles
-        >
-          <Typography>Log in with Facebook</Typography>
-        </FacebookLoginButton>
-        <GoogleLoginButton
-          onClick={() => alert('Hello')}
-          style={socialBtnStyles}
-          align="center"
-          preventActiveStyles
-        >
-          <Typography>Log in with Google</Typography>
-        </GoogleLoginButton>
-      </div>
+      <SocialLoginButtons />
       <div>
         <LabelDivider label="or" />
         <form>
