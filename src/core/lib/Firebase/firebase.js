@@ -19,6 +19,9 @@ class Firebase {
 
     this.auth = app.auth();
     this.db = app.database();
+
+    this.googleProvider = new app.auth.GoogleAuthProvider();
+    this.facebookProvider = new app.auth.FacebookAuthProvider();
   }
 
   onAuthUserListener = (next, fallback) => this.auth.onAuthStateChanged((authUser) => {
@@ -45,19 +48,23 @@ class Firebase {
 
   doCreateUserWithEmailAndPassword = (email, password) => this.auth.createUserWithEmailAndPassword(email, password);
 
-  doSignInWithEmailAndPassword = (email, password) => this.auth.signInWithEmailAndPassword(email, password)
+  doSignInWithEmailAndPassword = (email, password) => this.auth.signInWithEmailAndPassword(email, password);
 
-  doSignOut = () => this.auth.signOut()
+  doSignOut = () => this.auth.signOut();
 
-  doPasswordReset = (email) => this.auth.sendPasswordResetEmail(email)
+  doPasswordReset = (email) => this.auth.sendPasswordResetEmail(email);
 
-  doPasswordUpdate = (password) => this.auth.currentUser.updatePassword(password)
+  doPasswordUpdate = (password) => this.auth.currentUser.updatePassword(password);
+
+  doSignInWithGoogle = () => this.auth.signInWithPopup(this.googleProvider);
+
+  doSignInWithFacebook = () => this.auth.signInWithPopup(this.facebookProvider);
 
   // *** User API ***
 
-  users = () => this.db.ref('users')
+  users = () => this.db.ref('users');
 
-  user = (uid) => this.db.ref(`users/${uid}`)
+  user = (uid) => this.db.ref(`users/${uid}`);
 }
 
 export default Firebase;

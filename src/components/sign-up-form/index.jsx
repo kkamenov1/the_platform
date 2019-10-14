@@ -94,8 +94,8 @@ const SignUpForm = ({ firebase }) => {
       .then((authUser) => (
         firebase.user(authUser.user.uid).set({
           email,
-          firstName: inputValues.firstName,
-          lastName: inputValues.lastName,
+          displayName: `${inputValues.firstName} ${inputValues.lastName}`,
+          photoURL: null,
           isGuru: false,
           isAdmin: false,
         })))
