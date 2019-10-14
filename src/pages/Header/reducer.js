@@ -2,13 +2,17 @@ import {
   TOGGLE_MOBILE_NAVIGATION,
   TOGGLE_HEADER_MODAL,
   SET_LOADING_SIGNUP_MODAL,
+  SET_LOADING_SIGNIN_MODAL,
 } from './actions';
 
 export const defaultStore = {
   isMobileNavigationOpen: false,
   isHeaderModalOpen: false,
   headerModalName: '',
-  signupModal: {
+  signUpModal: {
+    loading: false,
+  },
+  signInModal: {
     loading: false,
   },
 };
@@ -31,8 +35,17 @@ export default (state = defaultStore, action) => {
     case SET_LOADING_SIGNUP_MODAL:
       return {
         ...state,
-        signupModal: {
-          ...state.signupModal,
+        signUpModal: {
+          ...state.signUpModal,
+          loading: action.loading,
+        },
+      };
+
+    case SET_LOADING_SIGNIN_MODAL:
+      return {
+        ...state,
+        signInModal: {
+          ...state.signInModal,
           loading: action.loading,
         },
       };

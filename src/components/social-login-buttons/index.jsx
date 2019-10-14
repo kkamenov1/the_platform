@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
 
 import { Typography } from '@material-ui/core';
 import { FacebookLoginButton, GoogleLoginButton } from 'react-social-login-buttons';
 import { withFirebase } from '../../core/lib/Firebase';
 import { toggleHeaderModal } from '../../pages/Header/actions';
+import { FormError } from '../../core/components';
 
 const socialBtnStyles = {
   margin: '8px 0',
@@ -14,14 +14,7 @@ const socialBtnStyles = {
   height: 46,
 };
 
-const useStyles = makeStyles({
-  error: {
-    fontSize: 14,
-  },
-});
-
 const SocialLoginButtons = ({ firebase }) => {
-  const classes = useStyles();
   const [errorGoogle, setErrorGoogle] = useState(null);
   const [errorFB, setErrorFB] = useState(null);
   const dispatch = useDispatch();
@@ -80,14 +73,7 @@ const SocialLoginButtons = ({ firebase }) => {
       >
         <Typography>Log in with Facebook</Typography>
       </FacebookLoginButton>
-      {errorFB && (
-        <Typography
-          color="error"
-          className={classes.error}
-        >
-          {errorFB.message}
-        </Typography>
-      )}
+      {errorFB && <FormError>{errorFB.message}</FormError>}
 
       <GoogleLoginButton
         onClick={onGoogleBtnClick}
@@ -97,14 +83,7 @@ const SocialLoginButtons = ({ firebase }) => {
       >
         <Typography>Log in with Google</Typography>
       </GoogleLoginButton>
-      {errorGoogle && (
-        <Typography
-          color="error"
-          className={classes.error}
-        >
-          {errorGoogle.message}
-        </Typography>
-      )}
+      {errorGoogle && <FormError>{errorGoogle.message}</FormError>}
     </div>
   );
 };

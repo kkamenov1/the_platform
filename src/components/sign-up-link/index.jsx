@@ -4,8 +4,7 @@ import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { toggleHeaderModal } from '../../pages/Header/actions';
 import { SIGNUP_BTN_NAME } from '../../constants/routes';
-
-import LinkStyledButton from '../../core/components/link-styled-button';
+import { LinkStyledButton } from '../../core/components';
 
 const useStyles = makeStyles({
   text: {

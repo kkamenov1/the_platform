@@ -29,7 +29,7 @@ import MobileDrawerNavigation from '../../components/mobile-drawer-navigation';
 import SignUpForm from '../../components/sign-up-form';
 import SignInForm from '../../components/sign-in-form';
 import ForgotPasswordForm from '../../components/forgot-password-form';
-import Modal from '../../core/components/modal';
+import { Modal } from '../../core/components';
 import { toggleMobileNavigation, toggleHeaderModal } from './actions';
 
 

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-  Button,
   TextField,
   FormControl,
   Typography,
@@ -18,12 +17,16 @@ import VisibilityOffOutlinedIcon from '@material-ui/icons/VisibilityOffOutlined'
 import { LOGIN_BTN_NAME, POST_SIGNUP } from '../../constants/routes';
 import { withFirebase } from '../../core/lib/Firebase';
 import SocialLoginButtons from '../social-login-buttons';
-import LabelDivider from '../../core/components/label-divider';
-import LinkStyledButton from '../../core/components/link-styled-button';
-import CircularProgressInButton from '../../core/components/circular-progress-in-button';
+import {
+  LabelDivider,
+  LinkStyledButton,
+  CircularProgressInButton,
+  FormError,
+  SimpleButton,
+} from '../../core/components';
 import {
   toggleHeaderModal,
-  setLoadingSignupModal,
+  setLoadingSignUpModal,
 } from '../../pages/Header/actions';
 
 const useStyles = makeStyles((theme) => ({
@@ -33,17 +36,6 @@ const useStyles = makeStyles((theme) => ({
   input: {
     '& input': {
       padding: '13.5px 14px',
-    },
-  },
-  submitBtn: {
-    backgroundColor: 'rgb(255, 90, 95)',
-    padding: '10px 8px',
-    textTransform: 'none',
-    fontSize: 16,
-    color: theme.palette.common.white,
-
-    '&:hover': {
-      backgroundColor: 'rgb(255, 90, 95)',
     },
   },
   showPasswordBtn: {
@@ -64,9 +56,6 @@ const useStyles = makeStyles((theme) => ({
   bottomDivider: {
     margin: '16px 0',
   },
-  error: {
-    fontSize: 14,
-  },
 }));
 
 const INITIAL_STATE = {
@@ -82,12 +71,12 @@ const SignUpForm = ({ firebase }) => {
   const [inputValues, setInputValues] = useState(INITIAL_STATE);
   const [error, setError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
-  const loading = useSelector((state) => state.header.signupModal.loading);
+  const loading = useSelector((state) => state.header.signUpModal.loading);
 
   const onSubmit = (event) => {
     event.preventDefault();
     const { email, password } = inputValues;
-    dispatch(setLoadingSignupModal(true));
+    dispatch(setLoadingSignUpModal(true));
 
     firebase
       .doCreateUserWithEmailAndPassword(email, password)
@@ -102,7 +91,7 @@ const SignUpForm = ({ firebase }) => {
       .then(() => {
         setInputValues(INITIAL_STATE);
         setError(null);
-        dispatch(setLoadingSignupModal(false));
+        dispatch(setLoadingSignUpModal(false));
         dispatch(toggleHeaderModal(true, POST_SIGNUP));
         setTimeout(() => {
           firebase
@@ -114,7 +103,7 @@ const SignUpForm = ({ firebase }) => {
       })
       .catch((err) => {
         setError(err);
-        dispatch(setLoadingSignupModal(false));
+        dispatch(setLoadingSignUpModal(false));
       });
   };
 
@@ -154,9 +143,9 @@ const SignUpForm = ({ firebase }) => {
         </FormControl>
 
         {error && error.code && error.code.includes('email') && (
-          <Typography color="error" className={classes.error}>
+          <FormError>
             {error.message}
-          </Typography>
+          </FormError>
         )}
 
         <FormControl fullWidth className={classes.formControl}>
@@ -225,20 +214,20 @@ const SignUpForm = ({ firebase }) => {
         </FormControl>
 
         {error && error.code && error.code.includes('password') && (
-          <Typography color="error" className={classes.error}>
+          <FormError>
             {error.message}
-          </Typography>
+          </FormError>
         )}
 
         <FormControl fullWidth className={classes.formControl}>
-          <Button
+          <SimpleButton
             variant="contained"
-            className={classes.submitBtn}
+            color="primary"
             onClick={onSubmit}
           >
             Sign up
             <CircularProgressInButton loading={loading} />
-          </Button>
+          </SimpleButton>
         </FormControl>
 
       </form>

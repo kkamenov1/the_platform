@@ -8,6 +8,7 @@ const useStyles = makeStyles({
     backgroundColor: 'rgb(255, 90, 95)',
     width: '100%',
     textTransform: 'none',
+    padding: '9px 8px',
 
     '&:hover': {
       backgroundColor: 'rgb(255, 90, 95)',
@@ -21,6 +22,7 @@ const SimpleButton = ({ children, ...other }) => {
   return (
     <Button
       className={classes.searchButton}
+      disableRipple
       {...other}
     >
       {children}

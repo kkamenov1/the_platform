@@ -12,8 +12,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import { withFirebase } from '../../core/lib/Firebase';
-import LinkStyledButton from '../../core/components/link-styled-button';
-import SimpleButton from '../../core/components/simple-button';
+import { LinkStyledButton, SimpleButton, FormError } from '../../core/components';
 import { toggleHeaderModal } from '../../pages/Header/actions';
 import { LOGIN_BTN_NAME } from '../../constants/routes';
 
@@ -29,11 +28,6 @@ const useStyles = makeStyles({
     '& input': {
       padding: '13.5px 14px',
     },
-  },
-  error: {
-    height: 24,
-    fontSize: 14,
-    fontWeight: 500,
   },
   signupText: {
     fontWeight: 800,
@@ -92,12 +86,9 @@ const ForgotPasswordForm = ({ firebase }) => {
         />
       </FormControl>
 
-      <Typography
-        color="error"
-        className={classes.error}
-      >
+      <FormError>
         {error && error.message}
-      </Typography>
+      </FormError>
 
       <Grid container className={classes.btnContainer}>
         <Grid item xs={6}>

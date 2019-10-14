@@ -1,26 +1,33 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   FormControl,
   TextField,
-  Button,
-  Typography,
   Divider,
   InputAdornment,
+  Typography,
 } from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
 import { makeStyles } from '@material-ui/core/styles';
 import { withFirebase } from '../../core/lib/Firebase';
-import LabelDivider from '../../core/components/label-divider';
-import LinkStyledButton from '../../core/components/link-styled-button';
+import {
+  LabelDivider,
+  LinkStyledButton,
+  CircularProgressInButton,
+  FormError,
+  SimpleButton,
+} from '../../core/components';
 import SignUpLink from '../sign-up-link';
 import { FORGOT_PASSWORD_BTN_NAME } from '../../constants/routes';
-import { toggleHeaderModal } from '../../pages/Header/actions';
+import {
+  toggleHeaderModal,
+  setLoadingSignInModal,
+} from '../../pages/Header/actions';
 import SocialLoginButtons from '../social-login-buttons';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
   formControl: {
     margin: '8px 0',
 
@@ -33,27 +40,10 @@ const useStyles = makeStyles((theme) => ({
       padding: '13.5px 14px',
     },
   },
-  submitBtn: {
-    backgroundColor: 'rgb(255, 90, 95)',
-    padding: '9px 8px',
-    textTransform: 'none',
-    fontSize: 16,
-    color: theme.palette.common.white,
-
-    '&:hover': {
-      backgroundColor: 'rgb(255, 90, 95)',
-    },
-  },
-  showPasswordWrapper: {
-    textAlign: 'right',
-  },
-  forgotPasswordWrapper: {
-    textAlign: 'center',
-  },
   bottomDivider: {
     margin: '8px 0 16px 0',
   },
-}));
+});
 
 const INITIAL_STATE = {
   email: '',
@@ -63,6 +53,7 @@ const INITIAL_STATE = {
 const SignInForm = ({ firebase }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const loading = useSelector((state) => state.header.signInModal.loading);
   const [inputValues, setInputValues] = useState(INITIAL_STATE);
   const [error, setError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -74,16 +65,19 @@ const SignInForm = ({ firebase }) => {
   const onSubmit = (event) => {
     event.preventDefault();
     const { email, password } = inputValues;
+    dispatch(setLoadingSignInModal(true));
 
     firebase
       .doSignInWithEmailAndPassword(email, password)
       .then(() => {
         setInputValues(INITIAL_STATE);
         setError(null);
+        dispatch(setLoadingSignInModal(false));
+        dispatch(toggleHeaderModal(false, ''));
       })
       .catch((err) => {
-        console.log(err);
         setError(err);
+        dispatch(setLoadingSignInModal(false));
       });
   };
 
@@ -119,6 +113,10 @@ const SignInForm = ({ firebase }) => {
             />
           </FormControl>
 
+          {error && error.code && error.code.includes('email') && (
+            <FormError>{error.message}</FormError>
+          )}
+
           <FormControl fullWidth className={classes.formControl}>
             <TextField
               variant="outlined"
@@ -138,31 +136,36 @@ const SignInForm = ({ firebase }) => {
             />
           </FormControl>
 
-          <div className={classes.showPasswordWrapper}>
+          {error && error.code
+            && (error.code.includes('password') || error.code.includes('user-not-found'))
+            && (
+              <FormError>{error.message}</FormError>
+            )}
+
+          <Typography align="right" component="div">
             <LinkStyledButton
               onClick={() => setShowPassword(!showPassword)}
             >
               Show password
             </LinkStyledButton>
-          </div>
-
-          {error && <Typography color="error">{error.message}</Typography>}
+          </Typography>
 
           <FormControl fullWidth className={classes.formControl}>
-            <Button
+            <SimpleButton
               variant="contained"
-              className={classes.submitBtn}
+              color="primary"
               onClick={onSubmit}
             >
               Log in
-            </Button>
+              <CircularProgressInButton loading={loading} />
+            </SimpleButton>
           </FormControl>
 
-          <div className={classes.forgotPasswordWrapper}>
+          <Typography align="center" component="div">
             <LinkStyledButton onClick={openForgotPasswordModal}>
               {FORGOT_PASSWORD_BTN_NAME}
             </LinkStyledButton>
-          </div>
+          </Typography>
         </form>
 
         <Divider className={classes.bottomDivider} />

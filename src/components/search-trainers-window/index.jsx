@@ -1,9 +1,11 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
-import InputWithLabel from '../../core/components/input-with-label';
-import SimpleSelect from '../../core/components/simple-select';
-import SimpleButton from '../../core/components/simple-button';
+import {
+  InputWithLabel,
+  SimpleSelect,
+  SimpleButton,
+} from '../../core/components';
 
 const useStyles = makeStyles((theme) => ({
   outerModalContainer: {
