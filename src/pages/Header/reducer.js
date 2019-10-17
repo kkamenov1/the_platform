@@ -3,6 +3,7 @@ import {
   TOGGLE_HEADER_MODAL,
   SET_LOADING_SIGNUP_MODAL,
   SET_LOADING_SIGNIN_MODAL,
+  SET_LOADING_RESET_PASSWORD_MODAL,
 } from './actions';
 
 export const defaultStore = {
@@ -13,6 +14,9 @@ export const defaultStore = {
     loading: false,
   },
   signInModal: {
+    loading: false,
+  },
+  forgotPasswordModal: {
     loading: false,
   },
 };
@@ -46,6 +50,16 @@ export default (state = defaultStore, action) => {
         ...state,
         signInModal: {
           ...state.signInModal,
+          loading: action.loading,
+        },
+      };
+
+
+    case SET_LOADING_RESET_PASSWORD_MODAL:
+      return {
+        ...state,
+        forgotPasswordModal: {
+          ...state.forgotPasswordModal,
           loading: action.loading,
         },
       };

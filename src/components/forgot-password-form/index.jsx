@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   FormControl,
@@ -12,8 +12,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import { withFirebase } from '../../core/lib/Firebase';
-import { LinkStyledButton, SimpleButton, FormError } from '../../core/components';
-import { toggleHeaderModal } from '../../pages/Header/actions';
+import {
+  LinkStyledButton,
+  SimpleButton,
+  FormError,
+  CircularProgressInButton,
+} from '../../core/components';
+import { toggleHeaderModal, setLoadingResetPasswordModal } from '../../pages/Header/actions';
 import { LOGIN_BTN_NAME } from '../../constants/routes';
 
 const useStyles = makeStyles({
@@ -40,6 +45,7 @@ const useStyles = makeStyles({
 const ForgotPasswordForm = ({ firebase }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const loading = useSelector((state) => state.header.forgotPasswordModal.loading);
   const [email, setEmail] = useState('');
   const [error, setError] = useState(null);
 
@@ -51,16 +57,21 @@ const ForgotPasswordForm = ({ firebase }) => {
     setEmail(event.target.value);
   };
 
-  const onSubmit = () => {
+  const onSubmit = (event) => {
+    event.preventDefault();
+    dispatch(setLoadingResetPasswordModal(true));
+
     firebase
       .doPasswordReset(email)
       .then(() => {
         setEmail('');
         setError(null);
+        dispatch(setLoadingResetPasswordModal(false));
       })
       .catch((err) => {
         setError(err);
         setEmail('');
+        dispatch(setLoadingResetPasswordModal(false));
       });
   };
 
@@ -111,6 +122,7 @@ const ForgotPasswordForm = ({ firebase }) => {
             onClick={onSubmit}
           >
             Send reset link
+            <CircularProgressInButton loading={loading} />
           </SimpleButton>
         </Grid>
       </Grid>

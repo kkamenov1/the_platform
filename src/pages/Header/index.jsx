@@ -8,8 +8,6 @@ import {
   Grid,
   Button,
   Hidden,
-  Typography,
-  CircularProgress,
   useMediaQuery,
 } from '@material-ui/core';
 import { KeyboardArrowDown } from '@material-ui/icons';
@@ -17,19 +15,12 @@ import { KeyboardArrowDown } from '@material-ui/icons';
 import { ReactComponent as Logo } from '../../svg/logo.svg';
 import {
   NavigationRoutes,
-  LOGIN_BTN_NAME,
-  SIGNUP_BTN_NAME,
   HOME_BTN_NAME,
   BECOMEATRAINER_BTN_NAME,
   HELP_BTN_NAME,
-  FORGOT_PASSWORD_BTN_NAME,
-  POST_SIGNUP,
 } from '../../constants/routes';
 import MobileDrawerNavigation from '../../components/mobile-drawer-navigation';
-import SignUpForm from '../../components/sign-up-form';
-import SignInForm from '../../components/sign-in-form';
-import ForgotPasswordForm from '../../components/forgot-password-form';
-import PostSignUp from '../../components/post-sign-up';
+import ModalHeaderProvider from '../../components/modal-header-provider';
 import { Modal } from '../../core/components';
 import { toggleMobileNavigation, toggleHeaderModal } from './actions';
 
@@ -120,15 +111,6 @@ const useStyles = makeStyles((theme) => ({
       fill: 'rgb(255, 90, 95)',
     },
   },
-  headerModalHeading: {
-    fontWeight: 600,
-    textAlign: 'left',
-    marginBottom: 16,
-    color: 'rgb(72, 72, 72)',
-  },
-  infoText: {
-    marginBottom: 20,
-  },
 }));
 
 const Header = () => {
@@ -163,43 +145,6 @@ const Header = () => {
 
   const [, ...navRoutesWithoutHome] = NavigationRoutes;
 
-  const ModalContent = () => {
-    if (headerModalName === LOGIN_BTN_NAME) {
-      return <SignInForm />;
-    }
-
-    if (headerModalName === SIGNUP_BTN_NAME) {
-      return <SignUpForm />;
-    }
-
-    if (headerModalName === POST_SIGNUP) {
-      return <PostSignUp />;
-    }
-
-    if (headerModalName === FORGOT_PASSWORD_BTN_NAME) {
-      return (
-        <>
-          <Typography
-            variant="h5"
-            component="h5"
-            className={classes.headerModalHeading}
-          >
-            Reset password
-          </Typography>
-          <Typography className={classes.infoText}>
-            Enter the email address associated with your account,
-            and we’ll email you a link to reset your password.
-          </Typography>
-          <ForgotPasswordForm />
-        </>
-      );
-    }
-
-    return (
-      <CircularProgress className={classes.progress} />
-    );
-  };
-
   return (
     <div className={classes.root}>
       <Modal
@@ -207,7 +152,7 @@ const Header = () => {
         open={isHeaderModalOpen}
         onClose={() => toggleModal(false, '')}
       >
-        <ModalContent />
+        <ModalHeaderProvider headerModalName={headerModalName} />
       </Modal>
       <MobileDrawerNavigation toggleDrawer={toggleDrawer} open={isMobileNavigationOpen} />
       <AppBar
