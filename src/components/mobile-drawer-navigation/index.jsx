@@ -22,7 +22,7 @@ import {
   LOGIN_BTN_NAME,
 } from '../../constants/routes';
 import { toggleHeaderModal } from '../../pages/Header/actions';
-import { ReactComponent as DBIcon } from '../../svg/dumbbell.svg';
+import { ReactComponent as GymIcon } from '../../svg/gym.svg';
 
 const useStyles = makeStyles((theme) => ({
   drawer: {
@@ -119,7 +119,7 @@ const MobileDrawerNavigation = ({ toggleDrawer, open }) => {
                 {BECOMEATRAINER_BTN_NAME}
               </Typography>
               <div className={classes.iconWrapper}>
-                <DBIcon />
+                <GymIcon />
               </div>
               <Typography
                 className={classnames(classes.infoText, classes.displayBlock)}

@@ -84,22 +84,15 @@ const SignUpForm = ({ firebase }) => {
         firebase.user(authUser.user.uid).set({
           email,
           displayName: `${inputValues.firstName} ${inputValues.lastName}`,
-          photoURL: null,
           isGuru: false,
           isAdmin: false,
         })))
+      .then(() => firebase.doSendEmailVerification())
       .then(() => {
         setInputValues(INITIAL_STATE);
         setError(null);
         dispatch(setLoadingSignUpModal(false));
         dispatch(toggleHeaderModal(true, POST_SIGNUP));
-        setTimeout(() => {
-          firebase
-            .doSignInWithEmailAndPassword(email, password)
-            .then(() => {
-              dispatch(toggleHeaderModal(false, ''));
-            });
-        }, 2000);
       })
       .catch((err) => {
         setError(err);
@@ -256,6 +249,7 @@ SignUpForm.propTypes = {
     doCreateUserWithEmailAndPassword: PropTypes.func.isRequired,
     user: PropTypes.func.isRequired,
     doSignInWithEmailAndPassword: PropTypes.func.isRequired,
+    doSendEmailVerification: PropTypes.func.isRequired,
   }).isRequired,
 };
 

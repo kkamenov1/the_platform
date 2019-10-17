@@ -51,6 +51,7 @@ const SocialLoginButtons = ({ firebase }) => {
             email: socialAuthUser.additionalUserInfo.profile.email,
             displayName: socialAuthUser.additionalUserInfo.profile.name,
             photoURL: socialAuthUser.user.photoURL,
+            emailVerified: true,
             isGuru: false,
             isAdmin: false,
           })))

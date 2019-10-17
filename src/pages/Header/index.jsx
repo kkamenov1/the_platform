@@ -29,6 +29,7 @@ import MobileDrawerNavigation from '../../components/mobile-drawer-navigation';
 import SignUpForm from '../../components/sign-up-form';
 import SignInForm from '../../components/sign-in-form';
 import ForgotPasswordForm from '../../components/forgot-password-form';
+import PostSignUp from '../../components/post-sign-up';
 import { Modal } from '../../core/components';
 import { toggleMobileNavigation, toggleHeaderModal } from './actions';
 
@@ -172,11 +173,7 @@ const Header = () => {
     }
 
     if (headerModalName === POST_SIGNUP) {
-      return (
-        <Typography variant="h3" component="h3" align="center">
-          Thank you for signing up in GYMGURUS!
-        </Typography>
-      );
+      return <PostSignUp />;
     }
 
     if (headerModalName === FORGOT_PASSWORD_BTN_NAME) {
