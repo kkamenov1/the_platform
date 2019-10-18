@@ -65,17 +65,40 @@ const INITIAL_STATE = {
   password: '',
 };
 
+// eslint-disable-next-line no-useless-escape
+const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
 const SignUpForm = ({ firebase }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [inputValues, setInputValues] = useState(INITIAL_STATE);
   const [error, setError] = useState(null);
+  const [errorFirstName, setErrorFirstName] = useState(null);
+  const [errorLastName, setErrorLastName] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const loading = useSelector((state) => state.header.signUpModal.loading);
 
   const onSubmit = (event) => {
     event.preventDefault();
-    const { email, password } = inputValues;
+    const {
+      email, password, firstName, lastName,
+    } = inputValues;
+
+    /* check for errors on firstName, lastName */
+    if (re.test(email.toLowerCase()) && firstName.trim().length === 0) {
+      setErrorFirstName('Invalid first name');
+      setErrorLastName(null);
+      setError(null);
+      return;
+    }
+
+    if (re.test(email.toLowerCase()) && lastName.trim().length === 0) {
+      setErrorLastName('Invalid last name');
+      setErrorFirstName(null);
+      setError(null);
+      return;
+    }
+
     dispatch(setLoadingSignUpModal(true));
 
     firebase
@@ -90,12 +113,18 @@ const SignUpForm = ({ firebase }) => {
       .then(() => firebase.doSendEmailVerification())
       .then(() => {
         setInputValues(INITIAL_STATE);
+
         setError(null);
+        setErrorFirstName(null);
+        setErrorLastName(null);
+
         dispatch(setLoadingSignUpModal(false));
         dispatch(toggleHeaderModal(true, POST_SIGNUP));
       })
       .catch((err) => {
         setError(err);
+        setErrorFirstName(null);
+        setErrorLastName(null);
         dispatch(setLoadingSignUpModal(false));
       });
   };
@@ -160,6 +189,8 @@ const SignUpForm = ({ firebase }) => {
           />
         </FormControl>
 
+        {errorFirstName && <FormError>{errorFirstName}</FormError>}
+
         <FormControl fullWidth className={classes.formControl}>
           <TextField
             variant="outlined"
@@ -178,6 +209,8 @@ const SignUpForm = ({ firebase }) => {
             }}
           />
         </FormControl>
+
+        {errorLastName && <FormError>{errorLastName}</FormError>}
 
         <FormControl fullWidth className={classes.formControl}>
           <TextField
