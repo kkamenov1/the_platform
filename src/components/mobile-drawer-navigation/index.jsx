@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
@@ -11,18 +11,28 @@ import {
   Divider,
   Typography,
   Button,
+  Grid,
 } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import {
   LANDING,
+  PROFILE,
+  DASHBOARD,
   HOME_BTN_NAME,
   BECOMEATRAINER_BTN_NAME,
   HELP_BTN_NAME,
   SIGNUP_BTN_NAME,
   LOGIN_BTN_NAME,
+  PROFILE_BTN_NAME,
+  DASHBOARD_BTN_NAME,
+  LOGOUT_BTN_NAME,
 } from '../../constants/routes';
 import { toggleHeaderModal } from '../../pages/Header/actions';
 import { ReactComponent as GymIcon } from '../../svg/gym.svg';
+import { ReactComponent as DashboardIcon } from '../../svg/dashboard.svg';
+import { ReactComponent as ProfileIcon } from '../../svg/profile.svg';
+import { withFirebase } from '../../core/lib/Firebase';
+
 
 const useStyles = makeStyles((theme) => ({
   drawer: {
@@ -64,13 +74,20 @@ const useStyles = makeStyles((theme) => ({
     height: 40,
     position: 'absolute',
     top: 0,
-    right: 10,
+    right: 0,
+  },
+  icon: {
+    width: 30,
+    height: 30,
   },
 }));
 
-const MobileDrawerNavigation = ({ toggleDrawer, open }) => {
+const MobileDrawerNavigation = ({
+  toggleDrawer, open, firebase,
+}) => {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const auth = useSelector((state) => state.app.auth);
 
   const toggleModal = (openModal, modalName) => {
     if (
@@ -99,11 +116,57 @@ const MobileDrawerNavigation = ({ toggleDrawer, open }) => {
               to={LANDING}
               className={classes.navLink}
             >
-              <span>{HOME_BTN_NAME}</span>
+              {HOME_BTN_NAME}
             </NavigationLink>
           </ListItem>
 
           <Divider component="li" className={classes.divider} />
+
+          {auth && (
+            <>
+              <ListItem className={classes.listItem}>
+                <NavigationLink
+                  component={Link}
+                  to={PROFILE}
+                  className={classes.navLink}
+                >
+                  <Grid container justify="space-between" alignItems="center">
+                    <Grid item>
+                      <Typography component="span" className={classes.navLink}>
+                        {PROFILE_BTN_NAME}
+                      </Typography>
+                    </Grid>
+
+                    <Grid item>
+                      <ProfileIcon className={classes.icon} />
+                    </Grid>
+                  </Grid>
+                </NavigationLink>
+              </ListItem>
+
+              <ListItem className={classes.listItem}>
+                <NavigationLink
+                  component={Link}
+                  to={DASHBOARD}
+                  className={classes.navLink}
+                >
+                  <Grid container justify="space-between" alignItems="center">
+                    <Grid item>
+                      <Typography component="span" className={classes.navLink}>
+                        {DASHBOARD_BTN_NAME}
+                      </Typography>
+                    </Grid>
+
+                    <Grid item>
+                      <DashboardIcon className={classes.icon} />
+                    </Grid>
+                  </Grid>
+                </NavigationLink>
+              </ListItem>
+
+              <Divider component="li" className={classes.divider} />
+            </>
+          )}
 
           <ListItem className={classes.listItem}>
             <Button
@@ -153,37 +216,58 @@ const MobileDrawerNavigation = ({ toggleDrawer, open }) => {
             </Button>
           </ListItem>
 
-          <ListItem className={classes.listItem}>
-            <Button
-              className={classnames(classes.navLink, classes.navBtn)}
-              disableRipple
-              onClick={() => toggleModal(true, SIGNUP_BTN_NAME)}
-            >
-              <Typography
-                component="span"
-                className={classes.navLink}
-                align="left"
-              >
-                {SIGNUP_BTN_NAME}
-              </Typography>
-            </Button>
-          </ListItem>
+          {!auth ? (
+            <>
+              <ListItem className={classes.listItem}>
+                <Button
+                  className={classnames(classes.navLink, classes.navBtn)}
+                  disableRipple
+                  onClick={() => toggleModal(true, SIGNUP_BTN_NAME)}
+                >
+                  <Typography
+                    component="span"
+                    className={classes.navLink}
+                    align="left"
+                  >
+                    {SIGNUP_BTN_NAME}
+                  </Typography>
+                </Button>
+              </ListItem>
 
-          <ListItem className={classes.listItem}>
-            <Button
-              className={classnames(classes.navLink, classes.navBtn)}
-              disableRipple
-              onClick={() => toggleModal(true, LOGIN_BTN_NAME)}
-            >
-              <Typography
-                component="span"
-                className={classes.navLink}
-                align="left"
+              <ListItem className={classes.listItem}>
+                <Button
+                  className={classnames(classes.navLink, classes.navBtn)}
+                  disableRipple
+                  onClick={() => toggleModal(true, LOGIN_BTN_NAME)}
+                >
+                  <Typography
+                    component="span"
+                    className={classes.navLink}
+                    align="left"
+                  >
+                    {LOGIN_BTN_NAME}
+                  </Typography>
+                </Button>
+              </ListItem>
+            </>
+          ) : (
+            <ListItem className={classes.listItem}>
+              <Button
+                className={classnames(classes.navLink, classes.navBtn)}
+                disableRipple
+                onClick={firebase.doSignOut}
               >
-                {LOGIN_BTN_NAME}
-              </Typography>
-            </Button>
-          </ListItem>
+                <Typography
+                  component="span"
+                  className={classes.navLink}
+                  align="left"
+                >
+                  {LOGOUT_BTN_NAME}
+                </Typography>
+              </Button>
+            </ListItem>
+          )}
+
         </List>
       </nav>
     </Drawer>
@@ -193,6 +277,9 @@ const MobileDrawerNavigation = ({ toggleDrawer, open }) => {
 MobileDrawerNavigation.propTypes = {
   toggleDrawer: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
+  firebase: PropTypes.shape({
+    doSignOut: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
-export default MobileDrawerNavigation;
+export default withFirebase(MobileDrawerNavigation);

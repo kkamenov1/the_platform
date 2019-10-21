@@ -21,6 +21,7 @@ import {
 } from '../../constants/routes';
 import MobileDrawerNavigation from '../../components/mobile-drawer-navigation';
 import ModalHeaderProvider from '../../components/modal-header-provider';
+import AvatarNavButton from '../../components/avatar-nav-button';
 import { Modal } from '../../core/components';
 import { toggleMobileNavigation, toggleHeaderModal } from './actions';
 
@@ -122,9 +123,10 @@ const Header = () => {
   const isMobileNavigationOpen = useSelector((state) => state.header.isMobileNavigationOpen);
   const isHeaderModalOpen = useSelector((state) => state.header.isHeaderModalOpen);
   const headerModalName = useSelector((state) => state.header.headerModalName);
+  const auth = useSelector((state) => state.app.auth);
 
   const toggleDrawer = (open) => (event) => {
-    if (window.innerWidth > 960) return;
+    if (!isMobile) return;
 
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
@@ -202,21 +204,32 @@ const Header = () => {
                   alignItems="center"
                   className={classes.nav}
                 >
-                  {navRoutesWithoutHome.map((navRoute) => (
+                  {navRoutesWithoutHome
+                    .filter((navRoute) => !auth || !navRoute.shouldHideOnAuth)
+                    .map((navRoute) => (
+                      <Grid
+                        item
+                        key={navRoute.name}
+                        className={classes.navBtnWrapper}
+                      >
+                        <Button
+                          className={classes.navBtn}
+                          disableRipple
+                          onClick={() => toggleModal(true, navRoute.name)}
+                        >
+                          {navRoute.name}
+                        </Button>
+                      </Grid>
+                    ))}
+
+                  {auth && (
                     <Grid
                       item
-                      key={navRoute.name}
                       className={classes.navBtnWrapper}
                     >
-                      <Button
-                        className={classes.navBtn}
-                        disableRipple
-                        onClick={() => toggleModal(true, navRoute.name)}
-                      >
-                        {navRoute.name}
-                      </Button>
+                      <AvatarNavButton />
                     </Grid>
-                  ))}
+                  )}
                 </Grid>
               </Grid>
             </Hidden>
