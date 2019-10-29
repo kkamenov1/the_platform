@@ -15,6 +15,7 @@ import {
   TextField,
   Grid,
   Button,
+  CircularProgress,
 } from '@material-ui/core';
 import AddAPhotoIcon from '@material-ui/icons/AddAPhoto';
 import PlacesAutoComplete from '../../../core/components/places-autocomplete';
@@ -70,7 +71,16 @@ const useStyles = makeStyles({
     },
   },
   noDisplay: {
-    display: 'none',
+    display: 'none !important',
+  },
+  photoUploadProgess: {
+    width: '45px !important',
+    height: '45px !important',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    color: 'rgb(255, 90, 95)',
+    display: 'block',
   },
 });
 
@@ -102,7 +112,8 @@ const PersonalDetailsStep = ({ firebase }) => {
   const [inputValues, setInputValues] = useState(INITIAL_STATE);
   const [isUserSubmittedPhoto, setIsUserSubmittedPhoto] = useState(false);
   const [submittedPhoto, setSubmittedPhoto] = useState(null);
-  const [labelWidth, setLabelWidth] = React.useState(0);
+  const [labelWidth, setLabelWidth] = useState(0);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
   const imageRef = useRef(null);
   const inputLabel = React.useRef(null);
@@ -131,6 +142,7 @@ const PersonalDetailsStep = ({ firebase }) => {
     const file = event.target.files[0];
 
     if (file) {
+      setUploadingPhoto(true);
       firebase.doUploadImage(file, auth.uid).then(() => {
         if (isUserSubmittedPhoto) {
           firebase.doDeleteImage(submittedPhoto.name, auth.uid);
@@ -145,6 +157,7 @@ const PersonalDetailsStep = ({ firebase }) => {
               ...inputValues,
               photoURL: url,
             });
+            setUploadingPhoto(false);
           });
         });
       });
@@ -158,7 +171,6 @@ const PersonalDetailsStep = ({ firebase }) => {
     });
   };
 
-  console.log(inputValues.photoURL);
   return (
     <form>
       <PlacesAutoComplete
@@ -275,6 +287,11 @@ const PersonalDetailsStep = ({ firebase }) => {
                   [classes.noDisplay]: !isUserSubmittedPhoto && !auth.photoURL,
                 })}
                 ref={imageRef}
+              />
+              <CircularProgress
+                className={classnames(classes.photoUploadProgess, {
+                  [classes.noDisplay]: !uploadingPhoto,
+                })}
               />
             </div>
             <Typography
