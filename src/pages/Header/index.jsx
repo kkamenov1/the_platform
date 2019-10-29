@@ -16,8 +16,8 @@ import { ReactComponent as Logo } from '../../svg/logo.svg';
 import {
   NavigationRoutes,
   HOME_BTN_NAME,
-  BECOMEATRAINER_BTN_NAME,
   HELP_BTN_NAME,
+  BECOMEAGURU_BTN_NAME,
 } from '../../constants/routes';
 import MobileDrawerNavigation from '../../components/mobile-drawer-navigation';
 import ModalHeaderProvider from '../../components/modal-header-provider';
@@ -139,7 +139,6 @@ const Header = () => {
     if (
       modalName !== HOME_BTN_NAME
       && modalName !== HELP_BTN_NAME
-      && modalName !== BECOMEATRAINER_BTN_NAME
     ) {
       dispatch(toggleHeaderModal(open, modalName));
     }
@@ -153,6 +152,7 @@ const Header = () => {
         fullScreen={isMobile}
         open={isHeaderModalOpen}
         onClose={() => toggleModal(false, '')}
+        noPadding={headerModalName === BECOMEAGURU_BTN_NAME}
       >
         <ModalHeaderProvider headerModalName={headerModalName} />
       </Modal>

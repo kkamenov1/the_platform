@@ -81,6 +81,7 @@ const SearchTrainersWindow = () => {
             <SimpleSelect
               id="sport"
               label="Sport"
+              name="sport"
               options={selectOptions}
               onChange={onSportSelectChange}
               selectedValue={value}

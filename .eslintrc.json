@@ -4,6 +4,8 @@
   "rules": {
     "max-len": [1, 110, 2],
     "react/jsx-props-no-spreading": 0,
-    "react/no-array-index-key": 0
+    "react/no-array-index-key": 0,
+    "react/forbid-prop-types": 0,
+    "react-hooks/exhaustive-deps": 0
   }
 }

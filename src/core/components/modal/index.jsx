@@ -3,27 +3,36 @@ import PropTypes from 'prop-types';
 import { Dialog, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
+import classnames from 'classnames';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   dialogPaper: {
     width: '100%',
+    borderRadius: 0,
   },
-  modalWrapper: {
-    padding: 32,
+  [theme.breakpoints.up('md')]: {
+    paperWidthSm900: {
+      maxWidth: 900,
+    },
+  },
+  paperWidthSm600: {
+    maxWidth: 600,
+  },
+  modalPadding: {
+    padding: '42px 32px 32px 32px',
   },
   closeIconWrapper: {
-    textAlign: 'right',
-    marginBottom: 20,
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    zIndex: 9999,
   },
   closeBtn: {
-    padding: 15,
-    margin: -20,
-
     '&:hover': {
       backgroundColor: 'transparent',
     },
   },
-});
+}));
 
 const Modal = ({
   fullScreen,
@@ -31,6 +40,7 @@ const Modal = ({
   onClose,
   children,
   other,
+  noPadding,
 }) => {
   const classes = useStyles();
 
@@ -41,10 +51,11 @@ const Modal = ({
       onClose={onClose}
       classes={{
         paper: classes.dialogPaper,
+        paperWidthSm: !noPadding ? classes.paperWidthSm600 : classes.paperWidthSm900,
       }}
       {...other}
     >
-      <div className={classes.modalWrapper}>
+      <div className={classnames({ [classes.modalPadding]: !noPadding })}>
         <div className={classes.closeIconWrapper}>
           <IconButton
             className={classes.closeBtn}
@@ -62,6 +73,7 @@ const Modal = ({
 
 Modal.defaultProps = {
   fullScreen: false,
+  noPadding: false,
   other: {},
 };
 
@@ -73,6 +85,7 @@ Modal.propTypes = {
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,
   ]).isRequired,
+  noPadding: PropTypes.bool,
   other: PropTypes.shape({}),
 };
 

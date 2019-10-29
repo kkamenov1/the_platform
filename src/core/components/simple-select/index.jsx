@@ -20,6 +20,7 @@ const useStyles = makeStyles({
 
 const SimpleSelect = ({
   id,
+  name,
   label,
   options,
   onChange,
@@ -46,6 +47,7 @@ const SimpleSelect = ({
           margin="dense"
           inputProps={{
             id,
+            name,
           }}
         >
           <MenuItem value="">
@@ -64,6 +66,7 @@ const SimpleSelect = ({
 
 SimpleSelect.propTypes = {
   id: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   options: PropTypes.arrayOf(PropTypes.shape({
     value: PropTypes.string.isRequired,

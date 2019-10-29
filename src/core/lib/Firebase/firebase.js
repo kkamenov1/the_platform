@@ -1,6 +1,7 @@
 import app from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
+import 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -19,6 +20,7 @@ class Firebase {
 
     this.auth = app.auth();
     this.db = app.database();
+    this.storage = app.storage();
 
     this.googleProvider = new app.auth.GoogleAuthProvider();
     this.facebookProvider = new app.auth.FacebookAuthProvider();
@@ -74,6 +76,18 @@ class Firebase {
   users = () => this.db.ref('users');
 
   user = (uid) => this.db.ref(`users/${uid}`);
+
+  // *** Storage API ***
+
+  doUploadImage = (image, userID) => {
+    const imagesPath = this.storage.ref(`users/${userID}/images/${image.name}`);
+
+    return imagesPath.put(image);
+  }
+
+  doDownloadImage = (imageName, userID) => this.storage.ref(`users/${userID}/images/${imageName}`).getDownloadURL();
+
+  doDeleteImage = (imageName, userID) => this.storage.ref(`users/${userID}/images/${imageName}`).delete();
 }
 
 export default Firebase;

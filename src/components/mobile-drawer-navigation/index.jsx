@@ -19,7 +19,7 @@ import {
   PROFILE,
   DASHBOARD,
   HOME_BTN_NAME,
-  BECOMEATRAINER_BTN_NAME,
+  BECOMEAGURU_BTN_NAME,
   HELP_BTN_NAME,
   SIGNUP_BTN_NAME,
   LOGIN_BTN_NAME,
@@ -93,7 +93,7 @@ const MobileDrawerNavigation = ({
     if (
       modalName !== HOME_BTN_NAME
       && modalName !== HELP_BTN_NAME
-      && modalName !== BECOMEATRAINER_BTN_NAME
+      && modalName !== BECOMEAGURU_BTN_NAME
     ) {
       dispatch(toggleHeaderModal(openModal, modalName));
     }
@@ -172,14 +172,14 @@ const MobileDrawerNavigation = ({
             <Button
               className={classnames(classes.navLink, classes.navBtn)}
               disableRipple
-              onClick={() => toggleModal(true, BECOMEATRAINER_BTN_NAME)}
+              onClick={() => toggleModal(true, BECOMEAGURU_BTN_NAME)}
             >
               <Typography
                 component="span"
                 className={classes.navLink}
                 align="left"
               >
-                {BECOMEATRAINER_BTN_NAME}
+                {BECOMEAGURU_BTN_NAME}
               </Typography>
               <div className={classes.iconWrapper}>
                 <GymIcon />

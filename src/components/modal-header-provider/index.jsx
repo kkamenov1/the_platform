@@ -8,12 +8,14 @@ import {
   SIGNUP_BTN_NAME,
   FORGOT_PASSWORD_BTN_NAME,
   POST_SIGNUP,
+  BECOMEAGURU_BTN_NAME,
 } from '../../constants/routes';
 
 import SignUpForm from '../sign-up-form';
 import SignInForm from '../sign-in-form';
 import ForgotPasswordForm from '../forgot-password-form';
 import PostSignUp from '../post-sign-up';
+import BecomeAGuru from '../become-a-guru';
 
 const useStyles = makeStyles({
   headerModalHeading: {
@@ -59,6 +61,10 @@ const ModalHeaderProvider = ({ headerModalName }) => {
         <ForgotPasswordForm />
       </>
     );
+  }
+
+  if (headerModalName === BECOMEAGURU_BTN_NAME) {
+    return <BecomeAGuru />;
   }
 
   return (
