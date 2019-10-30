@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { useSelector } from 'react-redux';
+import React from 'react';
+import PropTypes from 'prop-types';
 import {
   Typography,
   Button,
@@ -55,23 +55,22 @@ const useStyles = makeStyles({
 });
 
 const UploadAPhoto = ({
-  handlePhotoChange,
+  onPhotoChange,
+  photoURL,
   isUserSubmittedPhoto,
   uploadingPhoto,
+  imageRef,
 }) => {
   const classes = useStyles();
-  const imageRef = useRef(null);
-  const auth = useSelector((state) => state.app.auth);
-
 
   return (
     <>
       <input
-        accept=".jpg, .png"
+        accept=".png, .jpg, .jpeg"
         style={{ display: 'none' }}
         id="photo"
         type="file"
-        onChange={handlePhotoChange}
+        onChange={onPhotoChange}
       />
       <label htmlFor="photo">
         <Button
@@ -80,12 +79,12 @@ const UploadAPhoto = ({
           disableRipple
         >
           <div className={classes.uploadPhotoIconWrapper}>
-            {!auth.photoURL && !isUserSubmittedPhoto && <AddAPhotoIcon />}
+            {!photoURL && !isUserSubmittedPhoto && <AddAPhotoIcon />}
             <img
               alt="add"
-              src={auth.photoURL}
+              src={photoURL}
               className={classnames(classes.userSubmittedImage, {
-                [classes.noDisplay]: !isUserSubmittedPhoto && !auth.photoURL,
+                [classes.noDisplay]: !isUserSubmittedPhoto && !photoURL,
               })}
               ref={imageRef}
             />
@@ -99,12 +98,20 @@ const UploadAPhoto = ({
             component="span"
             className={classes.uploadPhotoText}
           >
-            {isUserSubmittedPhoto || auth.photoURL ? 'Change the photo' : 'Upload a photo'}
+            {isUserSubmittedPhoto || photoURL ? 'Change the photo' : 'Upload a photo'}
           </Typography>
         </Button>
       </label>
     </>
   );
+};
+
+UploadAPhoto.propTypes = {
+  onPhotoChange: PropTypes.func.isRequired,
+  photoURL: PropTypes.string.isRequired,
+  isUserSubmittedPhoto: PropTypes.bool.isRequired,
+  uploadingPhoto: PropTypes.bool.isRequired,
+  imageRef: PropTypes.shape({}).isRequired,
 };
 
 export default UploadAPhoto;
