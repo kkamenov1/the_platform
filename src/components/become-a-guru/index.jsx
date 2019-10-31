@@ -48,6 +48,9 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     backgroundColor: '#f0f0f0',
   },
+  caption: {
+    marginBottom: 20,
+  },
 }));
 
 function getSteps() {
@@ -96,6 +99,10 @@ const BecomeAGuru = () => {
           <div className={classes.padding}>
             <Typography component="h4" variant="h4">
               APPLY TO BECOME A GURU
+            </Typography>
+
+            <Typography variant="caption" className={classes.caption} component="p">
+              Earn money by coaching other people
             </Typography>
 
             <div className={classes.stepContent}>

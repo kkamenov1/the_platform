@@ -85,7 +85,7 @@ class Firebase {
     return imagesPath.put(image);
   }
 
-  doDownloadImage = (imageName, userID) => this.storage.ref(`users/${userID}/images/${imageName}`).getDownloadURL();
+  getImageUrl = (imageName, userID) => this.storage.ref(`users/${userID}/images/${imageName}`).getDownloadURL();
 
   doDeleteImage = (imageName, userID) => this.storage.ref(`users/${userID}/images/${imageName}`).delete();
 }
