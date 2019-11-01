@@ -1,4 +1,3 @@
-/* eslint-disable no-await-in-loop */
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
@@ -15,13 +14,12 @@ import {
   Button,
   List,
   ListItem,
+  CircularProgress,
 } from '@material-ui/core';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import PlacesAutoComplete from '../../../core/components/places-autocomplete';
 import languages from '../../../constants/languages';
 import { withFirebase } from '../../../core/lib/Firebase';
-
-const NUMBER_OF_IMAGES = 4;
 
 const useStyles = makeStyles({
   chips: {
@@ -47,11 +45,10 @@ const useStyles = makeStyles({
   },
   photoListItem: {
     paddingLeft: 0,
-    paddingRight: 12,
   },
   imageWrapper: {
     background: '#f4f4f4',
-    border: '1px dashed #c5d7b5',
+    border: '1px dashed rgb(255, 90, 95)',
   },
   image: {
     width: 100,
@@ -67,6 +64,15 @@ const useStyles = makeStyles({
   },
   addPhotoIcon: {
     fill: 'rgb(255, 90, 95)',
+  },
+  progressWrapper: {
+    width: 100,
+    height: 100,
+  },
+  progress: {
+    color: 'rgb(255, 90, 95)',
+    width: '20px !important',
+    height: '20px !important',
   },
 });
 
@@ -90,18 +96,19 @@ const INITIAL_STATE = {
   year: '',
 };
 
+const DEFAULT_IMAGES = [
+  { src: null, loading: false },
+  { src: null, loading: false },
+  { src: null, loading: false },
+  { src: null, loading: false },
+];
 
 const PersonalDetailsStep = ({ firebase }) => {
   const classes = useStyles();
 
   const [inputValues, setInputValues] = useState(INITIAL_STATE);
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState(DEFAULT_IMAGES);
   const [labelWidth, setLabelWidth] = useState(0);
-  // const [isUserSubmittedPhoto, setIsUserSubmittedPhoto] = useState(false);
-  // const [submittedPhoto, setSubmittedPhoto] = useState(null);
-  // const [uploadingPhoto, setUploadingPhoto] = useState(false);
-
-  // const imageRef = useRef(null);
 
   const inputLabel = React.useRef(null);
 
@@ -109,8 +116,7 @@ const PersonalDetailsStep = ({ firebase }) => {
 
   useEffect(() => {
     setLabelWidth(inputLabel.current.offsetWidth);
-    console.log(images);
-  }, [images]);
+  }, []);
 
   const handleLocationChange = (location) => {
     setInputValues({
@@ -119,45 +125,23 @@ const PersonalDetailsStep = ({ firebase }) => {
     });
   };
 
-  const handlePhotoChange = async (event) => {
-    const { files } = event.target;
-    const newImages = [];
+  const addFirstPossible = (val, arr) => {
+    const index = arr.findIndex((obj) => obj.src === null);
+    return arr.map((item, idx) => {
+      if (idx === index) return val;
+      return item;
+    });
+  };
 
-    for (let i = 0; i < files.length; i += 1) {
-      const file = files[i];
-
-      if (!file.type.match('image')) {
-        continue;
-      }
-
+  const handlePhotoChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImages([...addFirstPossible({ loading: true, src: null }, images)]);
       await firebase.doUploadImage(file, auth.uid);
       const url = await firebase.getImageUrl(file.name, auth.uid);
 
-      newImages.push({ loading: true, src: url });
+      setImages([...addFirstPossible({ loading: false, src: url }, images)]);
     }
-    setImages([...images, ...newImages]);
-
-    // if (file) {
-    //   setUploadingPhoto(true);
-    //   firebase.doUploadImage(file, auth.uid).then(() => {
-    //     if (isUserSubmittedPhoto) {
-    //       firebase.doDeleteImage(submittedPhoto.name, auth.uid);
-    //     }
-
-    //     firebase.doDownloadImage(file.name, auth.uid).then((url) => {
-    //       axios.get(url).then(() => {
-    //         imageRef.current.src = url;
-    //         setIsUserSubmittedPhoto(true);
-    //         setSubmittedPhoto(file);
-    //         setInputValues({
-    //           ...inputValues,
-    //           photoURL: url,
-    //         });
-    //         setUploadingPhoto(false);
-    //       });
-    //     });
-    //   });
-    // }
   };
 
   const handleChange = (event) => {
@@ -261,37 +245,51 @@ const PersonalDetailsStep = ({ firebase }) => {
           Photos
         </Typography>
 
-        <input
-          accept="image/*"
-          style={{ display: 'none' }}
-          id="photos"
-          type="file"
-          onChange={handlePhotoChange}
-          multiple
-        />
+        <List className={classes.photoList}>
+          {images.map((image, index) => (
+            <ListItem className={classes.photoListItem} key={index}>
+              <div className={classes.imageWrapper}>
 
-
-        <label htmlFor="photos">
-          <List className={classes.photoList}>
-            {Array.from(Array(NUMBER_OF_IMAGES).keys()).map((item) => (
-              <ListItem key={item} className={classes.photoListItem}>
-                <div className={classes.imageWrapper}>
-                  {images && images.length && images.length > item ? (
-                    <img
-                      src={images[item].src}
-                      alt="test"
-                      className={classes.image}
+                {image.src ? (
+                  <img src={image.src} alt="test" className={classes.image} />
+                ) : image.loading ? (
+                  <div className={classes.photoListItem}>
+                    <div className={classes.imageWrapper}>
+                      <Grid
+                        container
+                        alignItems="center"
+                        justify="center"
+                        className={classes.progressWrapper}
+                      >
+                        <CircularProgress className={classes.progress} />
+                      </Grid>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <input
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      id={`photos-${index}`}
+                      type="file"
+                      onChange={handlePhotoChange}
                     />
-                  ) : (
-                    <Button component="span" disableRipple className={classes.addPhotoBtn}>
-                      <AddCircleIcon className={classes.addPhotoIcon} />
-                    </Button>
-                  )}
-                </div>
-              </ListItem>
-            ))}
-          </List>
-        </label>
+
+                    <label htmlFor={`photos-${index}`}>
+                      <div className={classes.photoListItem}>
+                        <div className={classes.imageWrapper}>
+                          <Button component="span" disableRipple className={classes.addPhotoBtn}>
+                            <AddCircleIcon className={classes.addPhotoIcon} />
+                          </Button>
+                        </div>
+                      </div>
+                    </label>
+                  </>
+                )}
+              </div>
+            </ListItem>
+          ))}
+        </List>
       </div>
     </form>
   );
