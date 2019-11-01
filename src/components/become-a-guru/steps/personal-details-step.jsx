@@ -21,6 +21,7 @@ import PlacesAutoComplete from '../../../core/components/places-autocomplete';
 import languages from '../../../constants/languages';
 import { withFirebase } from '../../../core/lib/Firebase';
 
+const NUMBER_OF_IMAGES = 4;
 
 const useStyles = makeStyles({
   chips: {
@@ -60,8 +61,8 @@ const useStyles = makeStyles({
     margin: 'auto',
   },
   addPhotoBtn: {
-    width: 87,
-    height: 72,
+    width: 100,
+    height: 100,
     border: '1px solid white',
   },
   addPhotoIcon: {
@@ -120,6 +121,7 @@ const PersonalDetailsStep = ({ firebase }) => {
 
   const handlePhotoChange = async (event) => {
     const { files } = event.target;
+    const newImages = [];
 
     for (let i = 0; i < files.length; i += 1) {
       const file = files[i];
@@ -128,27 +130,12 @@ const PersonalDetailsStep = ({ firebase }) => {
         continue;
       }
 
-      setImages([...images, { loading: true, src: null }]);
       await firebase.doUploadImage(file, auth.uid);
       const url = await firebase.getImageUrl(file.name, auth.uid);
-      setImages([...images.slice(0, -1), { loading: false, src: url }]);
 
-      // promises.push(
-      //   firebase.doUploadImage(file, auth.uid),
-      //   firebase.doDownloadImage(file.name, auth.uid),
-      // );
-      // Promise.all(promises).then((result) => {
-      //   const [, url] = result;
-      //   setImages([...images.slice(0, -1), { loading: false, src: url }]);
-      // });
-      // firebase.doUploadImage(file, auth.uid).then(() => {
-      //   firebase.doDownloadImage(file.name, auth.uid).then((url) => {
-      //     axios.get(url).then(() => {
-      //       setImages(...images.slice(0, -1), { loading: false, src: url });
-      //     });
-      //   });
-      // });
+      newImages.push({ loading: true, src: url });
     }
+    setImages([...images, ...newImages]);
 
     // if (file) {
     //   setUploadingPhoto(true);
@@ -283,55 +270,26 @@ const PersonalDetailsStep = ({ firebase }) => {
           multiple
         />
 
+
         <label htmlFor="photos">
           <List className={classes.photoList}>
-            <ListItem className={classes.photoListItem}>
-              <div className={classes.imageWrapper}>
-                {images && images.length ? (
-                  <img src={images[0].src} alt="test" className={classes.image} />
-                ) : (
-                  <Button component="span" disableRipple className={classes.addPhotoBtn}>
-                    <AddCircleIcon className={classes.addPhotoIcon} />
-                  </Button>
-                )}
-              </div>
-            </ListItem>
-
-            <ListItem className={classes.photoListItem}>
-              <div className={classes.imageWrapper}>
-                {images && images.length > 1 ? (
-                  <img src={images[1].src} alt="test" className={classes.image} />
-                ) : (
-                  <Button component="span" disableRipple className={classes.addPhotoBtn}>
-                    <AddCircleIcon className={classes.addPhotoIcon} />
-                  </Button>
-                )}
-              </div>
-            </ListItem>
-
-            <ListItem className={classes.photoListItem}>
-              <div className={classes.imageWrapper}>
-                {/* {images && images.item.src && images.item.index === item ? (
-                    <img src={images.item.src} alt="test" />
-                  ) : ( */}
-                <Button component="span" disableRipple className={classes.addPhotoBtn}>
-                  <AddCircleIcon className={classes.addPhotoIcon} />
-                </Button>
-                {/* )} */}
-              </div>
-            </ListItem>
-
-            <ListItem className={classes.photoListItem}>
-              <div className={classes.imageWrapper}>
-                {/* {images && images.item.src && images.item.index === item ? (
-                    <img src={images.item.src} alt="test" />
-                  ) : ( */}
-                <Button component="span" disableRipple className={classes.addPhotoBtn}>
-                  <AddCircleIcon className={classes.addPhotoIcon} />
-                </Button>
-                {/* )} */}
-              </div>
-            </ListItem>
+            {Array.from(Array(NUMBER_OF_IMAGES).keys()).map((item) => (
+              <ListItem key={item} className={classes.photoListItem}>
+                <div className={classes.imageWrapper}>
+                  {images && images.length && images.length > item ? (
+                    <img
+                      src={images[item].src}
+                      alt="test"
+                      className={classes.image}
+                    />
+                  ) : (
+                    <Button component="span" disableRipple className={classes.addPhotoBtn}>
+                      <AddCircleIcon className={classes.addPhotoIcon} />
+                    </Button>
+                  )}
+                </div>
+              </ListItem>
+            ))}
           </List>
         </label>
       </div>

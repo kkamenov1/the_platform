@@ -37,6 +37,10 @@ const useStyles = makeStyles((theme) => ({
       color: '#fb2525',
     },
   },
+  heading: {
+    color: 'rgb(72, 72, 72)',
+    fontWeight: 500,
+  },
   padding: {
     padding: 32,
   },
@@ -50,6 +54,8 @@ const useStyles = makeStyles((theme) => ({
   },
   caption: {
     marginBottom: 20,
+    color: 'rgb(72, 72, 72)',
+    fontWeight: 100,
   },
 }));
 
@@ -97,7 +103,7 @@ const BecomeAGuru = () => {
       <Grid item className={classes.right} xs={8}>
         <div>
           <div className={classes.padding}>
-            <Typography component="h4" variant="h4">
+            <Typography component="h4" variant="h4" className={classes.heading}>
               APPLY TO BECOME A GURU
             </Typography>
 
