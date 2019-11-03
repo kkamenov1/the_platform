@@ -15,9 +15,11 @@ import {
   List,
   ListItem,
   CircularProgress,
+  Fab,
 } from '@material-ui/core';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-import PlacesAutoComplete from '../../../core/components/places-autocomplete';
+import ClearIcon from '@material-ui/icons/Clear';
+import { PlacesAutoComplete, FormError } from '../../../core/components';
 import languages from '../../../constants/languages';
 import { withFirebase } from '../../../core/lib/Firebase';
 
@@ -74,9 +76,35 @@ const useStyles = makeStyles({
     width: '20px !important',
     height: '20px !important',
   },
+  imageWrapperInner: {
+    position: 'relative',
+
+    '&:hover > button': {
+      display: 'block',
+    },
+  },
+  deleteImageBtn: {
+    backgroundColor: 'rgb(255, 90, 95)',
+    position: 'absolute',
+    top: -10,
+    right: -10,
+    width: 25,
+    height: 25,
+    minHeight: 0,
+    display: 'none',
+
+    '&:hover': {
+      backgroundColor: 'rgb(255, 90, 95)',
+    },
+  },
+  deleteIcon: {
+    width: 'inherit',
+    height: 'inherit',
+  },
 });
 
-
+const FILE_MEGABYTES = 5;
+const KILOBYTE = 1024;
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -97,17 +125,17 @@ const INITIAL_STATE = {
 };
 
 const DEFAULT_IMAGES = [
-  { src: null, loading: false },
-  { src: null, loading: false },
-  { src: null, loading: false },
-  { src: null, loading: false },
+  { src: null, loading: false, name: null },
+  { src: null, loading: false, name: null },
+  { src: null, loading: false, name: null },
+  { src: null, loading: false, name: null },
 ];
 
 const PersonalDetailsStep = ({ firebase }) => {
   const classes = useStyles();
-
   const [inputValues, setInputValues] = useState(INITIAL_STATE);
   const [images, setImages] = useState(DEFAULT_IMAGES);
+  const [errorPhotos, setErrorPhotos] = useState(null);
   const [labelWidth, setLabelWidth] = useState(0);
 
   const inputLabel = React.useRef(null);
@@ -133,15 +161,44 @@ const PersonalDetailsStep = ({ firebase }) => {
     });
   };
 
+  const addOnPosition = (pos, val, arr) => arr.map((item, idx) => {
+    if (idx === pos) return val;
+    return item;
+  });
+
   const handlePhotoChange = async (e) => {
     const file = e.target.files[0];
+
     if (file) {
+      if (!file.type.match('image')) {
+        setErrorPhotos('Selected file should be an image');
+        return;
+      }
+
+      const selectedFileMegabytes = file.size / KILOBYTE / KILOBYTE;
+      if (selectedFileMegabytes > FILE_MEGABYTES) {
+        setErrorPhotos('Selected file size should not be more than 5MB');
+        return;
+      }
+
       setImages([...addFirstPossible({ loading: true, src: null }, images)]);
       await firebase.doUploadImage(file, auth.uid);
       const url = await firebase.getImageUrl(file.name, auth.uid);
 
-      setImages([...addFirstPossible({ loading: false, src: url }, images)]);
+      setImages([...addFirstPossible({ loading: false, src: url, name: file.name }, images)]);
+      setErrorPhotos(null);
     }
+  };
+
+  const removePhoto = async (pos) => {
+    const imageName = images[pos].name;
+    await firebase.doDeleteImage(imageName, auth.uid);
+    const arrayWithDeletedImage = [...addOnPosition(
+      pos,
+      { src: null, loading: false, name: null },
+      images,
+    )];
+    setImages(arrayWithDeletedImage);
   };
 
   const handleChange = (event) => {
@@ -251,7 +308,17 @@ const PersonalDetailsStep = ({ firebase }) => {
               <div className={classes.imageWrapper}>
 
                 {image.src ? (
-                  <img src={image.src} alt="test" className={classes.image} />
+                  <div className={classes.imageWrapperInner}>
+                    <Fab
+                      color="primary"
+                      aria-label="add"
+                      className={classes.deleteImageBtn}
+                      onClick={() => removePhoto(index)}
+                    >
+                      <ClearIcon className={classes.deleteIcon} />
+                    </Fab>
+                    <img src={image.src} alt="test" className={classes.image} />
+                  </div>
                 ) : image.loading ? (
                   <div className={classes.photoListItem}>
                     <div className={classes.imageWrapper}>
@@ -290,6 +357,12 @@ const PersonalDetailsStep = ({ firebase }) => {
             </ListItem>
           ))}
         </List>
+
+        {errorPhotos && (
+          <FormError>
+            {errorPhotos}
+          </FormError>
+        )}
       </div>
     </form>
   );

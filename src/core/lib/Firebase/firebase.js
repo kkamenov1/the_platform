@@ -80,14 +80,14 @@ class Firebase {
   // *** Storage API ***
 
   doUploadImage = (image, userID) => {
-    const imagesPath = this.storage.ref(`users/${userID}/images/${image.name}`);
+    const imagesPath = this.storage.ref(`users/${userID}/images/guru-portfolio/${image.name}`);
 
     return imagesPath.put(image);
   }
 
-  getImageUrl = (imageName, userID) => this.storage.ref(`users/${userID}/images/${imageName}`).getDownloadURL();
+  getImageUrl = (imageName, userID) => this.storage.ref(`users/${userID}/images/guru-portfolio/${imageName}`).getDownloadURL();
 
-  doDeleteImage = (imageName, userID) => this.storage.ref(`users/${userID}/images/${imageName}`).delete();
+  doDeleteImage = (imageName, userID) => this.storage.ref(`users/${userID}/images/guru-portfolio/${imageName}`).delete();
 }
 
 export default Firebase;

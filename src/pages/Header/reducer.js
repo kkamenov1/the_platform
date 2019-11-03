@@ -4,6 +4,7 @@ import {
   SET_LOADING_SIGNUP_MODAL,
   SET_LOADING_SIGNIN_MODAL,
   SET_LOADING_RESET_PASSWORD_MODAL,
+  SET_GURU_PHOTOS,
 } from './actions';
 
 export const defaultStore = {
@@ -18,6 +19,16 @@ export const defaultStore = {
   },
   forgotPasswordModal: {
     loading: false,
+  },
+  becomeGuruModal: {
+    personalDetailsStep: {
+      images: [
+        { src: null, loading: false, name: null },
+        { src: null, loading: false, name: null },
+        { src: null, loading: false, name: null },
+        { src: null, loading: false, name: null },
+      ],
+    },
   },
 };
 
@@ -61,6 +72,18 @@ export default (state = defaultStore, action) => {
         forgotPasswordModal: {
           ...state.forgotPasswordModal,
           loading: action.loading,
+        },
+      };
+
+    case SET_GURU_PHOTOS:
+      return {
+        ...state,
+        becomeGuruModal: {
+          ...state.becomeGuruModal,
+          personalDetailsStep: {
+            ...state.becomeGuruModal.personalDetailsStep,
+            images: action.images,
+          },
         },
       };
 
