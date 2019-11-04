@@ -83,6 +83,7 @@ const BecomeAGuru = ({ firebase }) => {
   const guruDayOfBirth = useSelector((state) => state.header.becomeGuruModal.personalDetailsStep.day);
   const guruMonthOfBirth = useSelector((state) => state.header.becomeGuruModal.personalDetailsStep.month);
   const guruYearOfBirth = useSelector((state) => state.header.becomeGuruModal.personalDetailsStep.year);
+  const applicationUID = useSelector((state) => state.header.becomeGuruModal.applicationUID);
 
   const submitPersonalDetailsStep = () => {
     const formErrors = {};
@@ -113,13 +114,24 @@ const BecomeAGuru = ({ firebase }) => {
       return false;
     }
 
-    // TODO: handle the back and forward buttons to the in exact
+    // handle the back and forward buttons to the in exact
     // application UID and not to create a new one each time a Continue
     // button is clicked
-    uidgen.generate().then((uid) => {
-      dispatch(setApplicationUID(uid));
+    if (!applicationUID) {
+      uidgen.generate().then((uid) => {
+        dispatch(setApplicationUID(uid));
 
-      firebase.application(uid).set({
+        firebase.application(uid).set({
+          location: guruLocation,
+          languages: guruLanguages,
+          birthday: birthDate.toDateString(),
+          images: filteredImages,
+        }).then(() => {
+          dispatch(setPersonalDetailsErrors({}));
+        });
+      });
+    } else {
+      firebase.application(applicationUID).set({
         location: guruLocation,
         languages: guruLanguages,
         birthday: birthDate.toDateString(),
@@ -127,7 +139,7 @@ const BecomeAGuru = ({ firebase }) => {
       }).then(() => {
         dispatch(setPersonalDetailsErrors({}));
       });
-    });
+    }
 
     return true;
   };
