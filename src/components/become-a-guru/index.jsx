@@ -9,7 +9,6 @@ import {
   Grid,
   Button,
 } from '@material-ui/core';
-import UIDGenerator from 'uid-generator';
 import { SimpleButton } from '../../core/components';
 import contentSteps from './steps';
 import {
@@ -72,7 +71,6 @@ function getSteps() {
 }
 
 const BecomeAGuru = ({ firebase }) => {
-  const uidgen = new UIDGenerator();
   const classes = useStyles();
   const dispatch = useDispatch();
   const steps = getSteps();
@@ -87,7 +85,9 @@ const BecomeAGuru = ({ firebase }) => {
 
   const submitPersonalDetailsStep = () => {
     const formErrors = {};
-    const filteredImages = guruImages.filter((img) => img.src);
+    const filteredImages = guruImages
+      .filter((img) => img.src)
+      .map((img) => img.src);
     const day = parseInt(guruDayOfBirth, 10);
     const month = parseInt(guruMonthOfBirth, 10);
     const year = parseInt(guruYearOfBirth, 10);
@@ -118,17 +118,16 @@ const BecomeAGuru = ({ firebase }) => {
     // application UID and not to create a new one each time a Continue
     // button is clicked
     if (!applicationUID) {
-      uidgen.generate().then((uid) => {
-        dispatch(setApplicationUID(uid));
+      const newApplicationUID = firebase.applications().push().key;
 
-        firebase.application(uid).set({
-          location: guruLocation,
-          languages: guruLanguages,
-          birthday: birthDate.toDateString(),
-          images: filteredImages,
-        }).then(() => {
-          dispatch(setPersonalDetailsErrors({}));
-        });
+      firebase.application(newApplicationUID).set({
+        location: guruLocation,
+        languages: guruLanguages,
+        birthday: birthDate.toDateString(),
+        images: filteredImages,
+      }).then(() => {
+        dispatch(setPersonalDetailsErrors({}));
+        dispatch(setApplicationUID(newApplicationUID));
       });
     } else {
       firebase.application(applicationUID).set({
