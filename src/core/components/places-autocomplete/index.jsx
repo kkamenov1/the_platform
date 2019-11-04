@@ -41,13 +41,14 @@ const useStyles = makeStyles({
 });
 
 
-const PlacesAutoComplete = ({ value, onChange }) => {
+const PlacesAutoComplete = ({ value, onChange, ...rest }) => {
   const classes = useStyles();
 
   return (
     <PlacesAutocomplete
       value={value}
       onChange={onChange}
+      {...rest}
     >
       {({
         getInputProps, suggestions, getSuggestionItemProps, loading,

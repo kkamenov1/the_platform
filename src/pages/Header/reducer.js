@@ -5,6 +5,11 @@ import {
   SET_LOADING_SIGNIN_MODAL,
   SET_LOADING_RESET_PASSWORD_MODAL,
   SET_GURU_PHOTOS,
+  SET_ACTIVE_STEP,
+  SET_APPLICATION_UID,
+  SET_GURU_LOCATION,
+  SET_PERSONAL_DETAILS_INPUT_VALUES,
+  SET_PERSONAL_DETAILS_ERRORS,
 } from './actions';
 
 export const defaultStore = {
@@ -21,13 +26,25 @@ export const defaultStore = {
     loading: false,
   },
   becomeGuruModal: {
+    activeStep: 0,
+    applicationUID: null,
     personalDetailsStep: {
+      location: '',
+      languages: [],
+      day: '',
+      month: '',
+      year: '',
       images: [
         { src: null, loading: false, name: null },
         { src: null, loading: false, name: null },
         { src: null, loading: false, name: null },
         { src: null, loading: false, name: null },
       ],
+      errors: {},
+    },
+    guruInformationStep: {
+    },
+    ratesStep: {
     },
   },
 };
@@ -87,6 +104,61 @@ export default (state = defaultStore, action) => {
         },
       };
 
+    case SET_ACTIVE_STEP:
+      return {
+        ...state,
+        becomeGuruModal: {
+          ...state.becomeGuruModal,
+          activeStep: action.activeStep,
+        },
+      };
+
+    case SET_APPLICATION_UID:
+      return {
+        ...state,
+        becomeGuruModal: {
+          ...state.becomeGuruModal,
+          applicationUID: action.uid,
+        },
+      };
+
+    case SET_GURU_LOCATION:
+      return {
+        ...state,
+        becomeGuruModal: {
+          ...state.becomeGuruModal,
+          personalDetailsStep: {
+            ...state.becomeGuruModal.personalDetailsStep,
+            location: action.location,
+          },
+        },
+      };
+
+    case SET_PERSONAL_DETAILS_INPUT_VALUES:
+      return {
+        ...state,
+        becomeGuruModal: {
+          ...state.becomeGuruModal,
+          personalDetailsStep: {
+            ...state.becomeGuruModal.personalDetailsStep,
+            [action.name]: action.value,
+          },
+        },
+      };
+
+    case SET_PERSONAL_DETAILS_ERRORS:
+      return {
+        ...state,
+        becomeGuruModal: {
+          ...state.becomeGuruModal,
+          personalDetailsStep: {
+            ...state.becomeGuruModal.personalDetailsStep,
+            errors: {
+              ...action.errors,
+            },
+          },
+        },
+      };
     default:
       return state;
   }

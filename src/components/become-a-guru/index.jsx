@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Stepper,
@@ -8,8 +9,15 @@ import {
   Grid,
   Button,
 } from '@material-ui/core';
+import UIDGenerator from 'uid-generator';
 import { SimpleButton } from '../../core/components';
 import contentSteps from './steps';
+import {
+  setActiveStep,
+  setApplicationUID,
+  setPersonalDetailsErrors,
+} from '../../pages/Header/actions';
+import { withFirebase } from '../../core/lib/Firebase';
 
 const useStyles = makeStyles((theme) => ({
   left: {
@@ -63,17 +71,75 @@ function getSteps() {
   return ['Personal information', 'GURU information', 'Rates'];
 }
 
-const BecomeAGuru = () => {
+const BecomeAGuru = ({ firebase }) => {
+  const uidgen = new UIDGenerator();
   const classes = useStyles();
+  const dispatch = useDispatch();
   const steps = getSteps();
-  const [activeStep, setActiveStep] = React.useState(0);
+  const activeStep = useSelector((state) => state.header.becomeGuruModal.activeStep);
+  const guruImages = useSelector((state) => state.header.becomeGuruModal.personalDetailsStep.images);
+  const guruLocation = useSelector((state) => state.header.becomeGuruModal.personalDetailsStep.location);
+  const guruLanguages = useSelector((state) => state.header.becomeGuruModal.personalDetailsStep.languages);
+  const guruDayOfBirth = useSelector((state) => state.header.becomeGuruModal.personalDetailsStep.day);
+  const guruMonthOfBirth = useSelector((state) => state.header.becomeGuruModal.personalDetailsStep.month);
+  const guruYearOfBirth = useSelector((state) => state.header.becomeGuruModal.personalDetailsStep.year);
+
+  const submitPersonalDetailsStep = () => {
+    const formErrors = {};
+    const filteredImages = guruImages.filter((img) => img.src);
+    const day = parseInt(guruDayOfBirth, 10);
+    const month = parseInt(guruMonthOfBirth, 10);
+    const year = parseInt(guruYearOfBirth, 10);
+    const birthDate = new Date(year, month - 1, day);
+
+    if (!guruLocation) {
+      formErrors.location = 'Please enter your location';
+    }
+
+    if (!guruLanguages.length) {
+      formErrors.languages = 'Please select at least one language';
+    }
+
+    if (!filteredImages.length) {
+      formErrors.images = 'Please select at least one image';
+    }
+
+    if (birthDate && birthDate.getMonth() + 1 !== month) {
+      formErrors.birthday = 'Please enter correct birth date';
+    }
+
+    if (Object.entries(formErrors).length) {
+      dispatch(setPersonalDetailsErrors(formErrors));
+      return false;
+    }
+
+    // TODO: handle the back and forward buttons to the in exact
+    // application UID and not to create a new one each time a Continue
+    // button is clicked
+    uidgen.generate().then((uid) => {
+      dispatch(setApplicationUID(uid));
+
+      firebase.application(uid).set({
+        location: guruLocation,
+        languages: guruLanguages,
+        birthday: birthDate.toDateString(),
+        images: filteredImages,
+      }).then(() => {
+        dispatch(setPersonalDetailsErrors({}));
+      });
+    });
+
+    return true;
+  };
 
   const handleNext = () => {
-    setActiveStep(activeStep + 1);
+    if (submitPersonalDetailsStep()) {
+      dispatch(setActiveStep(activeStep + 1));
+    }
   };
 
   const handleBack = () => {
-    setActiveStep(activeStep - 1);
+    dispatch(setActiveStep(activeStep - 1));
   };
 
   return (
@@ -142,4 +208,4 @@ const BecomeAGuru = () => {
   );
 };
 
-export default BecomeAGuru;
+export default withFirebase(BecomeAGuru);

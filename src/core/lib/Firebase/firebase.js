@@ -77,6 +77,12 @@ class Firebase {
 
   user = (uid) => this.db.ref(`users/${uid}`);
 
+  // *** Application API ***
+
+  applications = () => this.db.ref('applications');
+
+  application = (uid) => this.db.ref(`applications/${uid}`);
+
   // *** Storage API ***
 
   doUploadImage = (image, userID) => {

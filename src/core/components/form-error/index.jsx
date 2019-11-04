@@ -7,6 +7,8 @@ const useStyles = makeStyles({
   error: {
     fontSize: 14,
     fontWeight: 500,
+    height: 21,
+    marginBottom: 4,
   },
 });
 
