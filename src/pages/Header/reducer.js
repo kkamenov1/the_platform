@@ -10,6 +10,9 @@ import {
   SET_GURU_LOCATION,
   SET_PERSONAL_DETAILS_INPUT_VALUES,
   SET_PERSONAL_DETAILS_ERRORS,
+  SET_GURU_DETAILS_FORM_VALUES,
+  SET_GURU_DETAILS_COACHING_METHODS,
+  SET_GURU_DETAILS_ERRORS,
 } from './actions';
 
 export const defaultStore = {
@@ -42,7 +45,17 @@ export const defaultStore = {
       ],
       errors: {},
     },
-    guruInformationStep: {
+    guruDetailsStep: {
+      sport: '',
+      methods: {
+        workout: false,
+        nutritionPlan: false,
+        workoutAndNutritionPlan: false,
+        watchingExercise: false,
+        supplementPlan: false,
+      },
+      introduction: '',
+      errors: {},
     },
     ratesStep: {
     },
@@ -159,6 +172,48 @@ export default (state = defaultStore, action) => {
           },
         },
       };
+
+    case SET_GURU_DETAILS_FORM_VALUES:
+      return {
+        ...state,
+        becomeGuruModal: {
+          ...state.becomeGuruModal,
+          guruDetailsStep: {
+            ...state.becomeGuruModal.guruDetailsStep,
+            [action.name]: action.value,
+          },
+        },
+      };
+
+    case SET_GURU_DETAILS_COACHING_METHODS:
+      return {
+        ...state,
+        becomeGuruModal: {
+          ...state.becomeGuruModal,
+          guruDetailsStep: {
+            ...state.becomeGuruModal.guruDetailsStep,
+            methods: {
+              ...state.becomeGuruModal.guruDetailsStep.methods,
+              [action.name]: action.value,
+            },
+          },
+        },
+      };
+
+    case SET_GURU_DETAILS_ERRORS:
+      return {
+        ...state,
+        becomeGuruModal: {
+          ...state.becomeGuruModal,
+          guruDetailsStep: {
+            ...state.becomeGuruModal.guruDetailsStep,
+            errors: {
+              ...action.errors,
+            },
+          },
+        },
+      };
+
     default:
       return state;
   }

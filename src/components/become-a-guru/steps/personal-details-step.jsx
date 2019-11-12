@@ -19,7 +19,11 @@ import {
 } from '@material-ui/core';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import ClearIcon from '@material-ui/icons/Clear';
-import { PlacesAutoComplete, FormError } from '../../../core/components';
+import {
+  PlacesAutoComplete,
+  FormError,
+  ModalHeader,
+} from '../../../core/components';
 import allLanguages from '../../../constants/languages';
 import { withFirebase } from '../../../core/lib/Firebase';
 import {
@@ -217,170 +221,176 @@ const PersonalDetailsStep = ({ firebase }) => {
   };
 
   return (
-    <form>
-      <PlacesAutoComplete
-        value={location}
-        onChange={handleLocationChange}
-        shouldFetchSuggestions={location.length > 1}
+    <>
+      <ModalHeader
+        heading="APPLY TO BECOME A GURU"
+        caption="Earn money by coaching other people"
       />
-      <FormError>
-        {errors && errors.location}
-      </FormError>
+      <form>
+        <PlacesAutoComplete
+          value={location}
+          onChange={handleLocationChange}
+          shouldFetchSuggestions={location.length > 1}
+        />
+        <FormError>
+          {errors && errors.location}
+        </FormError>
 
-      <FormControl fullWidth variant="outlined">
-        <InputLabel
-          htmlFor="select-multiple-language"
-          ref={inputLabel}
-          className={classes.label}
-        >
+        <FormControl fullWidth variant="outlined">
+          <InputLabel
+            htmlFor="select-multiple-language"
+            ref={inputLabel}
+            className={classes.label}
+          >
           Languages
-        </InputLabel>
-        <Select
-          multiple
-          value={languages}
-          onChange={handleInputChange}
-          labelWidth={labelWidth}
-          className={classes.select}
-          margin="dense"
-          inputProps={{
-            id: 'select-multiple-language',
-            name: 'languages',
-          }}
-          renderValue={(selected) => (
-            <div className={classes.chips}>
-              {selected.map((value) => (
-                <Chip key={value} label={value} className={classes.chip} />
-              ))}
-            </div>
-          )}
-          MenuProps={MenuProps}
-        >
-          {allLanguages.map((language) => (
-            <MenuItem key={language} value={language}>
-              {language}
-            </MenuItem>
-          ))}
-        </Select>
-        <FormError>
-          {errors && errors.languages}
-        </FormError>
-      </FormControl>
-
-      <div className={classes.vspace}>
-        <Typography component="h6" variant="button">
-          Birthday
-        </Typography>
-
-        <Grid container spacing={1}>
-          <Grid item xs={2}>
-            <TextField
-              variant="outlined"
-              name="day"
-              value={day}
-              onChange={handleInputChange}
-              type="text"
-              placeholder="DD"
-              margin="dense"
-              inputProps={{ maxLength: 2 }}
-            />
-          </Grid>
-
-          <Grid item xs={2}>
-            <TextField
-              variant="outlined"
-              name="month"
-              value={month}
-              onChange={handleInputChange}
-              type="text"
-              placeholder="MM"
-              margin="dense"
-              inputProps={{ maxLength: 2 }}
-            />
-          </Grid>
-
-          <Grid item xs={4}>
-            <TextField
-              variant="outlined"
-              name="year"
-              value={year}
-              onChange={handleInputChange}
-              type="text"
-              placeholder="YYYY"
-              margin="dense"
-              inputProps={{ maxLength: 4 }}
-            />
-          </Grid>
-        </Grid>
-        <FormError>
-          {errors && errors.birthday}
-        </FormError>
-      </div>
-
-      <div className={classes.vspace}>
-        <Typography component="h6" variant="button">
-          Photos
-        </Typography>
-
-        <List className={classes.photoList}>
-          {images.map((image, index) => (
-            <ListItem className={classes.photoListItem} key={index}>
-              <div className={classes.imageWrapper}>
-
-                {image.src ? (
-                  <div className={classes.imageWrapperInner}>
-                    <Fab
-                      color="primary"
-                      aria-label="add"
-                      className={classes.deleteImageBtn}
-                      onClick={() => removePhoto(index)}
-                    >
-                      <ClearIcon className={classes.deleteIcon} />
-                    </Fab>
-                    <img src={image.src} alt="test" className={classes.image} />
-                  </div>
-                ) : image.loading ? (
-                  <div className={classes.photoListItem}>
-                    <div className={classes.imageWrapper}>
-                      <Grid
-                        container
-                        alignItems="center"
-                        justify="center"
-                        className={classes.progressWrapper}
-                      >
-                        <CircularProgress className={classes.progress} />
-                      </Grid>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <input
-                      accept="image/*"
-                      style={{ display: 'none' }}
-                      id={`photos-${index}`}
-                      type="file"
-                      onChange={handlePhotoChange}
-                    />
-
-                    <label htmlFor={`photos-${index}`}>
-                      <div className={classes.photoListItem}>
-                        <div className={classes.imageWrapper}>
-                          <Button component="span" disableRipple className={classes.addPhotoBtn}>
-                            <AddCircleIcon className={classes.addPhotoIcon} />
-                          </Button>
-                        </div>
-                      </div>
-                    </label>
-                  </>
-                )}
+          </InputLabel>
+          <Select
+            multiple
+            value={languages}
+            onChange={handleInputChange}
+            labelWidth={labelWidth}
+            className={classes.select}
+            margin="dense"
+            inputProps={{
+              id: 'select-multiple-language',
+              name: 'languages',
+            }}
+            renderValue={(selected) => (
+              <div className={classes.chips}>
+                {selected.map((value) => (
+                  <Chip key={value} label={value} className={classes.chip} />
+                ))}
               </div>
-            </ListItem>
-          ))}
-        </List>
-        <FormError>
-          {errors && errors.images}
-        </FormError>
-      </div>
-    </form>
+            )}
+            MenuProps={MenuProps}
+          >
+            {allLanguages.map((language) => (
+              <MenuItem key={language} value={language}>
+                {language}
+              </MenuItem>
+            ))}
+          </Select>
+          <FormError>
+            {errors && errors.languages}
+          </FormError>
+        </FormControl>
+
+        <div className={classes.vspace}>
+          <Typography component="h6" variant="button">
+            Birthday
+          </Typography>
+
+          <Grid container spacing={1}>
+            <Grid item xs={2}>
+              <TextField
+                variant="outlined"
+                name="day"
+                value={day}
+                onChange={handleInputChange}
+                type="text"
+                placeholder="DD"
+                margin="dense"
+                inputProps={{ maxLength: 2 }}
+              />
+            </Grid>
+
+            <Grid item xs={2}>
+              <TextField
+                variant="outlined"
+                name="month"
+                value={month}
+                onChange={handleInputChange}
+                type="text"
+                placeholder="MM"
+                margin="dense"
+                inputProps={{ maxLength: 2 }}
+              />
+            </Grid>
+
+            <Grid item xs={4}>
+              <TextField
+                variant="outlined"
+                name="year"
+                value={year}
+                onChange={handleInputChange}
+                type="text"
+                placeholder="YYYY"
+                margin="dense"
+                inputProps={{ maxLength: 4 }}
+              />
+            </Grid>
+          </Grid>
+          <FormError>
+            {errors && errors.birthday}
+          </FormError>
+        </div>
+
+        <div className={classes.vspace}>
+          <Typography component="h6" variant="button">
+            Photos
+          </Typography>
+
+          <List className={classes.photoList}>
+            {images.map((image, index) => (
+              <ListItem className={classes.photoListItem} key={index}>
+                <div className={classes.imageWrapper}>
+
+                  {image.src ? (
+                    <div className={classes.imageWrapperInner}>
+                      <Fab
+                        color="primary"
+                        aria-label="add"
+                        className={classes.deleteImageBtn}
+                        onClick={() => removePhoto(index)}
+                      >
+                        <ClearIcon className={classes.deleteIcon} />
+                      </Fab>
+                      <img src={image.src} alt="test" className={classes.image} />
+                    </div>
+                  ) : image.loading ? (
+                    <div className={classes.photoListItem}>
+                      <div className={classes.imageWrapper}>
+                        <Grid
+                          container
+                          alignItems="center"
+                          justify="center"
+                          className={classes.progressWrapper}
+                        >
+                          <CircularProgress className={classes.progress} />
+                        </Grid>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <input
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        id={`photos-${index}`}
+                        type="file"
+                        onChange={handlePhotoChange}
+                      />
+
+                      <label htmlFor={`photos-${index}`}>
+                        <div className={classes.photoListItem}>
+                          <div className={classes.imageWrapper}>
+                            <Button component="span" disableRipple className={classes.addPhotoBtn}>
+                              <AddCircleIcon className={classes.addPhotoIcon} />
+                            </Button>
+                          </div>
+                        </div>
+                      </label>
+                    </>
+                  )}
+                </div>
+              </ListItem>
+            ))}
+          </List>
+          <FormError>
+            {errors && errors.images}
+          </FormError>
+        </div>
+      </form>
+    </>
   );
 };
 

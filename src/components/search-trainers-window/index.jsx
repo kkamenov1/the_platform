@@ -6,6 +6,7 @@ import {
   SimpleSelect,
   SimpleButton,
 } from '../../core/components';
+import sports from '../../constants/sports';
 
 const useStyles = makeStyles((theme) => ({
   outerModalContainer: {
@@ -45,17 +46,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const selectOptions = [
-  {
-    name: 'Bodybuilding',
-    value: 'bodybuilding',
-  },
-  {
-    name: 'Crossfit',
-    value: 'crossfit',
-  },
-];
-
 const SearchTrainersWindow = () => {
   const classes = useStyles();
   const [value, setSelectValue] = React.useState('');
@@ -82,7 +72,7 @@ const SearchTrainersWindow = () => {
               id="sport"
               label="Sport"
               name="sport"
-              options={selectOptions}
+              options={sports}
               onChange={onSportSelectChange}
               selectedValue={value}
             />

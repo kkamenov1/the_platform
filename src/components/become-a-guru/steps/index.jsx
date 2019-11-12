@@ -7,7 +7,3 @@ export {
   GuruDetailsStep,
   RatesStep,
 };
-
-const steps = [PersonalDetailsStep, GuruDetailsStep, RatesStep];
-
-export default steps;

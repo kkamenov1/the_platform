@@ -1,20 +1,21 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Stepper,
   Step,
   StepLabel,
-  Typography,
   Grid,
   Button,
 } from '@material-ui/core';
 import { SimpleButton } from '../../core/components';
-import contentSteps from './steps';
+import { PersonalDetailsStep, GuruDetailsStep } from './steps';
 import {
   setActiveStep,
   setApplicationUID,
   setPersonalDetailsErrors,
+  setGuruDetailsErrors,
 } from '../../pages/Header/actions';
 import { withFirebase } from '../../core/lib/Firebase';
 
@@ -44,10 +45,6 @@ const useStyles = makeStyles((theme) => ({
       color: '#fb2525',
     },
   },
-  heading: {
-    color: 'rgb(72, 72, 72)',
-    fontWeight: 500,
-  },
   padding: {
     padding: 32,
   },
@@ -59,16 +56,19 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     backgroundColor: '#f0f0f0',
   },
-  caption: {
-    marginBottom: 20,
-    color: 'rgb(72, 72, 72)',
-    fontWeight: 100,
-  },
 }));
 
-function getSteps() {
-  return ['Personal information', 'GURU information', 'Rates'];
-}
+const getSteps = () => ['Personal information', 'GURU information', 'Rates'];
+
+const renderStepContent = (activeStep) => {
+  switch (activeStep) {
+    case 0:
+      return <PersonalDetailsStep />;
+    case 1:
+      return <GuruDetailsStep />;
+    default: return null;
+  }
+};
 
 const BecomeAGuru = ({ firebase }) => {
   const classes = useStyles();
@@ -82,6 +82,9 @@ const BecomeAGuru = ({ firebase }) => {
   const guruMonthOfBirth = useSelector((state) => state.header.becomeGuruModal.personalDetailsStep.month);
   const guruYearOfBirth = useSelector((state) => state.header.becomeGuruModal.personalDetailsStep.year);
   const applicationUID = useSelector((state) => state.header.becomeGuruModal.applicationUID);
+  const sport = useSelector((state) => state.header.becomeGuruModal.guruDetailsStep.sport);
+  const methods = useSelector((state) => state.header.becomeGuruModal.guruDetailsStep.methods);
+  const introduction = useSelector((state) => state.header.becomeGuruModal.guruDetailsStep.introduction);
 
   const submitPersonalDetailsStep = () => {
     const formErrors = {};
@@ -143,8 +146,42 @@ const BecomeAGuru = ({ firebase }) => {
     return true;
   };
 
+  const submitGuruDetailsStep = () => {
+    const formErrors = {};
+
+    if (!sport) {
+      formErrors.sport = 'Please choose sport';
+    }
+
+    if (Object.keys(methods).every((method) => !methods[method])) {
+      formErrors.methods = 'Please select at least one coaching method';
+    }
+
+    if (!introduction) {
+      formErrors.introduction = 'Please introduce yourself to students';
+    }
+
+    if (Object.entries(formErrors).length) {
+      dispatch(setGuruDetailsErrors(formErrors));
+      return false;
+    }
+
+    firebase.application(applicationUID).update({
+      sport,
+      methods,
+      introduction,
+    }).then(() => {
+      dispatch(setGuruDetailsErrors({}));
+    });
+    return true;
+  };
+
   const handleNext = () => {
-    if (submitPersonalDetailsStep()) {
+    if (activeStep === 0 && submitPersonalDetailsStep()) {
+      dispatch(setActiveStep(activeStep + 1));
+    }
+
+    if (activeStep === 1 && submitGuruDetailsStep()) {
       dispatch(setActiveStep(activeStep + 1));
     }
   };
@@ -180,16 +217,8 @@ const BecomeAGuru = ({ firebase }) => {
       <Grid item className={classes.right} xs={8}>
         <div>
           <div className={classes.padding}>
-            <Typography component="h4" variant="h4" className={classes.heading}>
-              APPLY TO BECOME A GURU
-            </Typography>
-
-            <Typography variant="caption" className={classes.caption} component="p">
-              Earn money by coaching other people
-            </Typography>
-
             <div className={classes.stepContent}>
-              { contentSteps[activeStep]() }
+              {renderStepContent(activeStep)}
             </div>
           </div>
 
@@ -217,6 +246,13 @@ const BecomeAGuru = ({ firebase }) => {
       </Grid>
     </Grid>
   );
+};
+
+BecomeAGuru.propTypes = {
+  firebase: PropTypes.shape({
+    application: PropTypes.func.isRequired,
+    applications: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
 export default withFirebase(BecomeAGuru);

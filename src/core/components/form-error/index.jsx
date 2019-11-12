@@ -22,11 +22,15 @@ const FormError = ({ children }) => {
   );
 };
 
+FormError.defaultProps = {
+  children: null,
+};
+
 FormError.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,
-  ]).isRequired,
+  ]),
 };
 
 export default FormError;

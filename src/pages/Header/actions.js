@@ -9,6 +9,9 @@ export const SET_APPLICATION_UID = 'SET_APPLICATION_UID';
 export const SET_GURU_LOCATION = 'SET_GURU_LOCATION';
 export const SET_PERSONAL_DETAILS_INPUT_VALUES = 'SET_PERSONAL_DETAILS_INPUT_VALUES';
 export const SET_PERSONAL_DETAILS_ERRORS = 'SET_PERSONAL_DETAILS_ERRORS';
+export const SET_GURU_DETAILS_FORM_VALUES = 'SET_GURU_DETAILS_FORM_VALUES';
+export const SET_GURU_DETAILS_COACHING_METHODS = 'SET_GURU_DETAILS_COACHING_METHODS';
+export const SET_GURU_DETAILS_ERRORS = 'SET_GURU_DETAILS_ERRORS';
 
 export const toggleMobileNavigation = (open) => ({
   type: TOGGLE_MOBILE_NAVIGATION,
@@ -64,5 +67,22 @@ export const setPersonalDetailsInputValues = (name, value) => ({
 
 export const setPersonalDetailsErrors = (errors) => ({
   type: SET_PERSONAL_DETAILS_ERRORS,
+  errors,
+});
+
+export const setGuruDetailsFormValues = (name, value) => ({
+  type: SET_GURU_DETAILS_FORM_VALUES,
+  name,
+  value,
+});
+
+export const setGuruDetailsCoachingMethods = (name, value) => ({
+  type: SET_GURU_DETAILS_COACHING_METHODS,
+  name,
+  value,
+});
+
+export const setGuruDetailsErrors = (errors) => ({
+  type: SET_GURU_DETAILS_ERRORS,
   errors,
 });

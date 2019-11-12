@@ -8,6 +8,7 @@ import SimpleButton from './simple-button';
 import SimpleSelect from './simple-select';
 import PlacesAutoComplete from './places-autocomplete';
 import UploadAPhoto from './upload-a-photo';
+import ModalHeader from './modal-header';
 
 export {
   CircularProgressInButton,
@@ -20,4 +21,5 @@ export {
   SimpleSelect,
   PlacesAutoComplete,
   UploadAPhoto,
+  ModalHeader,
 };
