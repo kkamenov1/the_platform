@@ -55,6 +55,11 @@ export const defaultStore = {
         supplementPlan: false,
       },
       introduction: '',
+      certificate: {
+        src: null,
+        loading: false,
+        name: null,
+      },
       errors: {},
     },
     ratesStep: {

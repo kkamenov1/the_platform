@@ -11,27 +11,23 @@ import {
   Typography,
   TextField,
   Grid,
-  Button,
   List,
   ListItem,
-  CircularProgress,
-  Fab,
 } from '@material-ui/core';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
-import ClearIcon from '@material-ui/icons/Clear';
 import {
   PlacesAutoComplete,
   FormError,
   ModalHeader,
+  ImageUploader,
 } from '../../../core/components';
 import allLanguages from '../../../constants/languages';
 import { withFirebase } from '../../../core/lib/Firebase';
 import {
-  setGuruImages,
   setGuruLocation,
-  setPersonalDetailsInputValues,
+  setPersonalDetailsFormValues,
   setPersonalDetailsErrors,
 } from '../../../pages/Header/actions';
+import { FILE_MEGABYTES, KILOBYTE } from '../../../constants/files'
 
 const useStyles = makeStyles({
   chips: {
@@ -61,63 +57,8 @@ const useStyles = makeStyles({
   photoListItem: {
     paddingLeft: 0,
   },
-  imageWrapper: {
-    background: '#f4f4f4',
-    border: '1px dashed rgb(255, 90, 95)',
-  },
-  image: {
-    width: 100,
-    height: 100,
-    objectFit: 'cover',
-    display: 'block',
-    margin: 'auto',
-  },
-  addPhotoBtn: {
-    width: 100,
-    height: 100,
-    border: '1px solid white',
-  },
-  addPhotoIcon: {
-    fill: 'rgb(255, 90, 95)',
-  },
-  progressWrapper: {
-    width: 100,
-    height: 100,
-  },
-  progress: {
-    color: 'rgb(255, 90, 95)',
-    width: '20px !important',
-    height: '20px !important',
-  },
-  imageWrapperInner: {
-    position: 'relative',
-
-    '&:hover > button': {
-      display: 'block',
-    },
-  },
-  deleteImageBtn: {
-    backgroundColor: 'rgb(255, 90, 95)',
-    position: 'absolute',
-    top: -10,
-    right: -10,
-    width: 25,
-    height: 25,
-    minHeight: 0,
-    display: 'none',
-
-    '&:hover': {
-      backgroundColor: 'rgb(255, 90, 95)',
-    },
-  },
-  deleteIcon: {
-    width: 'inherit',
-    height: 'inherit',
-  },
 });
 
-const FILE_MEGABYTES = 5;
-const KILOBYTE = 1024;
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -169,7 +110,7 @@ const PersonalDetailsStep = ({ firebase }) => {
   };
 
   const handleInputChange = (e) => {
-    dispatch(setPersonalDetailsInputValues(e.target.name, e.target.value));
+    dispatch(setPersonalDetailsFormValues(e.target.name, e.target.value));
 
     // handling errors
     if (e.target.name === 'day' || e.target.name === 'month' || e.target.name === 'year') {
@@ -179,7 +120,7 @@ const PersonalDetailsStep = ({ firebase }) => {
     dispatch(setPersonalDetailsErrors({ ...errors, [e.target.name]: null }));
   };
 
-  const handlePhotoChange = async (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
 
     if (file) {
@@ -200,24 +141,33 @@ const PersonalDetailsStep = ({ firebase }) => {
         return;
       }
 
-      dispatch(setGuruImages([...addFirstPossible({ loading: true, src: null }, images)]));
-      await firebase.doUploadImage(file, auth.uid);
-      const url = await firebase.getImageUrl(file.name, auth.uid);
+      dispatch(setPersonalDetailsFormValues(
+        'images',
+        [...addFirstPossible({ loading: true, src: null }, images)],
+      ));
+      await firebase.doUploadGuruImages(file, auth.uid);
+      const url = await firebase.getGuruImageUrl(file.name, auth.uid);
 
-      dispatch(setGuruImages([...addFirstPossible({ loading: false, src: url, name: file.name }, images)]));
+      dispatch(setPersonalDetailsFormValues(
+        'images',
+        [...addFirstPossible({ loading: false, src: url, name: file.name }, images)],
+      ));
       dispatch(setPersonalDetailsErrors({ ...errors, images: null }));
     }
   };
 
-  const removePhoto = async (pos) => {
+  const handleImageRemove = async (pos) => {
     const imageName = images[pos].name;
-    await firebase.doDeleteImage(imageName, auth.uid);
+    await firebase.doDeleteGuruImage(imageName, auth.uid);
     const arrayWithDeletedImage = [...addOnPosition(
       pos,
       { src: null, loading: false, name: null },
       images,
     )];
-    dispatch(setGuruImages(arrayWithDeletedImage));
+    dispatch(setPersonalDetailsFormValues(
+      'images',
+      arrayWithDeletedImage,
+    ));
   };
 
   return (
@@ -242,7 +192,7 @@ const PersonalDetailsStep = ({ firebase }) => {
             ref={inputLabel}
             className={classes.label}
           >
-          Languages
+            Languages
           </InputLabel>
           <Select
             multiple
@@ -333,55 +283,12 @@ const PersonalDetailsStep = ({ firebase }) => {
           <List className={classes.photoList}>
             {images.map((image, index) => (
               <ListItem className={classes.photoListItem} key={index}>
-                <div className={classes.imageWrapper}>
-
-                  {image.src ? (
-                    <div className={classes.imageWrapperInner}>
-                      <Fab
-                        color="primary"
-                        aria-label="add"
-                        className={classes.deleteImageBtn}
-                        onClick={() => removePhoto(index)}
-                      >
-                        <ClearIcon className={classes.deleteIcon} />
-                      </Fab>
-                      <img src={image.src} alt="test" className={classes.image} />
-                    </div>
-                  ) : image.loading ? (
-                    <div className={classes.photoListItem}>
-                      <div className={classes.imageWrapper}>
-                        <Grid
-                          container
-                          alignItems="center"
-                          justify="center"
-                          className={classes.progressWrapper}
-                        >
-                          <CircularProgress className={classes.progress} />
-                        </Grid>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <input
-                        accept="image/*"
-                        style={{ display: 'none' }}
-                        id={`photos-${index}`}
-                        type="file"
-                        onChange={handlePhotoChange}
-                      />
-
-                      <label htmlFor={`photos-${index}`}>
-                        <div className={classes.photoListItem}>
-                          <div className={classes.imageWrapper}>
-                            <Button component="span" disableRipple className={classes.addPhotoBtn}>
-                              <AddCircleIcon className={classes.addPhotoIcon} />
-                            </Button>
-                          </div>
-                        </div>
-                      </label>
-                    </>
-                  )}
-                </div>
+                <ImageUploader
+                  image={image}
+                  onImageChange={handleImageChange}
+                  onImageRemove={() => handleImageRemove(index)}
+                  inputId={`guru-photo-${index}`}
+                />
               </ListItem>
             ))}
           </List>
@@ -396,9 +303,9 @@ const PersonalDetailsStep = ({ firebase }) => {
 
 PersonalDetailsStep.propTypes = {
   firebase: PropTypes.shape({
-    doUploadImage: PropTypes.func.isRequired,
-    getImageUrl: PropTypes.func.isRequired,
-    doDeleteImage: PropTypes.func.isRequired,
+    doUploadGuruImages: PropTypes.func.isRequired,
+    getGuruImageUrl: PropTypes.func.isRequired,
+    doDeleteGuruImage: PropTypes.func.isRequired,
   }).isRequired,
 };
 

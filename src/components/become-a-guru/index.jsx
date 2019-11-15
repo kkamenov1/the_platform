@@ -85,16 +85,18 @@ const BecomeAGuru = ({ firebase }) => {
   const sport = useSelector((state) => state.header.becomeGuruModal.guruDetailsStep.sport);
   const methods = useSelector((state) => state.header.becomeGuruModal.guruDetailsStep.methods);
   const introduction = useSelector((state) => state.header.becomeGuruModal.guruDetailsStep.introduction);
+  const certificate = useSelector((state) => state.header.becomeGuruModal.guruDetailsStep.certificate);
+
+  const filteredImages = guruImages
+    .filter((img) => img.src)
+    .map((img) => img.src);
+  const day = parseInt(guruDayOfBirth, 10);
+  const month = parseInt(guruMonthOfBirth, 10);
+  const year = parseInt(guruYearOfBirth, 10);
+  const birthDate = new Date(year, month - 1, day);
 
   const submitPersonalDetailsStep = () => {
     const formErrors = {};
-    const filteredImages = guruImages
-      .filter((img) => img.src)
-      .map((img) => img.src);
-    const day = parseInt(guruDayOfBirth, 10);
-    const month = parseInt(guruMonthOfBirth, 10);
-    const year = parseInt(guruYearOfBirth, 10);
-    const birthDate = new Date(year, month - 1, day);
 
     if (!guruLocation) {
       formErrors.location = 'Please enter your location';
@@ -133,7 +135,7 @@ const BecomeAGuru = ({ firebase }) => {
         dispatch(setApplicationUID(newApplicationUID));
       });
     } else {
-      firebase.application(applicationUID).set({
+      firebase.application(applicationUID).update({
         location: guruLocation,
         languages: guruLanguages,
         birthday: birthDate.toDateString(),
@@ -157,10 +159,6 @@ const BecomeAGuru = ({ firebase }) => {
       formErrors.methods = 'Please select at least one coaching method';
     }
 
-    if (!introduction) {
-      formErrors.introduction = 'Please introduce yourself to students';
-    }
-
     if (Object.entries(formErrors).length) {
       dispatch(setGuruDetailsErrors(formErrors));
       return false;
@@ -170,6 +168,7 @@ const BecomeAGuru = ({ firebase }) => {
       sport,
       methods,
       introduction,
+      certificate: certificate && certificate.src,
     }).then(() => {
       dispatch(setGuruDetailsErrors({}));
     });
@@ -189,6 +188,14 @@ const BecomeAGuru = ({ firebase }) => {
   const handleBack = () => {
     dispatch(setActiveStep(activeStep - 1));
   };
+
+  const disabledButtonForGuruDetailsStep = !sport
+    || Object.keys(methods).every((method) => !methods[method]);
+
+  const disableButtonForPersonalDetailsStep = !guruLocation
+    || !guruLanguages.length
+    || (birthDate && birthDate.getMonth() + 1 !== month)
+    || !filteredImages.length;
 
   return (
     <Grid container>
@@ -237,6 +244,10 @@ const BecomeAGuru = ({ firebase }) => {
                 variant="contained"
                 color="primary"
                 onClick={handleNext}
+                disabled={
+                  (activeStep === 0 && disableButtonForPersonalDetailsStep)
+                  || (activeStep === 1 && disabledButtonForGuruDetailsStep)
+                }
               >
                 {activeStep === steps.length - 1 ? 'Finish' : 'Continue'}
               </SimpleButton>

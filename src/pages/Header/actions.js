@@ -39,11 +39,6 @@ export const setLoadingResetPasswordModal = (loading) => ({
   loading,
 });
 
-export const setGuruImages = (images) => ({
-  type: SET_GURU_PHOTOS,
-  images,
-});
-
 export const setActiveStep = (activeStep) => ({
   type: SET_ACTIVE_STEP,
   activeStep,
@@ -59,7 +54,7 @@ export const setGuruLocation = (location) => ({
   location,
 });
 
-export const setPersonalDetailsInputValues = (name, value) => ({
+export const setPersonalDetailsFormValues = (name, value) => ({
   type: SET_PERSONAL_DETAILS_INPUT_VALUES,
   name,
   value,
