@@ -20,14 +20,18 @@ import {
   ModalHeader,
   ImageUploader,
 } from '../../../core/components';
+import {
+  addFirstPossible,
+  addOnPosition,
+} from '../../../core/utils';
 import allLanguages from '../../../constants/languages';
 import { withFirebase } from '../../../core/lib/Firebase';
 import {
   setGuruLocation,
-  setPersonalDetailsFormValues,
+  setFormValues,
   setPersonalDetailsErrors,
 } from '../../../pages/Header/actions';
-import { FILE_MEGABYTES, KILOBYTE } from '../../../constants/files'
+import { FILE_MEGABYTES, KILOBYTE } from '../../../constants/files';
 
 const useStyles = makeStyles({
   chips: {
@@ -70,18 +74,6 @@ const MenuProps = {
   },
 };
 
-const addFirstPossible = (val, arr) => {
-  const index = arr.findIndex((obj) => obj.src === null);
-  return arr.map((item, idx) => {
-    if (idx === index) return val;
-    return item;
-  });
-};
-
-const addOnPosition = (pos, val, arr) => arr.map((item, idx) => {
-  if (idx === pos) return val;
-  return item;
-});
 
 const PersonalDetailsStep = ({ firebase }) => {
   const classes = useStyles();
@@ -90,14 +82,14 @@ const PersonalDetailsStep = ({ firebase }) => {
   const [labelWidth, setLabelWidth] = useState(0);
 
   const auth = useSelector((state) => state.app.auth);
-  const images = useSelector((state) => state.header.becomeGuruModal.personalDetailsStep.images);
-  const errors = useSelector((state) => state.header.becomeGuruModal.personalDetailsStep.errors);
+  const images = useSelector((state) => state.header.becomeGuruModal.images);
+  const errors = useSelector((state) => state.header.becomeGuruModal.personalDetailsStepFormErrors);
 
-  const location = useSelector((state) => state.header.becomeGuruModal.personalDetailsStep.location);
-  const languages = useSelector((state) => state.header.becomeGuruModal.personalDetailsStep.languages);
-  const day = useSelector((state) => state.header.becomeGuruModal.personalDetailsStep.day);
-  const month = useSelector((state) => state.header.becomeGuruModal.personalDetailsStep.month);
-  const year = useSelector((state) => state.header.becomeGuruModal.personalDetailsStep.year);
+  const location = useSelector((state) => state.header.becomeGuruModal.location);
+  const languages = useSelector((state) => state.header.becomeGuruModal.languages);
+  const day = useSelector((state) => state.header.becomeGuruModal.day);
+  const month = useSelector((state) => state.header.becomeGuruModal.month);
+  const year = useSelector((state) => state.header.becomeGuruModal.year);
 
 
   useEffect(() => {
@@ -110,7 +102,7 @@ const PersonalDetailsStep = ({ firebase }) => {
   };
 
   const handleInputChange = (e) => {
-    dispatch(setPersonalDetailsFormValues(e.target.name, e.target.value));
+    dispatch(setFormValues(e.target.name, e.target.value));
 
     // handling errors
     if (e.target.name === 'day' || e.target.name === 'month' || e.target.name === 'year') {
@@ -141,14 +133,14 @@ const PersonalDetailsStep = ({ firebase }) => {
         return;
       }
 
-      dispatch(setPersonalDetailsFormValues(
+      dispatch(setFormValues(
         'images',
         [...addFirstPossible({ loading: true, src: null }, images)],
       ));
       await firebase.doUploadGuruImages(file, auth.uid);
       const url = await firebase.getGuruImageUrl(file.name, auth.uid);
 
-      dispatch(setPersonalDetailsFormValues(
+      dispatch(setFormValues(
         'images',
         [...addFirstPossible({ loading: false, src: url, name: file.name }, images)],
       ));
@@ -164,7 +156,7 @@ const PersonalDetailsStep = ({ firebase }) => {
       { src: null, loading: false, name: null },
       images,
     )];
-    dispatch(setPersonalDetailsFormValues(
+    dispatch(setFormValues(
       'images',
       arrayWithDeletedImage,
     ));

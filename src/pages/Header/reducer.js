@@ -8,11 +8,11 @@ import {
   SET_ACTIVE_STEP,
   SET_APPLICATION_UID,
   SET_GURU_LOCATION,
-  SET_PERSONAL_DETAILS_INPUT_VALUES,
+  SET_FORM_VALUES,
   SET_PERSONAL_DETAILS_ERRORS,
-  SET_GURU_DETAILS_FORM_VALUES,
   SET_GURU_DETAILS_COACHING_METHODS,
   SET_GURU_DETAILS_ERRORS,
+  SET_RATES_ERRORS,
 } from './actions';
 
 export const defaultStore = {
@@ -31,39 +31,60 @@ export const defaultStore = {
   becomeGuruModal: {
     activeStep: 0,
     applicationUID: null,
-    personalDetailsStep: {
-      location: '',
-      languages: [],
-      day: '',
-      month: '',
-      year: '',
-      images: [
-        { src: null, loading: false, name: null },
-        { src: null, loading: false, name: null },
-        { src: null, loading: false, name: null },
-        { src: null, loading: false, name: null },
-      ],
-      errors: {},
-    },
-    guruDetailsStep: {
-      sport: '',
-      methods: {
-        workout: false,
-        nutritionPlan: false,
-        workoutAndNutritionPlan: false,
-        watchingExercise: false,
-        supplementPlan: false,
+    location: '',
+    languages: [],
+    day: '',
+    month: '',
+    year: '',
+    images: [
+      { src: null, loading: false, name: null },
+      { src: null, loading: false, name: null },
+      { src: null, loading: false, name: null },
+      { src: null, loading: false, name: null },
+    ],
+    sport: '',
+    methods: [
+      {
+        name: 'Workout',
+        selected: false,
+        price: '',
       },
-      introduction: '',
-      certificate: {
-        src: null,
-        loading: false,
-        name: null,
+      {
+        name: 'Nutrition plan',
+        selected: false,
+        price: '',
       },
-      errors: {},
+      {
+        name: 'Workout & Nutrition plan',
+        selected: false,
+        price: '',
+      },
+      {
+        name: 'Watching exercise',
+        selected: false,
+        price: '',
+      },
+      {
+        name: 'Supplement plan',
+        selected: false,
+        price: '',
+      },
+      {
+        name: 'All',
+        selected: false,
+        price: '',
+      },
+    ],
+    duration: '',
+    introduction: '',
+    certificate: {
+      src: null,
+      loading: false,
+      name: null,
     },
-    ratesStep: {
-    },
+    personalDetailsStepFormErrors: {},
+    guruDetailsStepFormErrors: {},
+    ratesStepFormErrors: {},
   },
 };
 
@@ -115,10 +136,7 @@ export default (state = defaultStore, action) => {
         ...state,
         becomeGuruModal: {
           ...state.becomeGuruModal,
-          personalDetailsStep: {
-            ...state.becomeGuruModal.personalDetailsStep,
-            images: action.images,
-          },
+          images: action.images,
         },
       };
 
@@ -145,22 +163,7 @@ export default (state = defaultStore, action) => {
         ...state,
         becomeGuruModal: {
           ...state.becomeGuruModal,
-          personalDetailsStep: {
-            ...state.becomeGuruModal.personalDetailsStep,
-            location: action.location,
-          },
-        },
-      };
-
-    case SET_PERSONAL_DETAILS_INPUT_VALUES:
-      return {
-        ...state,
-        becomeGuruModal: {
-          ...state.becomeGuruModal,
-          personalDetailsStep: {
-            ...state.becomeGuruModal.personalDetailsStep,
-            [action.name]: action.value,
-          },
+          location: action.location,
         },
       };
 
@@ -169,24 +172,18 @@ export default (state = defaultStore, action) => {
         ...state,
         becomeGuruModal: {
           ...state.becomeGuruModal,
-          personalDetailsStep: {
-            ...state.becomeGuruModal.personalDetailsStep,
-            errors: {
-              ...action.errors,
-            },
+          personalDetailsStepFormErrors: {
+            ...action.errors,
           },
         },
       };
 
-    case SET_GURU_DETAILS_FORM_VALUES:
+    case SET_FORM_VALUES:
       return {
         ...state,
         becomeGuruModal: {
           ...state.becomeGuruModal,
-          guruDetailsStep: {
-            ...state.becomeGuruModal.guruDetailsStep,
-            [action.name]: action.value,
-          },
+          [action.name]: action.value,
         },
       };
 
@@ -195,13 +192,7 @@ export default (state = defaultStore, action) => {
         ...state,
         becomeGuruModal: {
           ...state.becomeGuruModal,
-          guruDetailsStep: {
-            ...state.becomeGuruModal.guruDetailsStep,
-            methods: {
-              ...state.becomeGuruModal.guruDetailsStep.methods,
-              [action.name]: action.value,
-            },
-          },
+          methods: action.methods,
         },
       };
 
@@ -210,11 +201,19 @@ export default (state = defaultStore, action) => {
         ...state,
         becomeGuruModal: {
           ...state.becomeGuruModal,
-          guruDetailsStep: {
-            ...state.becomeGuruModal.guruDetailsStep,
-            errors: {
-              ...action.errors,
-            },
+          guruDetailsStepFormErrors: {
+            ...action.errors,
+          },
+        },
+      };
+
+    case SET_RATES_ERRORS:
+      return {
+        ...state,
+        becomeGuruModal: {
+          ...state.becomeGuruModal,
+          ratesStepFormErrors: {
+            ...action.errors,
           },
         },
       };

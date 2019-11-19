@@ -113,30 +113,30 @@ const ImageUploader = ({
           </Grid>
         </div>
       ) : (
-            <>
-              <input
-                accept="image/*"
-                style={{ display: 'none' }}
-                id={inputId}
-                type="file"
-                onChange={onImageChange}
-              />
+        <>
+          <input
+            accept="image/*"
+            style={{ display: 'none' }}
+            id={inputId}
+            type="file"
+            onChange={onImageChange}
+          />
 
-              <label htmlFor={inputId}>
-                <div className={classes.photoListItem}>
-                  <Button
-                    className={classnames(classes.addPhotoBtn, {
-                      [classes.fullWidth]: fullWidth,
-                    })}
-                    component="span"
-                    disableRipple
-                  >
-                    <AddCircleIcon className={classes.addPhotoIcon} />
-                  </Button>
-                </div>
-              </label>
-            </>
-          )}
+          <label htmlFor={inputId}>
+            <div className={classes.photoListItem}>
+              <Button
+                className={classnames(classes.addPhotoBtn, {
+                  [classes.fullWidth]: fullWidth,
+                })}
+                component="span"
+                disableRipple
+              >
+                <AddCircleIcon className={classes.addPhotoIcon} />
+              </Button>
+            </div>
+          </label>
+        </>
+      )}
     </div>
   );
 };

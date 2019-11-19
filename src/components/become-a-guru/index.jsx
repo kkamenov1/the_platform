@@ -10,12 +10,13 @@ import {
   Button,
 } from '@material-ui/core';
 import { SimpleButton } from '../../core/components';
-import { PersonalDetailsStep, GuruDetailsStep } from './steps';
+import { PersonalDetailsStep, GuruDetailsStep, RatesStep } from './steps';
 import {
   setActiveStep,
   setApplicationUID,
   setPersonalDetailsErrors,
   setGuruDetailsErrors,
+  setRatesErrors,
 } from '../../pages/Header/actions';
 import { withFirebase } from '../../core/lib/Firebase';
 
@@ -66,37 +67,46 @@ const renderStepContent = (activeStep) => {
       return <PersonalDetailsStep />;
     case 1:
       return <GuruDetailsStep />;
+    case 2:
+      return <RatesStep />;
     default: return null;
   }
 };
+
+const checkMethodsForEmptyPrices = (methods) => (
+  methods.some((method) => {
+    const priceParsed = +method.price;
+    return isNaN(priceParsed) || priceParsed <= 0;
+  })
+);
 
 const BecomeAGuru = ({ firebase }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const steps = getSteps();
   const activeStep = useSelector((state) => state.header.becomeGuruModal.activeStep);
-  const guruImages = useSelector((state) => state.header.becomeGuruModal.personalDetailsStep.images);
-  const guruLocation = useSelector((state) => state.header.becomeGuruModal.personalDetailsStep.location);
-  const guruLanguages = useSelector((state) => state.header.becomeGuruModal.personalDetailsStep.languages);
-  const guruDayOfBirth = useSelector((state) => state.header.becomeGuruModal.personalDetailsStep.day);
-  const guruMonthOfBirth = useSelector((state) => state.header.becomeGuruModal.personalDetailsStep.month);
-  const guruYearOfBirth = useSelector((state) => state.header.becomeGuruModal.personalDetailsStep.year);
+  const guruImages = useSelector((state) => state.header.becomeGuruModal.images);
+  const guruLocation = useSelector((state) => state.header.becomeGuruModal.location);
+  const guruLanguages = useSelector((state) => state.header.becomeGuruModal.languages);
+  const guruDayOfBirth = useSelector((state) => state.header.becomeGuruModal.day);
+  const guruMonthOfBirth = useSelector((state) => state.header.becomeGuruModal.month);
+  const guruYearOfBirth = useSelector((state) => state.header.becomeGuruModal.year);
   const applicationUID = useSelector((state) => state.header.becomeGuruModal.applicationUID);
-  const sport = useSelector((state) => state.header.becomeGuruModal.guruDetailsStep.sport);
-  const methods = useSelector((state) => state.header.becomeGuruModal.guruDetailsStep.methods);
-  const introduction = useSelector((state) => state.header.becomeGuruModal.guruDetailsStep.introduction);
-  const certificate = useSelector((state) => state.header.becomeGuruModal.guruDetailsStep.certificate);
-
-  const filteredImages = guruImages
-    .filter((img) => img.src)
-    .map((img) => img.src);
-  const day = parseInt(guruDayOfBirth, 10);
-  const month = parseInt(guruMonthOfBirth, 10);
-  const year = parseInt(guruYearOfBirth, 10);
-  const birthDate = new Date(year, month - 1, day);
+  const sport = useSelector((state) => state.header.becomeGuruModal.sport);
+  const methods = useSelector((state) => state.header.becomeGuruModal.methods);
+  const introduction = useSelector((state) => state.header.becomeGuruModal.introduction);
+  const certificate = useSelector((state) => state.header.becomeGuruModal.certificate);
+  const duration = useSelector((state) => state.header.becomeGuruModal.duration);
 
   const submitPersonalDetailsStep = () => {
     const formErrors = {};
+    const filteredImages = (guruImages || [])
+      .filter((img) => img.src)
+      .map((img) => img.src);
+    const day = parseInt(guruDayOfBirth, 10);
+    const month = parseInt(guruMonthOfBirth, 10);
+    const year = parseInt(guruYearOfBirth, 10);
+    const birthDate = new Date(year, month - 1, day);
 
     if (!guruLocation) {
       formErrors.location = 'Please enter your location';
@@ -155,10 +165,6 @@ const BecomeAGuru = ({ firebase }) => {
       formErrors.sport = 'Please choose sport';
     }
 
-    if (Object.keys(methods).every((method) => !methods[method])) {
-      formErrors.methods = 'Please select at least one coaching method';
-    }
-
     if (Object.entries(formErrors).length) {
       dispatch(setGuruDetailsErrors(formErrors));
       return false;
@@ -166,11 +172,41 @@ const BecomeAGuru = ({ firebase }) => {
 
     firebase.application(applicationUID).update({
       sport,
-      methods,
       introduction,
       certificate: certificate && certificate.src,
     }).then(() => {
       dispatch(setGuruDetailsErrors({}));
+    });
+    return true;
+  };
+
+  const submitRatesStep = () => {
+    const formErrors = {};
+    const selectedMethods = methods.filter((method) => method.selected) || [];
+    const durationParsed = +duration;
+
+    if (checkMethodsForEmptyPrices(selectedMethods)) {
+      formErrors.methods = 'Please provide a price for each selected method';
+    }
+
+    if (!selectedMethods.length) {
+      formErrors.methods = 'Please select at least one method';
+    }
+
+    if (isNaN(durationParsed) || durationParsed < 1 || durationParsed > 365) {
+      formErrors.duration = 'Please enter a valid duration';
+    }
+
+    if (Object.entries(formErrors).length) {
+      dispatch(setRatesErrors(formErrors));
+      return false;
+    }
+
+    firebase.application(applicationUID).update({
+      methods: selectedMethods,
+      duration,
+    }).then(() => {
+      dispatch(setRatesErrors({}));
     });
     return true;
   };
@@ -183,19 +219,15 @@ const BecomeAGuru = ({ firebase }) => {
     if (activeStep === 1 && submitGuruDetailsStep()) {
       dispatch(setActiveStep(activeStep + 1));
     }
+
+    if (activeStep === 2 && submitRatesStep()) {
+      dispatch(setActiveStep(activeStep + 1));
+    }
   };
 
   const handleBack = () => {
     dispatch(setActiveStep(activeStep - 1));
   };
-
-  const disabledButtonForGuruDetailsStep = !sport
-    || Object.keys(methods).every((method) => !methods[method]);
-
-  const disableButtonForPersonalDetailsStep = !guruLocation
-    || !guruLanguages.length
-    || (birthDate && birthDate.getMonth() + 1 !== month)
-    || !filteredImages.length;
 
   return (
     <Grid container>
@@ -244,10 +276,6 @@ const BecomeAGuru = ({ firebase }) => {
                 variant="contained"
                 color="primary"
                 onClick={handleNext}
-                disabled={
-                  (activeStep === 0 && disableButtonForPersonalDetailsStep)
-                  || (activeStep === 1 && disabledButtonForGuruDetailsStep)
-                }
               >
                 {activeStep === steps.length - 1 ? 'Finish' : 'Continue'}
               </SimpleButton>

@@ -3,9 +3,6 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import {
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
   Typography,
   TextField,
   FormControl,
@@ -18,8 +15,7 @@ import {
   ImageUploader,
 } from '../../../core/components';
 import {
-  setGuruDetailsFormValues,
-  setGuruDetailsCoachingMethods,
+  setFormValues,
   setGuruDetailsErrors,
 } from '../../../pages/Header/actions';
 import sports from '../../../constants/sports';
@@ -41,21 +37,16 @@ const useStyles = makeStyles({
 const GuruDetailsStep = ({ firebase }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const introduction = useSelector((state) => state.header.becomeGuruModal.guruDetailsStep.introduction);
-  const methods = useSelector((state) => state.header.becomeGuruModal.guruDetailsStep.methods);
-  const sport = useSelector((state) => state.header.becomeGuruModal.guruDetailsStep.sport);
-  const certificate = useSelector((state) => state.header.becomeGuruModal.guruDetailsStep.certificate);
-  const errors = useSelector((state) => state.header.becomeGuruModal.guruDetailsStep.errors);
+  const introduction = useSelector((state) => state.header.becomeGuruModal.introduction);
+  const sport = useSelector((state) => state.header.becomeGuruModal.sport);
+  const certificate = useSelector((state) => state.header.becomeGuruModal.certificate);
+  const errors = useSelector((state) => state.header.becomeGuruModal.guruDetailsStepFormErrors);
   const auth = useSelector((state) => state.app.auth);
 
   const handleChange = (event) => {
     if (event.target.value.length <= 300) {
-      dispatch(setGuruDetailsFormValues(event.target.name, event.target.value));
+      dispatch(setFormValues(event.target.name, event.target.value));
     }
-  };
-
-  const handleCheckboxChange = (name) => (event) => {
-    dispatch(setGuruDetailsCoachingMethods(name, event.target.checked));
   };
 
   const handlePhotoChange = async (e) => {
@@ -79,14 +70,14 @@ const GuruDetailsStep = ({ firebase }) => {
         return;
       }
 
-      dispatch(setGuruDetailsFormValues(
+      dispatch(setFormValues(
         'certificate',
         { loading: true, src: null, name: null },
       ));
       await firebase.doUploadGuruImages(file, auth.uid);
       const url = await firebase.getGuruImageUrl(file.name, auth.uid);
 
-      dispatch(setGuruDetailsFormValues(
+      dispatch(setFormValues(
         'certificate',
         { loading: false, src: url, name: file.name },
       ));
@@ -97,7 +88,7 @@ const GuruDetailsStep = ({ firebase }) => {
   const handleImageRemove = async (image) => {
     const imageName = image.name;
     await firebase.doDeleteGuruImage(imageName, auth.uid);
-    dispatch(setGuruDetailsFormValues(
+    dispatch(setFormValues(
       'certificate',
       { loading: false, src: null, name: null },
     ));
@@ -123,77 +114,6 @@ const GuruDetailsStep = ({ firebase }) => {
         <FormError>
           {errors && errors.sport}
         </FormError>
-
-        <div className={classes.vspace}>
-          <Typography component="h6" variant="button">
-            COACHING METHODS
-          </Typography>
-          <FormGroup row>
-            <FormControlLabel
-              control={(
-                <Checkbox
-                  checked={methods.workout}
-                  onChange={handleCheckboxChange('workout')}
-                  value={methods.workout}
-                  color="primary"
-                />
-              )}
-              label="Workout"
-            />
-
-            <FormControlLabel
-              control={(
-                <Checkbox
-                  checked={methods.nutritionPlan}
-                  onChange={handleCheckboxChange('nutritionPlan')}
-                  value={methods.nutritionPlan}
-                  color="primary"
-                />
-              )}
-              label="Nutrition plan"
-            />
-
-            <FormControlLabel
-              control={(
-                <Checkbox
-                  checked={methods.workoutAndNutritionPlan}
-                  onChange={handleCheckboxChange('workoutAndNutritionPlan')}
-                  value={methods.workoutAndNutritionPlan}
-                  color="primary"
-                />
-              )}
-              label="Workout & Nutrition plan"
-            />
-
-            <FormControlLabel
-              control={(
-                <Checkbox
-                  checked={methods.watchingExercise}
-                  onChange={handleCheckboxChange('watchingExercise')}
-                  value={methods.watchingExercise}
-                  color="primary"
-                />
-              )}
-              label="Watching exercise"
-            />
-
-            <FormControlLabel
-              control={(
-                <Checkbox
-                  checked={methods.supplementPlan}
-                  onChange={handleCheckboxChange('supplementPlan')}
-                  value={methods.supplementPlan}
-                  color="primary"
-                />
-              )}
-              label="Supplement plan"
-            />
-
-          </FormGroup>
-          <FormError>
-            {errors && errors.methods}
-          </FormError>
-        </div>
 
         <FormControl fullWidth className={classes.vspace}>
           <Typography component="h6" variant="button">
