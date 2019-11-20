@@ -6,6 +6,7 @@ import {
   Typography,
   TextField,
   FormControl,
+  Slide,
 } from '@material-ui/core';
 import { withFirebase } from '../../../core/lib/Firebase';
 import {
@@ -37,11 +38,16 @@ const useStyles = makeStyles({
 const GuruDetailsStep = ({ firebase }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const introduction = useSelector((state) => state.header.becomeGuruModal.introduction);
-  const sport = useSelector((state) => state.header.becomeGuruModal.sport);
-  const certificate = useSelector((state) => state.header.becomeGuruModal.certificate);
-  const errors = useSelector((state) => state.header.becomeGuruModal.guruDetailsStepFormErrors);
+  const becomeGuruModal = useSelector((state) => state.header.becomeGuruModal);
   const auth = useSelector((state) => state.app.auth);
+  const {
+    introduction,
+    sport,
+    certificate,
+    guruDetailsStepFormErrors: errors,
+    activeStep,
+    isIncreasingSteps,
+  } = becomeGuruModal;
 
   const handleChange = (event) => {
     if (event.target.value.length <= 300) {
@@ -95,70 +101,77 @@ const GuruDetailsStep = ({ firebase }) => {
   };
 
   return (
-    <>
-      <ModalHeader
-        heading="GURU INFORMATION"
-        caption="Tell us more about your gym achievements and coaching background"
-      />
-
-      <form>
-        <SimpleSelect
-          id="guru-sport"
-          label="Sport"
-          name="sport"
-          options={sports}
-          onChange={handleChange}
-          selectedValue={sport}
+    <Slide
+      direction={isIncreasingSteps ? 'left' : 'right'}
+      in={activeStep === 1}
+      mountOnEnter
+      unmountOnExit
+    >
+      <div>
+        <ModalHeader
+          heading="GURU INFORMATION"
+          caption="Tell us more about your gym achievements and coaching background"
         />
 
-        <FormError>
-          {errors && errors.sport}
-        </FormError>
-
-        <FormControl fullWidth className={classes.vspace}>
-          <Typography component="h6" variant="button">
-            INTRODUCE YOURSELF TO STUDENTS
-          </Typography>
-          <TextField
-            multiline
-            rows="6"
-            margin="dense"
-            variant="outlined"
-            placeholder="Max 300 characters..."
+        <form>
+          <SimpleSelect
+            id="guru-sport"
+            label="Sport"
+            name="sport"
+            options={sports}
             onChange={handleChange}
-            name="introduction"
-            value={introduction}
+            selectedValue={sport}
           />
-        </FormControl>
 
-        <div className={classes.vspace}>
-          <Typography component="h6" variant="button">
-            CERTIFICATION
-          </Typography>
-          <FormControl fullWidth className={classes.formControl}>
-            <ImageUploader
-              image={certificate}
-              onImageChange={handlePhotoChange}
-              onImageRemove={() => handleImageRemove(certificate)}
-              inputId="guru-certificate"
-              fullWidth
+          <FormError>
+            {errors && errors.sport}
+          </FormError>
+
+          <FormControl fullWidth className={classes.vspace}>
+            <Typography component="h6" variant="button">
+              INTRODUCE YOURSELF TO STUDENTS
+            </Typography>
+            <TextField
+              multiline
+              rows="6"
+              margin="dense"
+              variant="outlined"
+              placeholder="Max 300 characters..."
+              onChange={handleChange}
+              name="introduction"
+              value={introduction}
             />
           </FormControl>
 
-          {errors && errors.images ? (
-            <FormError>
-              {errors && errors.images}
-            </FormError>
-          ) : (
-            <Typography variant="caption" className={classes.note}>
-              Note: This field is not necessary but candidates with provided
-              certificates have higher chance to become gurus.
+          <div className={classes.vspace}>
+            <Typography component="h6" variant="button">
+              CERTIFICATION
             </Typography>
-          )}
-        </div>
+            <FormControl fullWidth className={classes.formControl}>
+              <ImageUploader
+                image={certificate}
+                onImageChange={handlePhotoChange}
+                onImageRemove={() => handleImageRemove(certificate)}
+                inputId="guru-certificate"
+                fullWidth
+              />
+            </FormControl>
 
-      </form>
-    </>
+            {errors && errors.images ? (
+              <FormError>
+                {errors && errors.images}
+              </FormError>
+            ) : (
+              <Typography variant="caption" className={classes.note}>
+                Note: This field is not necessary but candidates with provided
+                certificates have higher chance to become gurus.
+              </Typography>
+            )}
+          </div>
+
+        </form>
+      </div>
+    </Slide>
   );
 };
 

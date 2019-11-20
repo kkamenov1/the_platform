@@ -85,6 +85,7 @@ export const defaultStore = {
     personalDetailsStepFormErrors: {},
     guruDetailsStepFormErrors: {},
     ratesStepFormErrors: {},
+    isIncreasingSteps: true,
   },
 };
 

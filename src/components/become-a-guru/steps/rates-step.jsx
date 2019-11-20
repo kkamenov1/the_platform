@@ -10,6 +10,7 @@ import {
   Input,
   InputAdornment,
   OutlinedInput,
+  Slide,
 } from '@material-ui/core';
 import EventNoteIcon from '@material-ui/icons/EventNote';
 import { ModalHeader, FormError } from '../../../core/components';
@@ -61,9 +62,15 @@ const useStyles = makeStyles({
 const RatesStep = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const methods = useSelector((state) => state.header.becomeGuruModal.methods);
-  const duration = useSelector((state) => state.header.becomeGuruModal.duration);
-  const errors = useSelector((state) => state.header.becomeGuruModal.ratesStepFormErrors);
+  const becomeGuruModal = useSelector((state) => state.header.becomeGuruModal);
+
+  const {
+    methods,
+    duration,
+    ratesStepFormErrors: errors,
+    activeStep,
+    isIncreasingSteps,
+  } = becomeGuruModal;
 
   const handleRatesChange = (index) => (event) => {
     dispatch(setGuruDetailsCoachingMethods(
@@ -90,113 +97,120 @@ const RatesStep = () => {
   };
 
   return (
-    <>
-      <ModalHeader
-        heading="SET YOUR GURU RATES"
-        caption={`Based on your coaching experience, please set rates for the
+    <Slide
+      direction={isIncreasingSteps ? 'left' : 'right'}
+      in={activeStep === 2}
+      mountOnEnter
+      unmountOnExit
+    >
+      <div>
+        <ModalHeader
+          heading="SET YOUR GURU RATES"
+          caption={`Based on your coaching experience, please set rates for the
           corresponding coaching format`}
-      />
+        />
 
-      <form>
-        <div>
-          <Grid
-            container
-            justify="space-between"
-            alignItems="center"
-            className={classes.tableHeader}
-          >
-            <Grid item xs={6} className={classes.left}>
-              <Typography className={classes.thItem}>Coaching Method</Typography>
+        <form>
+          <div>
+            <Grid
+              container
+              justify="space-between"
+              alignItems="center"
+              className={classes.tableHeader}
+            >
+              <Grid item xs={6} className={classes.left}>
+                <Typography className={classes.thItem}>Coaching Method</Typography>
+              </Grid>
+              <Grid item xs={6} className={classes.right}>
+                <Typography className={classes.thItem}>Rates</Typography>
+              </Grid>
             </Grid>
-            <Grid item xs={6} className={classes.right}>
-              <Typography className={classes.thItem}>Rates</Typography>
-            </Grid>
-          </Grid>
 
-          <div className={classes.methodsContainer}>
-            {methods
-              .map(({ name, selected, price }, i) => (
-                <Grid
-                  container
-                  justify="space-between"
-                  alignItems="center"
-                  key={i}
-                >
-                  <Grid item xs={6} className={classnames(classes.left, classes.leftItem)}>
-                    <FormControlLabel
-                      key={i}
-                      control={(
-                        <Checkbox
-                          checked={selected}
-                          onChange={handleCheckboxChange(i)}
-                          value={selected}
-                          color="primary"
-                        />
-                      )}
-                      label={name}
-                    />
+            <div className={classes.methodsContainer}>
+              {methods
+                .map(({ name, selected, price }, i) => (
+                  <Grid
+                    container
+                    justify="space-between"
+                    alignItems="center"
+                    key={i}
+                  >
+                    <Grid item xs={6} className={classnames(classes.left, classes.leftItem)}>
+                      <FormControlLabel
+                        key={i}
+                        control={(
+                          <Checkbox
+                            checked={selected}
+                            onChange={handleCheckboxChange(i)}
+                            value={selected}
+                            color="primary"
+                          />
+                        )}
+                        label={name}
+                      />
+                    </Grid>
+                    <Grid item xs={6} className={classes.right}>
+                      <Input
+                        value={price}
+                        onChange={handleRatesChange(i)}
+                        disabled={!selected}
+                        inputProps={{
+                          className: classes.input,
+                        }}
+                        startAdornment={
+                          <InputAdornment position="start">$</InputAdornment>
+                        }
+                        endAdornment={
+                          <InputAdornment position="end">USD</InputAdornment>
+                        }
+                      />
+                    </Grid>
                   </Grid>
-                  <Grid item xs={6} className={classes.right}>
-                    <Input
-                      value={price}
-                      onChange={handleRatesChange(i)}
-                      disabled={!selected}
-                      inputProps={{
-                        className: classes.input,
-                      }}
-                      startAdornment={
-                        <InputAdornment position="start">$</InputAdornment>
-                      }
-                      endAdornment={
-                        <InputAdornment position="end">USD</InputAdornment>
-                      }
-                    />
-                  </Grid>
-                </Grid>
-              ))}
+                ))}
 
-            <FormError>
-              {errors && errors.methods}
-            </FormError>
-          </div>
-
-          <div className={classes.vspace}>
-            <Typography component="h6" variant="button">
-              Duration of the coaching programs
-            </Typography>
-            <OutlinedInput
-              name="duration"
-              value={duration}
-              onChange={handleDurationChange}
-              margin="dense"
-              className={classes.durationInput}
-              inputProps={{
-                className: classes.input,
-              }}
-              startAdornment={
-                <EventNoteIcon className={classes.inputIcon} />
-              }
-              endAdornment={
-                <InputAdornment position="end">days</InputAdornment>
-              }
-            />
-
-            {errors && errors.duration ? (
               <FormError>
-                {errors && errors.duration}
+                {errors && errors.methods}
               </FormError>
-            ) : (
-              <Typography variant="caption" className={classes.note} component="p">
-                Note: This doesn&apos;t include&nbsp;
-                <strong>Watching exercise</strong>
-                &nbsp;method
-              </Typography>
-            )}
+            </div>
 
+            <div className={classes.vspace}>
+              <Typography component="h6" variant="button">
+                Duration of the coaching programs
+              </Typography>
+              <OutlinedInput
+                name="duration"
+                value={duration}
+                onChange={handleDurationChange}
+                margin="dense"
+                className={classes.durationInput}
+                inputProps={{
+                  className: classes.input,
+                }}
+                startAdornment={
+                  <EventNoteIcon className={classes.inputIcon} />
+              }
+                endAdornment={
+                  <InputAdornment position="end">days</InputAdornment>
+              }
+              />
+
+              {errors && errors.duration ? (
+                <FormError>
+                  {errors && errors.duration}
+                </FormError>
+              ) : (
+                <Typography variant="caption" className={classes.note} component="p">
+                  Note: This doesn&apos;t include&nbsp;
+                  <strong>Watching exercise</strong>
+                  &nbsp;method
+                </Typography>
+              )}
+
+            </div>
           </div>
-        </div>
-      </form>
-    </>
+        </form>
+      </div>
+    </Slide>
   );
 };
 

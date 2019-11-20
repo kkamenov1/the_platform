@@ -13,6 +13,7 @@ import {
   Grid,
   List,
   ListItem,
+  Slide,
 } from '@material-ui/core';
 import {
   PlacesAutoComplete,
@@ -82,15 +83,18 @@ const PersonalDetailsStep = ({ firebase }) => {
   const [labelWidth, setLabelWidth] = useState(0);
 
   const auth = useSelector((state) => state.app.auth);
-  const images = useSelector((state) => state.header.becomeGuruModal.images);
-  const errors = useSelector((state) => state.header.becomeGuruModal.personalDetailsStepFormErrors);
-
-  const location = useSelector((state) => state.header.becomeGuruModal.location);
-  const languages = useSelector((state) => state.header.becomeGuruModal.languages);
-  const day = useSelector((state) => state.header.becomeGuruModal.day);
-  const month = useSelector((state) => state.header.becomeGuruModal.month);
-  const year = useSelector((state) => state.header.becomeGuruModal.year);
-
+  const becomeGuruModal = useSelector((state) => state.header.becomeGuruModal);
+  const {
+    images,
+    personalDetailsStepFormErrors: errors,
+    location,
+    languages,
+    day,
+    month,
+    year,
+    activeStep,
+    isIncreasingSteps,
+  } = becomeGuruModal;
 
   useEffect(() => {
     setLabelWidth(inputLabel.current.offsetWidth);
@@ -163,133 +167,140 @@ const PersonalDetailsStep = ({ firebase }) => {
   };
 
   return (
-    <>
-      <ModalHeader
-        heading="APPLY TO BECOME A GURU"
-        caption="Earn money by coaching other people"
-      />
-      <form>
-        <PlacesAutoComplete
-          value={location}
-          onChange={handleLocationChange}
-          shouldFetchSuggestions={location.length > 1}
+    <Slide
+      direction={isIncreasingSteps ? 'left' : 'right'}
+      in={activeStep === 0}
+      mountOnEnter
+      unmountOnExit
+    >
+      <div>
+        <ModalHeader
+          heading="APPLY TO BECOME A GURU"
+          caption="Earn money by coaching other people"
         />
-        <FormError>
-          {errors && errors.location}
-        </FormError>
-
-        <FormControl fullWidth variant="outlined">
-          <InputLabel
-            htmlFor="select-multiple-language"
-            ref={inputLabel}
-            className={classes.label}
-          >
-            Languages
-          </InputLabel>
-          <Select
-            multiple
-            value={languages}
-            onChange={handleInputChange}
-            labelWidth={labelWidth}
-            className={classes.select}
-            margin="dense"
-            inputProps={{
-              id: 'select-multiple-language',
-              name: 'languages',
-            }}
-            renderValue={(selected) => (
-              <div className={classes.chips}>
-                {selected.map((value) => (
-                  <Chip key={value} label={value} className={classes.chip} />
-                ))}
-              </div>
-            )}
-            MenuProps={MenuProps}
-          >
-            {allLanguages.map((language) => (
-              <MenuItem key={language} value={language}>
-                {language}
-              </MenuItem>
-            ))}
-          </Select>
+        <form>
+          <PlacesAutoComplete
+            value={location}
+            onChange={handleLocationChange}
+            shouldFetchSuggestions={location.length > 1}
+          />
           <FormError>
-            {errors && errors.languages}
+            {errors && errors.location}
           </FormError>
-        </FormControl>
 
-        <div className={classes.vspace}>
-          <Typography component="h6" variant="button">
+          <FormControl fullWidth variant="outlined">
+            <InputLabel
+              htmlFor="select-multiple-language"
+              ref={inputLabel}
+              className={classes.label}
+            >
+              Languages
+            </InputLabel>
+            <Select
+              multiple
+              value={languages}
+              onChange={handleInputChange}
+              labelWidth={labelWidth}
+              className={classes.select}
+              margin="dense"
+              inputProps={{
+                id: 'select-multiple-language',
+                name: 'languages',
+              }}
+              renderValue={(selected) => (
+                <div className={classes.chips}>
+                  {selected.map((value) => (
+                    <Chip key={value} label={value} className={classes.chip} />
+                  ))}
+                </div>
+              )}
+              MenuProps={MenuProps}
+            >
+              {allLanguages.map((language) => (
+                <MenuItem key={language} value={language}>
+                  {language}
+                </MenuItem>
+              ))}
+            </Select>
+            <FormError>
+              {errors && errors.languages}
+            </FormError>
+          </FormControl>
+
+          <div className={classes.vspace}>
+            <Typography component="h6" variant="button">
             Birthday
-          </Typography>
+            </Typography>
 
-          <Grid container spacing={1}>
-            <Grid item xs={2}>
-              <TextField
-                variant="outlined"
-                name="day"
-                value={day}
-                onChange={handleInputChange}
-                type="text"
-                placeholder="DD"
-                margin="dense"
-                inputProps={{ maxLength: 2 }}
-              />
-            </Grid>
-
-            <Grid item xs={2}>
-              <TextField
-                variant="outlined"
-                name="month"
-                value={month}
-                onChange={handleInputChange}
-                type="text"
-                placeholder="MM"
-                margin="dense"
-                inputProps={{ maxLength: 2 }}
-              />
-            </Grid>
-
-            <Grid item xs={4}>
-              <TextField
-                variant="outlined"
-                name="year"
-                value={year}
-                onChange={handleInputChange}
-                type="text"
-                placeholder="YYYY"
-                margin="dense"
-                inputProps={{ maxLength: 4 }}
-              />
-            </Grid>
-          </Grid>
-          <FormError>
-            {errors && errors.birthday}
-          </FormError>
-        </div>
-
-        <div className={classes.vspace}>
-          <Typography component="h6" variant="button">
-            Photos
-          </Typography>
-
-          <List className={classes.photoList}>
-            {images.map((image, index) => (
-              <ListItem className={classes.photoListItem} key={index}>
-                <ImageUploader
-                  image={image}
-                  onImageChange={handleImageChange}
-                  onImageRemove={() => handleImageRemove(index)}
-                  inputId={`guru-photo-${index}`}
+            <Grid container spacing={1}>
+              <Grid item xs={2}>
+                <TextField
+                  variant="outlined"
+                  name="day"
+                  value={day}
+                  onChange={handleInputChange}
+                  type="text"
+                  placeholder="DD"
+                  margin="dense"
+                  inputProps={{ maxLength: 2 }}
                 />
-              </ListItem>
-            ))}
-          </List>
-          <FormError>
-            {errors && errors.images}
-          </FormError>
-        </div>
-      </form>
-    </>
+              </Grid>
+
+              <Grid item xs={2}>
+                <TextField
+                  variant="outlined"
+                  name="month"
+                  value={month}
+                  onChange={handleInputChange}
+                  type="text"
+                  placeholder="MM"
+                  margin="dense"
+                  inputProps={{ maxLength: 2 }}
+                />
+              </Grid>
+
+              <Grid item xs={4}>
+                <TextField
+                  variant="outlined"
+                  name="year"
+                  value={year}
+                  onChange={handleInputChange}
+                  type="text"
+                  placeholder="YYYY"
+                  margin="dense"
+                  inputProps={{ maxLength: 4 }}
+                />
+              </Grid>
+            </Grid>
+            <FormError>
+              {errors && errors.birthday}
+            </FormError>
+          </div>
+
+          <div className={classes.vspace}>
+            <Typography component="h6" variant="button">
+              Photos
+            </Typography>
+
+            <List className={classes.photoList}>
+              {images.map((image, index) => (
+                <ListItem className={classes.photoListItem} key={index}>
+                  <ImageUploader
+                    image={image}
+                    onImageChange={handleImageChange}
+                    onImageRemove={() => handleImageRemove(index)}
+                    inputId={`guru-photo-${index}`}
+                  />
+                </ListItem>
+              ))}
+            </List>
+            <FormError>
+              {errors && errors.images}
+            </FormError>
+          </div>
+        </form>
+      </div>
+    </Slide>
   );
 };
 
