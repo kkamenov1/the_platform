@@ -18,7 +18,7 @@ import { addOnPosition } from '../../../core/utils';
 import {
   setGuruDetailsCoachingMethods,
   setFormValues,
-} from '../../../pages/Header/actions';
+} from '../actions';
 
 const useStyles = makeStyles({
   input: {
@@ -49,7 +49,7 @@ const useStyles = makeStyles({
     borderTop: '1px solid rgb(128, 128, 128)',
   },
   vspace: {
-    marginTop: 20,
+    marginTop: 10,
   },
   note: {
     fontSize: 10,
@@ -62,7 +62,7 @@ const useStyles = makeStyles({
 const RatesStep = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const becomeGuruModal = useSelector((state) => state.header.becomeGuruModal);
+  const becomeGuruModal = useSelector((state) => state.becomeGuruModal);
 
   const {
     methods,

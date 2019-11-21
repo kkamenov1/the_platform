@@ -31,7 +31,7 @@ import {
   setGuruLocation,
   setFormValues,
   setPersonalDetailsErrors,
-} from '../../../pages/Header/actions';
+} from '../actions';
 import { FILE_MEGABYTES, KILOBYTE } from '../../../constants/files';
 
 const useStyles = makeStyles({
@@ -83,7 +83,7 @@ const PersonalDetailsStep = ({ firebase }) => {
   const [labelWidth, setLabelWidth] = useState(0);
 
   const auth = useSelector((state) => state.app.auth);
-  const becomeGuruModal = useSelector((state) => state.header.becomeGuruModal);
+  const becomeGuruModal = useSelector((state) => state.becomeGuruModal);
   const {
     images,
     personalDetailsStepFormErrors: errors,

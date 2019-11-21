@@ -18,7 +18,7 @@ import {
 import {
   setFormValues,
   setGuruDetailsErrors,
-} from '../../../pages/Header/actions';
+} from '../actions';
 import sports from '../../../constants/sports';
 import { KILOBYTE, FILE_MEGABYTES } from '../../../constants/files';
 
@@ -38,7 +38,7 @@ const useStyles = makeStyles({
 const GuruDetailsStep = ({ firebase }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const becomeGuruModal = useSelector((state) => state.header.becomeGuruModal);
+  const becomeGuruModal = useSelector((state) => state.becomeGuruModal);
   const auth = useSelector((state) => state.app.auth);
   const {
     introduction,

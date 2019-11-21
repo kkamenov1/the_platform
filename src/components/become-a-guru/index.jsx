@@ -2,15 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
+import classnames from 'classnames';
 import {
   Stepper,
   Step,
   StepLabel,
   Grid,
-  Button,
+  Fab,
 } from '@material-ui/core';
-import { SimpleButton } from '../../core/components';
 import { PersonalDetailsStep, GuruDetailsStep, RatesStep } from './steps';
+import Finalization from './finalization';
 import {
   setActiveStep,
   setApplicationUID,
@@ -18,7 +19,9 @@ import {
   setGuruDetailsErrors,
   setRatesErrors,
   setFormValues,
-} from '../../pages/Header/actions';
+  clearBecomeGuruModal,
+} from './actions';
+import { toggleHeaderModal } from '../../pages/Header/actions';
 import { withFirebase } from '../../core/lib/Firebase';
 
 const useStyles = makeStyles((theme) => ({
@@ -48,14 +51,19 @@ const useStyles = makeStyles((theme) => ({
       color: '#fb2525',
     },
   },
-  padding: {
+  rightPanelInner: {
     padding: 32,
+    height: 600,
+  },
+  fab: {
+    minWidth: '140px !important',
   },
   backBtn: {
-    textTransform: 'none',
+    boxShadow: 'none',
+    border: `1px solid ${theme.palette.common.black}`,
   },
   controls: {
-    padding: 15,
+    padding: '15px 32px',
     width: '100%',
     backgroundColor: '#f0f0f0',
   },
@@ -86,7 +94,7 @@ const BecomeAGuru = ({ firebase }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const steps = getSteps();
-  const becomeGuruModal = useSelector((state) => state.header.becomeGuruModal);
+  const becomeGuruModal = useSelector((state) => state.becomeGuruModal);
   const {
     activeStep,
     images,
@@ -229,11 +237,27 @@ const BecomeAGuru = ({ firebase }) => {
     if (activeStep === 2 && submitRatesStep()) {
       dispatch(setActiveStep(activeStep + 1));
     }
+
+    if (activeStep > 2) {
+      dispatch(toggleHeaderModal(false, ''));
+      dispatch(clearBecomeGuruModal());
+    }
   };
 
   const handleBack = () => {
     dispatch(setActiveStep(activeStep - 1));
     dispatch(setFormValues('isIncreasingSteps', false));
+  };
+
+  const generateButtonLabel = () => {
+    if (activeStep === steps.length - 1) {
+      return 'Finish';
+    }
+    if (activeStep > 2) {
+      return 'Close';
+    }
+
+    return 'Continue';
   };
 
   return (
@@ -262,30 +286,45 @@ const BecomeAGuru = ({ firebase }) => {
 
       <Grid item className={classes.right} xs={8}>
         <div>
-          <div className={classes.padding}>
+          <div className={classes.rightPanelInner}>
             <div className={classes.stepContent}>
               {renderStepContent(activeStep)}
+              <Finalization />
             </div>
           </div>
 
-          <Grid container className={classes.controls} justify="space-between">
+          <Grid
+            container
+            className={classes.controls}
+            justify="space-between"
+            alignItems="center"
+          >
             <Grid item>
-              {activeStep !== 0 && (
-                <Button onClick={handleBack} className={classes.backBtn}>
+              {activeStep > 0 && activeStep < 3 && (
+                <Fab
+                  variant="extended"
+                  size="medium"
+                  color="inherit"
+                  aria-label="back"
+                  onClick={handleBack}
+                  className={classnames(classes.fab, classes.backBtn)}
+                >
                   Back
-                </Button>
+                </Fab>
               )}
             </Grid>
 
             <Grid item>
-              <SimpleButton
-                size="large"
-                variant="contained"
+              <Fab
+                variant="extended"
+                size="medium"
                 color="primary"
+                aria-label="continue"
                 onClick={handleNext}
+                className={classes.fab}
               >
-                {activeStep === steps.length - 1 ? 'Finish' : 'Continue'}
-              </SimpleButton>
+                {generateButtonLabel()}
+              </Fab>
             </Grid>
           </Grid>
         </div>
