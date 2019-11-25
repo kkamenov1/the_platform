@@ -9,9 +9,6 @@ import { withFirebase } from '../../core/lib/Firebase';
 import {
   PROFILE,
   DASHBOARD,
-  PROFILE_BTN_NAME,
-  DASHBOARD_BTN_NAME,
-  LOGOUT_BTN_NAME,
 } from '../../constants/routes';
 
 const useStyles = makeStyles({
@@ -60,12 +57,12 @@ const MenuDropDown = ({ onClose, anchorEl, firebase }) => {
       getContentAnchorEl={null}
     >
       <MenuItem className={classes.menuItem}>
-        <Link to={PROFILE} className={classes.item}>{PROFILE_BTN_NAME}</Link>
+        <Link to={PROFILE} className={classes.item}>Profile</Link>
       </MenuItem>
       <Divider />
 
       <MenuItem className={classes.menuItem}>
-        <Link to={DASHBOARD} className={classes.item}>{DASHBOARD_BTN_NAME}</Link>
+        <Link to={DASHBOARD} className={classes.item}>Dashboard</Link>
       </MenuItem>
       <Divider />
 
@@ -75,7 +72,7 @@ const MenuDropDown = ({ onClose, anchorEl, firebase }) => {
           className={classes.item}
           onClick={firebase.doSignOut}
         >
-          {LOGOUT_BTN_NAME}
+          Log Out
         </Button>
       </MenuItem>
     </Menu>

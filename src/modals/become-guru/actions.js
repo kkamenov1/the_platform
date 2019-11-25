@@ -8,6 +8,7 @@ export const SET_GURU_DETAILS_COACHING_METHODS = 'SET_GURU_DETAILS_COACHING_METH
 export const SET_GURU_DETAILS_ERRORS = 'SET_GURU_DETAILS_ERRORS';
 export const SET_RATES_ERRORS = 'SET_RATES_ERRORS';
 export const CLEAR_BECOMEGURU_MODAL = 'CLEAR_BECOMEGURU_MODAL';
+export const TOGGLE_BECOME_GURU_MODAL = 'TOGGLE_BECOME_GURU_MODAL';
 
 export const setActiveStep = (activeStep) => ({
   type: SET_ACTIVE_STEP,
@@ -52,4 +53,9 @@ export const setRatesErrors = (errors) => ({
 
 export const clearBecomeGuruModal = () => ({
   type: CLEAR_BECOMEGURU_MODAL,
+});
+
+export const toggleBecomeGuruModal = (open) => ({
+  type: TOGGLE_BECOME_GURU_MODAL,
+  open,
 });

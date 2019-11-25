@@ -50,6 +50,7 @@ const Modal = ({
       open={open}
       onClose={onClose}
       classes={{
+        root: classes.root,
         paper: classes.dialogPaper,
         paperWidthSm: !noPadding ? classes.paperWidthSm600 : classes.paperWidthSm900,
       }}

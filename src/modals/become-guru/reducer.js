@@ -9,9 +9,11 @@ import {
   SET_GURU_DETAILS_ERRORS,
   SET_RATES_ERRORS,
   CLEAR_BECOMEGURU_MODAL,
+  TOGGLE_BECOME_GURU_MODAL,
 } from './actions';
 
 export const defaultStore = {
+  open: false,
   activeStep: 0,
   applicationUID: null,
   location: '',
@@ -69,10 +71,17 @@ export const defaultStore = {
   guruDetailsStepFormErrors: {},
   ratesStepFormErrors: {},
   isIncreasingSteps: true,
+  isFormFinalized: false,
 };
 
 export default (state = defaultStore, action) => {
   switch (action.type) {
+    case TOGGLE_BECOME_GURU_MODAL:
+      return {
+        ...state,
+        open: action.open,
+      };
+
     case SET_GURU_PHOTOS:
       return {
         ...state,

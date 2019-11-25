@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   FormControl,
@@ -20,11 +20,8 @@ import {
   SimpleButton,
 } from '../../core/components';
 import SignUpLink from '../sign-up-link';
-import { FORGOT_PASSWORD_BTN_NAME } from '../../constants/routes';
-import {
-  toggleHeaderModal,
-  setLoadingSignInModal,
-} from '../../pages/Header/actions';
+import { FORGOT_PASSWORD } from '../../constants/authModalPages';
+import { toggleAuthModal } from '../../modals/auth/actions';
 import SocialLoginButtons from '../social-login-buttons';
 
 const useStyles = makeStyles({
@@ -53,31 +50,31 @@ const INITIAL_STATE = {
 const SignInForm = ({ firebase }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const loading = useSelector((state) => state.header.signInModal.loading);
   const [inputValues, setInputValues] = useState(INITIAL_STATE);
   const [error, setError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const openForgotPasswordModal = () => {
-    dispatch(toggleHeaderModal(true, FORGOT_PASSWORD_BTN_NAME));
+    dispatch(toggleAuthModal(true, FORGOT_PASSWORD));
   };
 
   const onSubmit = (event) => {
     event.preventDefault();
     const { email, password } = inputValues;
-    dispatch(setLoadingSignInModal(true));
+    setLoading(true);
 
     firebase
       .doSignInWithEmailAndPassword(email, password)
       .then(() => {
         setInputValues(INITIAL_STATE);
         setError(null);
-        dispatch(setLoadingSignInModal(false));
-        dispatch(toggleHeaderModal(false, ''));
+        setLoading(false);
+        dispatch(toggleAuthModal(false, ''));
       })
       .catch((err) => {
         setError(err);
-        dispatch(setLoadingSignInModal(false));
+        setLoading(false);
       });
   };
 
@@ -163,7 +160,7 @@ const SignInForm = ({ firebase }) => {
 
           <Typography align="center" component="div">
             <LinkStyledButton onClick={openForgotPasswordModal}>
-              {FORGOT_PASSWORD_BTN_NAME}
+              Forgot Password?
             </LinkStyledButton>
           </Typography>
         </form>

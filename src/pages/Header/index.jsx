@@ -13,18 +13,16 @@ import {
 import { KeyboardArrowDown } from '@material-ui/icons';
 
 import { ReactComponent as Logo } from '../../svg/logo.svg';
-import {
-  NavigationRoutes,
-  HOME_BTN_NAME,
-  HELP_BTN_NAME,
-  BECOMEAGURU_BTN_NAME,
-} from '../../constants/routes';
+import { NavigationRoutes } from '../../constants/routes';
 import MobileDrawerNavigation from '../../components/mobile-drawer-navigation';
-import ModalHeaderProvider from '../../components/modal-header-provider';
 import AvatarNavButton from '../../components/avatar-nav-button';
-import { Modal } from '../../core/components';
-import { toggleMobileNavigation, toggleHeaderModal } from './actions';
-
+import { toggleMobileNavigation } from './actions';
+import { toggleBecomeGuruModal } from '../../modals/become-guru/actions';
+import { toggleAuthModal } from '../../modals/auth/actions';
+import {
+  SIGN_IN,
+  SIGN_UP,
+} from '../../constants/authModalPages';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -73,9 +71,6 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 9999,
     backgroundColor: theme.palette.common.white,
   },
-  headerMobileModalOpen: {
-    zIndex: 1,
-  },
   navBtn: {
     color: theme.palette.common.white,
     display: 'flex',
@@ -121,8 +116,6 @@ const Header = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const isMobileNavigationOpen = useSelector((state) => state.header.isMobileNavigationOpen);
-  const isHeaderModalOpen = useSelector((state) => state.header.isHeaderModalOpen);
-  const headerModalName = useSelector((state) => state.header.headerModalName);
   const auth = useSelector((state) => state.app.auth);
 
   const toggleDrawer = (open) => (event) => {
@@ -135,27 +128,22 @@ const Header = () => {
     dispatch(toggleMobileNavigation(open));
   };
 
-  const toggleModal = (open, modalName) => {
-    if (
-      modalName !== HOME_BTN_NAME
-      && modalName !== HELP_BTN_NAME
-    ) {
-      dispatch(toggleHeaderModal(open, modalName));
-    }
+  const [, ...navRoutesWithoutHome] = NavigationRoutes;
+
+  const openBecomeGuruModal = () => {
+    dispatch(toggleBecomeGuruModal(true));
   };
 
-  const [, ...navRoutesWithoutHome] = NavigationRoutes;
+  const openSignInModal = () => {
+    dispatch(toggleAuthModal(true, SIGN_IN));
+  };
+
+  const openSignUpModal = () => {
+    dispatch(toggleAuthModal(true, SIGN_UP));
+  };
 
   return (
     <div className={classes.root}>
-      <Modal
-        fullScreen={isMobile}
-        open={isHeaderModalOpen}
-        onClose={() => toggleModal(false, '')}
-        noPadding={headerModalName === BECOMEAGURU_BTN_NAME}
-      >
-        <ModalHeaderProvider headerModalName={headerModalName} />
-      </Modal>
       <MobileDrawerNavigation toggleDrawer={toggleDrawer} open={isMobileNavigationOpen} />
       <AppBar
         position="static"
@@ -163,7 +151,6 @@ const Header = () => {
           classes.appBar,
           {
             [classes.mobileNavOpen]: isMobileNavigationOpen,
-            [classes.headerMobileModalOpen]: isHeaderModalOpen,
           },
         )}
       >
@@ -204,31 +191,59 @@ const Header = () => {
                   alignItems="center"
                   className={classes.nav}
                 >
-                  {navRoutesWithoutHome
-                    .filter((navRoute) => !auth || !navRoute.shouldHideOnAuth)
-                    .map((navRoute) => (
-                      <Grid
-                        item
-                        key={navRoute.name}
-                        className={classes.navBtnWrapper}
-                      >
-                        <Button
-                          className={classes.navBtn}
-                          disableRipple
-                          onClick={() => toggleModal(true, navRoute.name)}
-                        >
-                          {navRoute.name}
-                        </Button>
-                      </Grid>
-                    ))}
+                  {/* BECOME GURU */}
+                  <Grid item className={classes.navBtnWrapper}>
+                    <Button
+                      className={classes.navBtn}
+                      disableRipple
+                      onClick={openBecomeGuruModal}
+                    >
+                      {navRoutesWithoutHome[0].name}
+                    </Button>
+                  </Grid>
 
-                  {auth && (
+                  {/* HELP */}
+                  <Grid item className={classes.navBtnWrapper}>
+                    <Button
+                      className={classes.navBtn}
+                      disableRipple
+                      onClick={() => {}}
+                    >
+                      {navRoutesWithoutHome[1].name}
+                    </Button>
+                  </Grid>
+
+                  {auth ? (
                     <Grid
                       item
                       className={classes.navBtnWrapper}
                     >
                       <AvatarNavButton />
                     </Grid>
+                  ) : (
+                    <>
+                      {/* SIGN UP */}
+                      <Grid item className={classes.navBtnWrapper}>
+                        <Button
+                          className={classes.navBtn}
+                          disableRipple
+                          onClick={openSignUpModal}
+                        >
+                          {navRoutesWithoutHome[2].name}
+                        </Button>
+                      </Grid>
+
+                      {/* SIGN IN */}
+                      <Grid item className={classes.navBtnWrapper}>
+                        <Button
+                          className={classes.navBtn}
+                          disableRipple
+                          onClick={openSignInModal}
+                        >
+                          {navRoutesWithoutHome[3].name}
+                        </Button>
+                      </Grid>
+                    </>
                   )}
                 </Grid>
               </Grid>

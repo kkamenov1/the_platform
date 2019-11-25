@@ -20,8 +20,8 @@ import {
   setRatesErrors,
   setFormValues,
   clearBecomeGuruModal,
-} from './actions';
-import { toggleHeaderModal } from '../../pages/Header/actions';
+  toggleBecomeGuruModal,
+} from '../../modals/become-guru/actions';
 import { withFirebase } from '../../core/lib/Firebase';
 
 const useStyles = makeStyles((theme) => ({
@@ -236,10 +236,11 @@ const BecomeAGuru = ({ firebase }) => {
 
     if (activeStep === 2 && submitRatesStep()) {
       dispatch(setActiveStep(activeStep + 1));
+      dispatch(setFormValues('isFormFinalized', true));
     }
 
     if (activeStep > 2) {
-      dispatch(toggleHeaderModal(false, ''));
+      dispatch(toggleBecomeGuruModal(false));
       dispatch(clearBecomeGuruModal());
     }
   };

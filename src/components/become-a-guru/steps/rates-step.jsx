@@ -18,7 +18,7 @@ import { addOnPosition } from '../../../core/utils';
 import {
   setGuruDetailsCoachingMethods,
   setFormValues,
-} from '../actions';
+} from '../../../modals/become-guru/actions';
 
 const useStyles = makeStyles({
   input: {

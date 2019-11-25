@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { Typography } from '@material-ui/core';
 import { FacebookLoginButton, GoogleLoginButton } from 'react-social-login-buttons';
 import { withFirebase } from '../../core/lib/Firebase';
-import { toggleHeaderModal } from '../../pages/Header/actions';
+import { toggleAuthModal } from '../../modals/auth/actions';
 import { FormError } from '../../core/components';
 
 const socialBtnStyles = {
@@ -34,7 +34,7 @@ const SocialLoginButtons = ({ firebase }) => {
           })))
       .then(() => {
         setErrorGoogle(null);
-        dispatch(toggleHeaderModal(false, ''));
+        dispatch(toggleAuthModal(false, ''));
       })
       .catch((err) => {
         setErrorGoogle(err);
@@ -57,7 +57,7 @@ const SocialLoginButtons = ({ firebase }) => {
           })))
       .then(() => {
         setErrorFB(null);
-        dispatch(toggleHeaderModal(false, ''));
+        dispatch(toggleAuthModal(false, ''));
       })
       .catch((err) => {
         setErrorFB(err);

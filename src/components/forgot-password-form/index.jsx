@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   FormControl,
@@ -18,8 +18,8 @@ import {
   FormError,
   CircularProgressInButton,
 } from '../../core/components';
-import { toggleHeaderModal, setLoadingResetPasswordModal } from '../../pages/Header/actions';
-import { LOGIN_BTN_NAME } from '../../constants/routes';
+import { toggleAuthModal } from '../../modals/auth/actions';
+import { SIGN_IN } from '../../constants/authModalPages';
 
 const useStyles = makeStyles({
   formControl: {
@@ -45,12 +45,12 @@ const useStyles = makeStyles({
 const ForgotPasswordForm = ({ firebase }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const loading = useSelector((state) => state.header.forgotPasswordModal.loading);
   const [email, setEmail] = useState('');
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const openSignInModal = () => {
-    dispatch(toggleHeaderModal(true, LOGIN_BTN_NAME));
+    dispatch(toggleAuthModal(true, SIGN_IN));
   };
 
   const onChange = (event) => {
@@ -59,19 +59,19 @@ const ForgotPasswordForm = ({ firebase }) => {
 
   const onSubmit = (event) => {
     event.preventDefault();
-    dispatch(setLoadingResetPasswordModal(true));
+    setLoading(true);
 
     firebase
       .doPasswordReset(email)
       .then(() => {
         setEmail('');
         setError(null);
-        dispatch(setLoadingResetPasswordModal(false));
+        setLoading(false);
       })
       .catch((err) => {
         setError(err);
         setEmail('');
-        dispatch(setLoadingResetPasswordModal(false));
+        setLoading(false);
       });
   };
 

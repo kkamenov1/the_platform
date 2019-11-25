@@ -18,20 +18,17 @@ import {
   LANDING,
   PROFILE,
   DASHBOARD,
-  HOME_BTN_NAME,
-  BECOMEAGURU_BTN_NAME,
-  HELP_BTN_NAME,
-  SIGNUP_BTN_NAME,
-  LOGIN_BTN_NAME,
-  PROFILE_BTN_NAME,
-  DASHBOARD_BTN_NAME,
-  LOGOUT_BTN_NAME,
 } from '../../constants/routes';
-import { toggleHeaderModal } from '../../pages/Header/actions';
+import { toggleAuthModal } from '../../modals/auth/actions';
+import { toggleBecomeGuruModal } from '../../modals/become-guru/actions';
 import { ReactComponent as GymIcon } from '../../svg/gym.svg';
 import { ReactComponent as DashboardIcon } from '../../svg/dashboard.svg';
 import { ReactComponent as ProfileIcon } from '../../svg/profile.svg';
 import { withFirebase } from '../../core/lib/Firebase';
+import {
+  SIGN_IN,
+  SIGN_UP,
+} from '../../constants/authModalPages';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -89,14 +86,16 @@ const MobileDrawerNavigation = ({
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.app.auth);
 
-  const toggleModal = (openModal, modalName) => {
-    if (
-      modalName !== HOME_BTN_NAME
-      && modalName !== HELP_BTN_NAME
-      && modalName !== BECOMEAGURU_BTN_NAME
-    ) {
-      dispatch(toggleHeaderModal(openModal, modalName));
-    }
+  const openBecomeGuruModal = () => {
+    dispatch(toggleBecomeGuruModal(true));
+  };
+
+  const openSignInModal = () => {
+    dispatch(toggleAuthModal(true, SIGN_IN));
+  };
+
+  const openSignUpModal = () => {
+    dispatch(toggleAuthModal(true, SIGN_UP));
   };
 
   return (
@@ -116,7 +115,7 @@ const MobileDrawerNavigation = ({
               to={LANDING}
               className={classes.navLink}
             >
-              {HOME_BTN_NAME}
+              Home
             </NavigationLink>
           </ListItem>
 
@@ -133,7 +132,7 @@ const MobileDrawerNavigation = ({
                   <Grid container justify="space-between" alignItems="center">
                     <Grid item>
                       <Typography component="span" className={classes.navLink}>
-                        {PROFILE_BTN_NAME}
+                        Profile
                       </Typography>
                     </Grid>
 
@@ -153,7 +152,7 @@ const MobileDrawerNavigation = ({
                   <Grid container justify="space-between" alignItems="center">
                     <Grid item>
                       <Typography component="span" className={classes.navLink}>
-                        {DASHBOARD_BTN_NAME}
+                        Dashboard
                       </Typography>
                     </Grid>
 
@@ -172,14 +171,14 @@ const MobileDrawerNavigation = ({
             <Button
               className={classnames(classes.navLink, classes.navBtn)}
               disableRipple
-              onClick={() => toggleModal(true, BECOMEAGURU_BTN_NAME)}
+              onClick={openBecomeGuruModal}
             >
               <Typography
                 component="span"
                 className={classes.navLink}
                 align="left"
               >
-                {BECOMEAGURU_BTN_NAME}
+                Become a GURU
               </Typography>
               <div className={classes.iconWrapper}>
                 <GymIcon />
@@ -204,14 +203,14 @@ const MobileDrawerNavigation = ({
             <Button
               className={classnames(classes.navLink, classes.navBtn)}
               disableRipple
-              onClick={() => toggleModal(true, HELP_BTN_NAME)}
+              onClick={() => {}}
             >
               <Typography
                 component="span"
                 className={classes.navLink}
                 align="left"
               >
-                {HELP_BTN_NAME}
+                Help
               </Typography>
             </Button>
           </ListItem>
@@ -222,14 +221,14 @@ const MobileDrawerNavigation = ({
                 <Button
                   className={classnames(classes.navLink, classes.navBtn)}
                   disableRipple
-                  onClick={() => toggleModal(true, SIGNUP_BTN_NAME)}
+                  onClick={openSignUpModal}
                 >
                   <Typography
                     component="span"
                     className={classes.navLink}
                     align="left"
                   >
-                    {SIGNUP_BTN_NAME}
+                    Sign up
                   </Typography>
                 </Button>
               </ListItem>
@@ -238,14 +237,14 @@ const MobileDrawerNavigation = ({
                 <Button
                   className={classnames(classes.navLink, classes.navBtn)}
                   disableRipple
-                  onClick={() => toggleModal(true, LOGIN_BTN_NAME)}
+                  onClick={openSignInModal}
                 >
                   <Typography
                     component="span"
                     className={classes.navLink}
                     align="left"
                   >
-                    {LOGIN_BTN_NAME}
+                    Log in
                   </Typography>
                 </Button>
               </ListItem>
@@ -262,7 +261,7 @@ const MobileDrawerNavigation = ({
                   className={classes.navLink}
                   align="left"
                 >
-                  {LOGOUT_BTN_NAME}
+                  Log Out
                 </Typography>
               </Button>
             </ListItem>

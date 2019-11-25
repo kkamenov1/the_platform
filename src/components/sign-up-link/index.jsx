@@ -2,8 +2,8 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { toggleHeaderModal } from '../../pages/Header/actions';
-import { SIGNUP_BTN_NAME } from '../../constants/routes';
+import { toggleAuthModal } from '../../modals/auth/actions';
+import { SIGN_UP } from '../../constants/authModalPages';
 import { LinkStyledButton } from '../../core/components';
 
 const useStyles = makeStyles({
@@ -21,7 +21,7 @@ const SignUpLink = () => {
   const dispatch = useDispatch();
 
   const onClick = () => {
-    dispatch(toggleHeaderModal(true, SIGNUP_BTN_NAME));
+    dispatch(toggleAuthModal(true, SIGN_UP));
   };
 
   return (

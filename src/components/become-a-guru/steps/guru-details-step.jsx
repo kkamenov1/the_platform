@@ -18,7 +18,7 @@ import {
 import {
   setFormValues,
   setGuruDetailsErrors,
-} from '../actions';
+} from '../../../modals/become-guru/actions';
 import sports from '../../../constants/sports';
 import { KILOBYTE, FILE_MEGABYTES } from '../../../constants/files';
 

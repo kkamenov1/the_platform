@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   TextField,
@@ -14,7 +14,7 @@ import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
 import PermIdentityOutlinedIcon from '@material-ui/icons/PermIdentityOutlined';
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
 import VisibilityOffOutlinedIcon from '@material-ui/icons/VisibilityOffOutlined';
-import { LOGIN_BTN_NAME, POST_SIGNUP } from '../../constants/routes';
+import { SIGN_IN, POST_SIGN_UP } from '../../constants/authModalPages';
 import { withFirebase } from '../../core/lib/Firebase';
 import SocialLoginButtons from '../social-login-buttons';
 import {
@@ -24,10 +24,7 @@ import {
   FormError,
   SimpleButton,
 } from '../../core/components';
-import {
-  toggleHeaderModal,
-  setLoadingSignUpModal,
-} from '../../pages/Header/actions';
+import { toggleAuthModal } from '../../modals/auth/actions';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -76,7 +73,7 @@ const SignUpForm = ({ firebase }) => {
   const [errorFirstName, setErrorFirstName] = useState(null);
   const [errorLastName, setErrorLastName] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
-  const loading = useSelector((state) => state.header.signUpModal.loading);
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = (event) => {
     event.preventDefault();
@@ -99,7 +96,7 @@ const SignUpForm = ({ firebase }) => {
       return;
     }
 
-    dispatch(setLoadingSignUpModal(true));
+    setLoading(true);
 
     firebase
       .doCreateUserWithEmailAndPassword(email, password)
@@ -118,14 +115,14 @@ const SignUpForm = ({ firebase }) => {
         setErrorFirstName(null);
         setErrorLastName(null);
 
-        dispatch(setLoadingSignUpModal(false));
-        dispatch(toggleHeaderModal(true, POST_SIGNUP));
+        setLoading(false);
+        dispatch(toggleAuthModal(true, POST_SIGN_UP));
       })
       .catch((err) => {
         setError(err);
         setErrorFirstName(null);
         setErrorLastName(null);
-        dispatch(setLoadingSignUpModal(false));
+        setLoading(false);
       });
   };
 
@@ -137,7 +134,7 @@ const SignUpForm = ({ firebase }) => {
   };
 
   const onLoginClick = () => {
-    dispatch(toggleHeaderModal(true, LOGIN_BTN_NAME));
+    dispatch(toggleAuthModal(true, SIGN_IN));
   };
 
   return (

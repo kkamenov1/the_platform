@@ -31,7 +31,7 @@ import {
   setGuruLocation,
   setFormValues,
   setPersonalDetailsErrors,
-} from '../actions';
+} from '../../../modals/become-guru/actions';
 import { FILE_MEGABYTES, KILOBYTE } from '../../../constants/files';
 
 const useStyles = makeStyles({
@@ -109,9 +109,8 @@ const PersonalDetailsStep = ({ firebase }) => {
     dispatch(setFormValues(e.target.name, e.target.value));
 
     // handling errors
-    if (e.target.name === 'day' || e.target.name === 'month' || e.target.name === 'year') {
+    if (['day', 'month', 'year'].includes(e.target.name)) {
       dispatch(setPersonalDetailsErrors({ ...errors, birthday: null }));
-      return;
     }
     dispatch(setPersonalDetailsErrors({ ...errors, [e.target.name]: null }));
   };
@@ -229,7 +228,7 @@ const PersonalDetailsStep = ({ firebase }) => {
 
           <div className={classes.vspace}>
             <Typography component="h6" variant="button">
-            Birthday
+              Birthday
             </Typography>
 
             <Grid container spacing={1}>

@@ -9,6 +9,8 @@ import { setAuthUser } from './actions';
 
 import Header from '../pages/Header';
 import Landing from '../pages/Landing';
+import BecomeGuruModal from '../modals/become-guru';
+import AuthModal from '../modals/auth';
 
 const App = ({ firebase }) => {
   const dispatch = useDispatch();
@@ -30,6 +32,8 @@ const App = ({ firebase }) => {
       <div>
         <CssBaseline />
         <Header />
+        <AuthModal />
+        <BecomeGuruModal />
 
         <Route exact path={routes.LANDING} component={Landing} />
       </div>

@@ -1,17 +1,17 @@
-import {
-  TOGGLE_MOBILE_NAVIGATION,
-} from './actions';
+import { TOGGLE_AUTH_MODAL } from './actions';
 
 export const defaultStore = {
-  isMobileNavigationOpen: false,
+  open: false,
+  page: '',
 };
 
 export default (state = defaultStore, action) => {
   switch (action.type) {
-    case TOGGLE_MOBILE_NAVIGATION:
+    case TOGGLE_AUTH_MODAL:
       return {
         ...state,
-        isMobileNavigationOpen: action.open,
+        open: action.open,
+        page: action.page,
       };
 
     default:
