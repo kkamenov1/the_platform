@@ -12,14 +12,26 @@ const BecomeGuruModal = ({ firebase }) => {
   const dispatch = useDispatch();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const open = useSelector((state) => state.becomeGuruModal.open);
-  const applicationUID = useSelector((state) => state.becomeGuruModal.applicationUID);
-  const isFormFinalized = useSelector((state) => state.becomeGuruModal.isFormFinalized);
+  const auth = useSelector((state) => state.app.auth);
+  const {
+    open,
+    applicationUID,
+    isFormFinalized,
+    images,
+  } = useSelector((state) => state.becomeGuruModal);
 
   const closeModal = () => {
     if (!isFormFinalized) {
+      /* DELETE UPLOADED IMAGES IN THE STORAGE */
+      const selectedImages = (images || []).filter((image) => image.src);
+      selectedImages.forEach(async (image) => {
+        await firebase.doDeleteGuruImage(image.name, auth.uid);
+      });
+
+      /* DELETE RECORD IN DB */
       firebase.application(applicationUID).set(null);
     }
+
     dispatch(toggleBecomeGuruModal(false));
     dispatch(clearBecomeGuruModal());
   };
@@ -39,6 +51,7 @@ const BecomeGuruModal = ({ firebase }) => {
 BecomeGuruModal.propTypes = {
   firebase: PropTypes.shape({
     application: PropTypes.func.isRequired,
+    doDeleteGuruImage: PropTypes.func.isRequired,
   }).isRequired,
 };
 
