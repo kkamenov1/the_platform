@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import classnames from 'classnames';
 import {
   Stepper,
@@ -9,6 +9,9 @@ import {
   StepLabel,
   Grid,
   Fab,
+  MobileStepper,
+  Button,
+  useMediaQuery,
 } from '@material-ui/core';
 import { PersonalDetailsStep, GuruDetailsStep, RatesStep } from './steps';
 import Finalization from './finalization';
@@ -26,9 +29,14 @@ import { withFirebase } from '../../core/lib/Firebase';
 
 const useStyles = makeStyles((theme) => ({
   left: {
+    display: 'none',
     backgroundImage: 'url("https://res.cloudinary.com/dl766ebzy/image/upload/b_rgb:ee5454,e_colorize:50,o_50/v1571747941/pexels-photo-260352_pjtnsi.jpg")',
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
+
+    [theme.breakpoints.up('md')]: {
+      display: 'flex',
+    },
   },
   right: {
     position: 'relative',
@@ -52,8 +60,11 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   rightPanelInner: {
-    padding: 32,
-    height: 600,
+    padding: '42px 16px 32px 16px',
+    [theme.breakpoints.up('md')]: {
+      padding: 32,
+      height: 600,
+    },
   },
   fab: {
     minWidth: '140px !important',
@@ -63,9 +74,14 @@ const useStyles = makeStyles((theme) => ({
     border: `1px solid ${theme.palette.common.black}`,
   },
   controls: {
+    display: 'none',
     padding: '15px 32px',
     width: '100%',
     backgroundColor: '#f0f0f0',
+
+    [theme.breakpoints.up('md')]: {
+      display: 'flex',
+    },
   },
 }));
 
@@ -93,6 +109,8 @@ const checkMethodsForEmptyPrices = (methods) => (
 const BecomeAGuru = ({ firebase }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const steps = getSteps();
   const becomeGuruModal = useSelector((state) => state.becomeGuruModal);
   const {
@@ -258,7 +276,7 @@ const BecomeAGuru = ({ firebase }) => {
       return 'Close';
     }
 
-    return 'Continue';
+    return 'Next';
   };
 
   return (
@@ -285,7 +303,7 @@ const BecomeAGuru = ({ firebase }) => {
         </Stepper>
       </Grid>
 
-      <Grid item className={classes.right} xs={8}>
+      <Grid item className={classes.right} xs={12} md={8}>
         <div>
           <div className={classes.rightPanelInner}>
             <div className={classes.stepContent}>
@@ -293,6 +311,25 @@ const BecomeAGuru = ({ firebase }) => {
               <Finalization />
             </div>
           </div>
+
+          {isMobile && (
+            <MobileStepper
+              steps={steps.length + 1}
+              position="bottom"
+              variant="text"
+              activeStep={activeStep}
+              nextButton={(
+                <Button size="small" onClick={handleNext}>
+                  {generateButtonLabel()}
+                </Button>
+              )}
+              backButton={(
+                <Button size="small" onClick={handleBack} disabled={activeStep <= 0 || activeStep >= 3}>
+                  Back
+                </Button>
+              )}
+            />
+          )}
 
           <Grid
             container

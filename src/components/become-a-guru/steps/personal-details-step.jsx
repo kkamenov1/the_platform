@@ -232,7 +232,7 @@ const PersonalDetailsStep = ({ firebase }) => {
             </Typography>
 
             <Grid container spacing={1}>
-              <Grid item xs={2}>
+              <Grid item xs={3} md={2}>
                 <TextField
                   variant="outlined"
                   name="day"
@@ -245,7 +245,7 @@ const PersonalDetailsStep = ({ firebase }) => {
                 />
               </Grid>
 
-              <Grid item xs={2}>
+              <Grid item xs={3} md={2}>
                 <TextField
                   variant="outlined"
                   name="month"

@@ -32,6 +32,9 @@ import {
 
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    zIndex: '1 !important',
+  },
   drawer: {
     position: 'fixed',
     top: 80,
@@ -104,6 +107,7 @@ const MobileDrawerNavigation = ({
       open={open}
       onClose={toggleDrawer(false)}
       classes={{
+        root: classes.root,
         paper: classes.drawer,
       }}
     >

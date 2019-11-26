@@ -11,7 +11,7 @@ import {
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import ClearIcon from '@material-ui/icons/Clear';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   photoListItem: {
     paddingLeft: 0,
   },
@@ -20,15 +20,32 @@ const useStyles = makeStyles({
     border: '1px dashed rgb(255, 90, 95)',
   },
   addPhotoBtn: {
-    width: 100,
-    height: 100,
+    width: 65,
+    height: 65,
     border: '1px solid white',
+
+    [theme.breakpoints.up('sm')]: {
+      width: 85,
+      height: 85,
+    },
+
+    [theme.breakpoints.up('md')]: {
+      width: 100,
+      height: 100,
+    },
   },
   fullWidth: {
     width: '100% !important',
   },
   addPhotoIcon: {
+    width: 20,
+    height: 20,
     fill: 'rgb(255, 90, 95)',
+
+    [theme.breakpoints.up('md')]: {
+      width: 25,
+      height: 25,
+    },
   },
   imageWrapperInner: {
     position: 'relative',
@@ -56,15 +73,35 @@ const useStyles = makeStyles({
     height: 'inherit',
   },
   image: {
-    width: 100,
-    height: 100,
+    width: 65,
+    height: 65,
     objectFit: 'cover',
     display: 'block',
     margin: 'auto',
+
+    [theme.breakpoints.up('sm')]: {
+      width: 85,
+      height: 85,
+    },
+
+    [theme.breakpoints.up('md')]: {
+      width: 100,
+      height: 100,
+    },
   },
   progressWrapper: {
-    height: 100,
-    width: 100,
+    width: 65,
+    height: 65,
+
+    [theme.breakpoints.up('sm')]: {
+      width: 85,
+      height: 85,
+    },
+
+    [theme.breakpoints.up('md')]: {
+      width: 100,
+      height: 100,
+    },
   },
   fullWidthProgressWrapper: {
     width: '100%',
@@ -74,7 +111,7 @@ const useStyles = makeStyles({
     width: '20px !important',
     height: '20px !important',
   },
-});
+}));
 
 const ImageUploader = ({
   image,

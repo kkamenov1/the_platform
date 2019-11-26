@@ -31,7 +31,7 @@ const renderModalContent = (page) => {
           />
           <ForgotPasswordForm />
         </>
-      )
+      );
     case POST_SIGN_UP:
       return <PostSignUp />;
     default:

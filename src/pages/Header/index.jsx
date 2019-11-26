@@ -68,7 +68,6 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   mobileNavOpen: {
-    zIndex: 9999,
     backgroundColor: theme.palette.common.white,
   },
   navBtn: {
