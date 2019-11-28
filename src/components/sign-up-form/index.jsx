@@ -20,9 +20,8 @@ import SocialLoginButtons from '../social-login-buttons';
 import {
   LabelDivider,
   LinkStyledButton,
-  CircularProgressInButton,
   FormError,
-  SimpleButton,
+  LoadingButton,
 } from '../../core/components';
 import { toggleAuthModal } from '../../modals/auth/actions';
 
@@ -243,14 +242,14 @@ const SignUpForm = ({ firebase }) => {
         )}
 
         <FormControl fullWidth className={classes.formControl}>
-          <SimpleButton
+          <LoadingButton
             variant="contained"
             color="primary"
             onClick={onSubmit}
-          >
-            Sign up
-            <CircularProgressInButton loading={loading} />
-          </SimpleButton>
+            size="large"
+            label="Sign up"
+            loading={loading}
+          />
         </FormControl>
 
       </form>

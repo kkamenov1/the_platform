@@ -15,9 +15,8 @@ import { withFirebase } from '../../core/lib/Firebase';
 import {
   LabelDivider,
   LinkStyledButton,
-  CircularProgressInButton,
   FormError,
-  SimpleButton,
+  LoadingButton,
 } from '../../core/components';
 import SignUpLink from '../sign-up-link';
 import { FORGOT_PASSWORD } from '../../constants/authModalPages';
@@ -148,14 +147,14 @@ const SignInForm = ({ firebase }) => {
           </Typography>
 
           <FormControl fullWidth className={classes.formControl}>
-            <SimpleButton
+            <LoadingButton
               variant="contained"
               color="primary"
               onClick={onSubmit}
-            >
-              Log in
-              <CircularProgressInButton loading={loading} />
-            </SimpleButton>
+              size="large"
+              label="Log in"
+              loading={loading}
+            />
           </FormControl>
 
           <Typography align="center" component="div">

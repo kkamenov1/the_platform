@@ -107,7 +107,6 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
   },
   progress: {
-    color: theme.palette.primary.main,
     width: '20px !important',
     height: '20px !important',
   },
@@ -146,7 +145,7 @@ const ImageUploader = ({
               [classes.fullWidth]: fullWidth,
             })}
           >
-            <CircularProgress className={classes.progress} />
+            <CircularProgress className={classes.progress} color="primary" />
           </Grid>
         </div>
       ) : (

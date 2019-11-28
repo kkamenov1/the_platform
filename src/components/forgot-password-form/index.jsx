@@ -7,7 +7,6 @@ import {
   Typography,
   InputAdornment,
   Grid,
-  Button,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
@@ -16,7 +15,7 @@ import { withFirebase } from '../../core/lib/Firebase';
 import {
   LinkStyledButton,
   FormError,
-  CircularProgressInButton,
+  LoadingButton,
 } from '../../core/components';
 import { toggleAuthModal } from '../../modals/auth/actions';
 import { SIGN_IN } from '../../constants/authModalPages';
@@ -120,15 +119,14 @@ const ForgotPasswordForm = ({ firebase }) => {
         </Grid>
 
         <Grid item>
-          <Button
+          <LoadingButton
             size="large"
             variant="contained"
             color="primary"
             onClick={onSubmit}
-          >
-            Send reset link
-            <CircularProgressInButton loading={loading} />
-          </Button>
+            label="Send reset link"
+            loading={loading}
+          />
         </Grid>
       </Grid>
 
