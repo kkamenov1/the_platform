@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   separatorOuter: {
     margin: '16px 0',
   },
@@ -15,11 +15,11 @@ const useStyles = makeStyles({
     position: 'relative',
   },
   textInner: {
-    color: 'rgb(118, 118, 118)',
+    color: theme.palette.text.secondary,
     margin: 0,
 
     '&:before': {
-      border: '.5px solid #e4e4e4',
+      border: `.5px solid ${theme.palette.grey['300']}`,
       content: '""',
       position: 'absolute',
       top: '50%',
@@ -28,7 +28,7 @@ const useStyles = makeStyles({
     },
 
     '&:after': {
-      border: '.5px solid #e4e4e4',
+      border: `.5px solid ${theme.palette.grey['300']}`,
       content: '""',
       position: 'absolute',
       top: '50%',
@@ -36,7 +36,7 @@ const useStyles = makeStyles({
       width: 5000,
     },
   },
-});
+}));
 
 
 const LabelDivider = ({ label }) => {

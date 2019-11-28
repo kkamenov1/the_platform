@@ -45,10 +45,10 @@ const useStyles = makeStyles((theme) => ({
   },
   text: {
     verticalAlign: 'middle',
-    color: 'rgb(72, 72, 72)',
+    color: theme.palette.text.primary,
   },
   loginText: {
-    fontWeight: 800,
+    fontWeight: theme.typography.fontWeightBold,
   },
   bottomDivider: {
     margin: '16px 0',

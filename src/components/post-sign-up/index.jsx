@@ -3,10 +3,10 @@ import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { ReactComponent as ExerciseIcon } from '../../svg/exercise.svg';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   heading: {
     marginBottom: 20,
-    fontWeight: 600,
+    fontWeight: theme.typography.fontWeightMedium,
   },
 
   icon: {
@@ -15,11 +15,11 @@ const useStyles = makeStyles({
   },
 
   infoText: {
-    fontSize: 14,
-    fontWeight: 500,
+    fontSize: theme.typography.pxToRem(theme.typography.fontSize),
+    fontWeight: theme.typography.fontWeightMedium,
     marginBottom: 20,
   },
-});
+}));
 
 const PostSignUp = () => {
   const classes = useStyles();

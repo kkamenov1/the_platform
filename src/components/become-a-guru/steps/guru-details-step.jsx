@@ -22,7 +22,7 @@ import {
 import sports from '../../../constants/sports';
 import { KILOBYTE, FILE_MEGABYTES } from '../../../constants/files';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   vspace: {
     marginTop: 10,
   },
@@ -31,9 +31,9 @@ const useStyles = makeStyles({
     marginBottom: 4,
   },
   note: {
-    fontSize: 10,
+    fontSize: theme.typography.pxToRem(10),
   },
-});
+}));
 
 const GuruDetailsStep = ({ firebase }) => {
   const classes = useStyles();

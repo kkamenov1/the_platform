@@ -11,7 +11,7 @@ import {
   DASHBOARD,
 } from '../../constants/routes';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   menu: {
     width: 280,
   },
@@ -20,9 +20,9 @@ const useStyles = makeStyles({
     padding: 0,
   },
   item: {
-    color: 'rgb(118, 118, 118)',
-    fontWeight: 500,
-    fontSize: 14,
+    color: theme.palette.text.secondary,
+    fontWeight: theme.typography.fontWeightMedium,
+    fontSize: theme.typography.pxToRem(theme.typography.fontSize),
     textDecoration: 'none',
     textTransform: 'none',
     minWidth: 0,
@@ -31,7 +31,7 @@ const useStyles = makeStyles({
     width: '100%',
     textAlign: 'left',
   },
-});
+}));
 
 const MenuDropDown = ({ onClose, anchorEl, firebase }) => {
   const classes = useStyles();
@@ -57,12 +57,12 @@ const MenuDropDown = ({ onClose, anchorEl, firebase }) => {
       getContentAnchorEl={null}
     >
       <MenuItem className={classes.menuItem}>
-        <Link to={PROFILE} className={classes.item}>Profile</Link>
+        <Button component={Link} to={PROFILE} className={classes.item}>Profile</Button>
       </MenuItem>
       <Divider />
 
       <MenuItem className={classes.menuItem}>
-        <Link to={DASHBOARD} className={classes.item}>Dashboard</Link>
+        <Button component={Link} to={DASHBOARD} className={classes.item}>Dashboard</Button>
       </MenuItem>
       <Divider />
 

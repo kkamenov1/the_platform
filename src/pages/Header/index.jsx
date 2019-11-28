@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
     height: 'inherit',
 
     '&:hover': {
-      borderBottom: '2px solid white',
+      borderBottom: `2px solid ${theme.palette.common.white}`,
     },
   },
   mobileNavOpen: {
@@ -103,7 +103,7 @@ const useStyles = makeStyles((theme) => ({
   },
   orangeLogo: {
     '& path': {
-      fill: 'rgb(255, 90, 95)',
+      fill: theme.palette.secondary.light,
     },
   },
 }));

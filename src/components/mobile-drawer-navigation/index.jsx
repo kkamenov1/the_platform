@@ -51,8 +51,8 @@ const useStyles = makeStyles((theme) => ({
   navLink: {
     width: '100%',
     display: 'block',
-    fontSize: 18,
-    color: 'rgb(72, 72, 72)',
+    fontSize: theme.typography.pxToRem(18),
+    color: theme.palette.text.primary,
     textDecoration: 'none',
   },
   navBtn: {
@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
     margin: '12px 0',
   },
   infoText: {
-    fontSize: 13,
+    fontSize: theme.typography.pxToRem(theme.typography.fontSize),
     padding: '10px 80px 0 0',
   },
   iconWrapper: {

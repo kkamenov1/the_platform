@@ -30,7 +30,7 @@ import { withFirebase } from '../../core/lib/Firebase';
 const useStyles = makeStyles((theme) => ({
   left: {
     display: 'none',
-    backgroundImage: 'url("https://res.cloudinary.com/dl766ebzy/image/upload/b_rgb:ee5454,e_colorize:50,o_50/v1571747941/pexels-photo-260352_pjtnsi.jpg")',
+    background: 'linear-gradient(to bottom, #4b79a1, #283e51);',
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
 
@@ -42,21 +42,14 @@ const useStyles = makeStyles((theme) => ({
     position: 'relative',
     overflow: 'hidden',
   },
-  stepper: {
-    backgroundColor: 'transparent',
-  },
   stepLabel: {
-    color: 'rgba(0, 0, 0, 0.60)',
-  },
-  activeLabel: {
     color: `${theme.palette.common.white} !important`,
   },
-  iconContainer: {
-    '& > [class *= "active"]': {
-      color: '#fb2525',
-    },
-    '& > [class *= "completed"]': {
-      color: '#fb2525',
+  stepper: {
+    backgroundColor: 'transparent',
+
+    '& div:nth-child(2n) > span': {
+      minHeight: 50,
     },
   },
   rightPanelInner: {
@@ -77,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'none',
     padding: '15px 32px',
     width: '100%',
-    backgroundColor: '#f0f0f0',
+    backgroundColor: theme.palette.grey['100'],
 
     [theme.breakpoints.up('md')]: {
       display: 'flex',
@@ -292,8 +285,8 @@ const BecomeAGuru = ({ firebase }) => {
             <Step key={label}>
               <StepLabel classes={{
                 label: classes.stepLabel,
-                active: classes.activeLabel,
-                iconContainer: classes.iconContainer,
+                active: classes.stepLabel,
+                completed: classes.stepLabel,
               }}
               >
                 {label}

@@ -20,7 +20,7 @@ import {
   setFormValues,
 } from '../../../modals/become-guru/actions';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   input: {
     width: 30,
   },
@@ -32,11 +32,11 @@ const useStyles = makeStyles({
   },
   thItem: {
     fontWeight: 600,
-    color: '#697b87',
+    color: theme.palette.grey['700'],
     lineHeight: '50px',
   },
   left: {
-    backgroundColor: '#FAFAFA',
+    backgroundColor: theme.palette.grey['50'],
     paddingLeft: 10,
   },
   leftItem: {
@@ -46,18 +46,18 @@ const useStyles = makeStyles({
     paddingLeft: 10,
   },
   methodsContainer: {
-    borderTop: '1px solid rgb(128, 128, 128)',
+    borderTop: `1px solid ${theme.palette.grey['700']}`,
   },
   vspace: {
     marginTop: 10,
   },
   note: {
-    fontSize: 10,
+    fontSize: theme.typography.pxToRem(10),
   },
   inputIcon: {
     marginRight: 10,
   },
-});
+}));
 
 const RatesStep = () => {
   const classes = useStyles();

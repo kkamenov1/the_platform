@@ -9,7 +9,7 @@ import classnames from 'classnames';
 import { makeStyles } from '@material-ui/core/styles';
 import AddAPhotoIcon from '@material-ui/icons/AddAPhoto';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   uploadPhotoIconWrapper: {
     height: 46,
     width: 46,
@@ -29,7 +29,7 @@ const useStyles = makeStyles({
     display: 'block',
   },
   uploadPhotoText: {
-    fontSize: 14,
+    fontSize: theme.typography.pxToRem(theme.typography.fontSize),
     textTransform: 'none',
     color: 'rgb(108, 126, 137)',
     fontWeight: 500,
@@ -52,7 +52,7 @@ const useStyles = makeStyles({
     color: 'rgb(255, 90, 95)',
     display: 'block',
   },
-});
+}));
 
 const UploadAPhoto = ({
   onPhotoChange,

@@ -3,17 +3,17 @@ import PropTypes from 'prop-types';
 import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
+  heading: {
+    color: theme.palette.text.primary,
+    fontWeight: theme.typography.fontWeightMedium,
+  },
   caption: {
     marginBottom: 20,
-    color: 'rgb(72, 72, 72)',
-    fontWeight: 100,
+    color: theme.palette.text.secondary,
+    fontWeight: theme.typography.fontWeightLight,
   },
-  heading: {
-    color: 'rgb(72, 72, 72)',
-    fontWeight: 500,
-  },
-});
+}));
 
 const ModalHeader = ({ heading, caption }) => {
   const classes = useStyles();

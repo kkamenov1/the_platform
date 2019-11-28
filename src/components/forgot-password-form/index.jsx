@@ -7,6 +7,7 @@ import {
   Typography,
   InputAdornment,
   Grid,
+  Button,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
@@ -14,14 +15,13 @@ import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import { withFirebase } from '../../core/lib/Firebase';
 import {
   LinkStyledButton,
-  SimpleButton,
   FormError,
   CircularProgressInButton,
 } from '../../core/components';
 import { toggleAuthModal } from '../../modals/auth/actions';
 import { SIGN_IN } from '../../constants/authModalPages';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: '8px 0',
 
@@ -35,12 +35,12 @@ const useStyles = makeStyles({
     },
   },
   signupText: {
-    fontWeight: 800,
+    fontWeight: theme.typography.fontWeightBold,
   },
   btnContainer: {
     marginTop: 20,
   },
-});
+}));
 
 const ForgotPasswordForm = ({ firebase }) => {
   const classes = useStyles();
@@ -101,8 +101,13 @@ const ForgotPasswordForm = ({ firebase }) => {
         {error && error.message}
       </FormError>
 
-      <Grid container className={classes.btnContainer}>
-        <Grid item xs={6}>
+      <Grid
+        container
+        className={classes.btnContainer}
+        justify="space-between"
+        alignItems="center"
+      >
+        <Grid item>
           <LinkStyledButton onClick={openSignInModal}>
             <KeyboardArrowLeftIcon />
             <Typography
@@ -114,8 +119,8 @@ const ForgotPasswordForm = ({ firebase }) => {
           </LinkStyledButton>
         </Grid>
 
-        <Grid item xs={6}>
-          <SimpleButton
+        <Grid item>
+          <Button
             size="large"
             variant="contained"
             color="primary"
@@ -123,7 +128,7 @@ const ForgotPasswordForm = ({ firebase }) => {
           >
             Send reset link
             <CircularProgressInButton loading={loading} />
-          </SimpleButton>
+          </Button>
         </Grid>
       </Grid>
 

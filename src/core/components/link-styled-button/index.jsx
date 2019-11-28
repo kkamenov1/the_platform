@@ -3,17 +3,17 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import { Button } from '@material-ui/core';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   button: {
     textTransform: 'none',
-    color: '#008489',
+    color: theme.palette.primary.dark,
 
     '&:hover': {
       backgroundColor: 'transparent',
       textDecoration: 'underline',
     },
   },
-});
+}));
 
 const LinkStyledButton = ({ onClick, children }) => {
   const classes = useStyles();

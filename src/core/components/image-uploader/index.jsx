@@ -8,7 +8,7 @@ import {
   Button,
   CircularProgress,
 } from '@material-ui/core';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
+import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import ClearIcon from '@material-ui/icons/Clear';
 
 const useStyles = makeStyles((theme) => ({
@@ -16,13 +16,13 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: 0,
   },
   imageWrapper: {
-    background: '#f4f4f4',
-    border: '1px dashed rgb(255, 90, 95)',
+    backgroundColor: theme.palette.grey['200'],
+    border: `1px dashed ${theme.palette.primary.main}`,
   },
   addPhotoBtn: {
     width: 65,
     height: 65,
-    border: '1px solid white',
+    border: `1px solid ${theme.palette.common.white}`,
 
     [theme.breakpoints.up('sm')]: {
       width: 85,
@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
   addPhotoIcon: {
     width: 20,
     height: 20,
-    fill: 'rgb(255, 90, 95)',
+    fill: theme.palette.primary.main,
 
     [theme.breakpoints.up('md')]: {
       width: 25,
@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   deleteImageBtn: {
-    backgroundColor: 'rgb(255, 90, 95)',
+    backgroundColor: theme.palette.primary.main,
     position: 'absolute',
     top: -10,
     right: -10,
@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'none',
 
     '&:hover': {
-      backgroundColor: 'rgb(255, 90, 95)',
+      backgroundColor: theme.palette.primary.main,
     },
   },
   deleteIcon: {
@@ -107,7 +107,7 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
   },
   progress: {
-    color: 'rgb(255, 90, 95)',
+    color: theme.palette.primary.main,
     width: '20px !important',
     height: '20px !important',
   },
@@ -168,7 +168,7 @@ const ImageUploader = ({
                 component="span"
                 disableRipple
               >
-                <AddCircleIcon className={classes.addPhotoIcon} />
+                <PhotoCamera className={classes.addPhotoIcon} />
               </Button>
             </div>
           </label>
@@ -180,7 +180,7 @@ const ImageUploader = ({
 
 ImageUploader.defaultProps = {
   fullWidth: false,
-}
+};
 
 ImageUploader.propTypes = {
   image: PropTypes.shape({

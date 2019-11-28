@@ -1,11 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Typography } from '@material-ui/core';
-import {
-  InputWithLabel,
-  SimpleSelect,
-  SimpleButton,
-} from '../../core/components';
+import { Typography, Button, FormControl } from '@material-ui/core';
+import { InputWithLabel, SimpleSelect } from '../../core/components';
 import sports from '../../constants/sports';
 
 const useStyles = makeStyles((theme) => ({
@@ -22,10 +18,10 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   innerModalContainer: {
-    borderRadius: 4,
+    borderRadius: theme.shape.borderRadius,
     width: '100%',
     padding: 24,
-    boxShadow: '0 16px 40px rgba(0,0,0,0.12)',
+    boxShadow: theme.shadows['16'],
     backgroundColor: theme.palette.common.white,
 
     [theme.breakpoints.up('md')]: {
@@ -35,13 +31,12 @@ const useStyles = makeStyles((theme) => ({
   },
   modalHeader: {
     margin: 0,
-    color: 'rgb(72, 72, 72)',
+    color: theme.palette.text.primary,
   },
   form: {
     marginTop: 15,
   },
   searchBtnWrapper: {
-    textAlign: 'right',
     marginTop: 25,
   },
 }));
@@ -76,15 +71,15 @@ const SearchTrainersWindow = () => {
               onChange={onSportSelectChange}
               selectedValue={value}
             />
-            <div className={classes.searchBtnWrapper}>
-              <SimpleButton
+            <FormControl className={classes.searchBtnWrapper} fullWidth>
+              <Button
                 size="large"
                 variant="contained"
                 color="primary"
               >
                 Search
-              </SimpleButton>
-            </div>
+              </Button>
+            </FormControl>
           </form>
         </div>
       </div>

@@ -6,15 +6,15 @@ import { toggleAuthModal } from '../../modals/auth/actions';
 import { SIGN_UP } from '../../constants/authModalPages';
 import { LinkStyledButton } from '../../core/components';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   text: {
     verticalAlign: 'middle',
-    color: 'rgb(72, 72, 72)',
+    color: theme.palette.text.primary,
   },
   signupText: {
-    fontWeight: 800,
+    fontWeight: theme.typography.fontWeightBold,
   },
-});
+}));
 
 const SignUpLink = () => {
   const classes = useStyles();

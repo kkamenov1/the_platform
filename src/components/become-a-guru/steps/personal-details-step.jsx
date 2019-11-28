@@ -42,8 +42,6 @@ const useStyles = makeStyles({
   chip: {
     margin: '0 2px',
     height: 19,
-    backgroundColor: 'rgb(255, 90, 95)',
-    color: 'white',
   },
   vspace: {
     marginTop: 10,
@@ -209,7 +207,12 @@ const PersonalDetailsStep = ({ firebase }) => {
               renderValue={(selected) => (
                 <div className={classes.chips}>
                   {selected.map((value) => (
-                    <Chip key={value} label={value} className={classes.chip} />
+                    <Chip
+                      key={value}
+                      label={value}
+                      className={classes.chip}
+                      color="primary"
+                    />
                   ))}
                 </div>
               )}
