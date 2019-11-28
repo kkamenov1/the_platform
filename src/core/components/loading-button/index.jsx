@@ -15,6 +15,10 @@ const useStyles = makeStyles((theme) => ({
     transition: ['padding-right'],
     transitionDuration: 300,
   },
+  btnLabel: {
+    position: 'relative',
+    width: 'auto',
+  },
   loadingBtn: {
     paddingRight: 45,
     transition: ['padding-right'],
@@ -27,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     opacity: 0,
     position: 'absolute',
     top: '50%',
-    right: 15,
+    right: -30,
     transform: 'translate(0, -50%)',
     transition: ['opacity', 'z-index'],
     transitionDuration: 300,
@@ -51,6 +55,9 @@ const LoadingButton = ({ label, loading, ...other }) => {
       className={classnames(classes.btn, {
         [classes.loadingBtn]: loading,
       })}
+      classes={{
+        label: classes.btnLabel,
+      }}
       {...other}
     >
       {label}
