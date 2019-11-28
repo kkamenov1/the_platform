@@ -1,7 +1,9 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTheme, makeStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
+import { Link } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -13,7 +15,7 @@ import {
 import { KeyboardArrowDown } from '@material-ui/icons';
 
 import { ReactComponent as Logo } from '../../svg/logo.svg';
-import { NavigationRoutes } from '../../constants/routes';
+import { NavigationRoutes, ADMIN } from '../../constants/routes';
 import MobileDrawerNavigation from '../../components/mobile-drawer-navigation';
 import AvatarNavButton from '../../components/avatar-nav-button';
 import { toggleMobileNavigation } from './actions';
@@ -39,9 +41,12 @@ const useStyles = makeStyles((theme) => ({
     position: 'fixed',
     top: 0,
     left: 0,
-    backgroundColor: 'transparent',
+    backgroundColor: theme.palette.common.black,
     boxShadow: 'none',
     height: 80,
+  },
+  headerTransparent: {
+    backgroundColor: 'transparent',
   },
   toolBar: {
     height: 'inherit',
@@ -108,7 +113,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Header = () => {
+const Header = ({ isTransparent }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -150,6 +155,7 @@ const Header = () => {
           classes.appBar,
           {
             [classes.mobileNavOpen]: isMobileNavigationOpen,
+            [classes.headerTransparent]: isTransparent,
           },
         )}
       >
@@ -190,6 +196,20 @@ const Header = () => {
                   alignItems="center"
                   className={classes.nav}
                 >
+                  {/* ADMIN */}
+                  {auth && auth.isAdmin && (
+                    <Grid item className={classes.navBtnWrapper}>
+                      <Button
+                        className={classes.navBtn}
+                        disableRipple
+                        component={Link}
+                        to={ADMIN}
+                      >
+                        Admin
+                      </Button>
+                    </Grid>
+                  )}
+
                   {/* BECOME GURU */}
                   <Grid item className={classes.navBtnWrapper}>
                     <Button
@@ -254,5 +274,10 @@ const Header = () => {
     </div>
   );
 };
+
+Header.propTypes = {
+  isTransparent: PropTypes.bool.isRequired,
+};
+
 
 export default Header;

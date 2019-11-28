@@ -15,6 +15,7 @@ import {
 } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import {
+  ADMIN,
   LANDING,
   PROFILE,
   DASHBOARD,
@@ -127,6 +128,18 @@ const MobileDrawerNavigation = ({
 
           {auth && (
             <>
+              {auth.isAdmin && (
+                <ListItem className={classes.listItem}>
+                  <NavigationLink
+                    component={Link}
+                    to={ADMIN}
+                    className={classes.navLink}
+                  >
+                    Admin
+                  </NavigationLink>
+                </ListItem>
+              )}
+
               <ListItem className={classes.listItem}>
                 <NavigationLink
                   component={Link}

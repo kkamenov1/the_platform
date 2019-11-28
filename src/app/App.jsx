@@ -1,19 +1,27 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { Route, Switch } from 'react-router-dom';
+import { ConnectedRouter } from 'connected-react-router';
 import { CssBaseline } from '@material-ui/core';
+import { history } from '../store';
 import * as routes from '../constants/routes';
 import { withFirebase } from '../core/lib/Firebase';
 import { setAuthUser } from './actions';
 
-import Header from '../pages/Header';
-import Landing from '../pages/Landing';
+import {
+  Header,
+  Landing,
+  Admin,
+} from '../pages';
 import BecomeGuruModal from '../modals/become-guru';
 import AuthModal from '../modals/auth';
 
 const App = ({ firebase }) => {
   const dispatch = useDispatch();
+  const pathname = useSelector((state) => state.router.location.pathname);
+  const isLandingPage = pathname === '/';
+
 
   useEffect(() => {
     firebase
@@ -28,16 +36,19 @@ const App = ({ firebase }) => {
   });
 
   return (
-    <Router>
-      <div>
-        <CssBaseline />
-        <Header />
-        <AuthModal />
-        <BecomeGuruModal />
+    <ConnectedRouter history={history}>
+      <CssBaseline />
+      <Header isTransparent={isLandingPage} />
+      <AuthModal />
+      <BecomeGuruModal />
 
-        <Route exact path={routes.LANDING} component={Landing} />
-      </div>
-    </Router>
+      <main style={{ paddingTop: isLandingPage ? 0 : 80 }}>
+        <Switch>
+          <Route exact path={routes.LANDING} component={Landing} />
+          <Route path={routes.ADMIN} component={Admin} />
+        </Switch>
+      </main>
+    </ConnectedRouter>
   );
 };
 
