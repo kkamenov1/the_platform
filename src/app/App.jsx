@@ -38,7 +38,7 @@ const App = ({ firebase }) => {
   return (
     <ConnectedRouter history={history}>
       <CssBaseline />
-      <Header isTransparent={isLandingPage} />
+      <Header isLandingPage={isLandingPage} />
       <AuthModal />
       <BecomeGuruModal />
 

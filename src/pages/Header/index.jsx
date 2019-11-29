@@ -15,7 +15,7 @@ import {
 import { KeyboardArrowDown } from '@material-ui/icons';
 
 import { ReactComponent as Logo } from '../../svg/logo.svg';
-import { NavigationRoutes, ADMIN } from '../../constants/routes';
+import { NavigationRoutes, ADMIN, LANDING } from '../../constants/routes';
 import MobileDrawerNavigation from '../../components/mobile-drawer-navigation';
 import AvatarNavButton from '../../components/avatar-nav-button';
 import { toggleMobileNavigation } from './actions';
@@ -113,7 +113,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Header = ({ isTransparent }) => {
+const Header = ({ isLandingPage }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -155,7 +155,7 @@ const Header = ({ isTransparent }) => {
           classes.appBar,
           {
             [classes.mobileNavOpen]: isMobileNavigationOpen,
-            [classes.headerTransparent]: isTransparent,
+            [classes.headerTransparent]: isLandingPage,
           },
         )}
       >
@@ -169,10 +169,12 @@ const Header = ({ isTransparent }) => {
                 disableRipple
               >
                 <div className={classes.logoWrapper}>
-                  <Logo className={classnames(
-                    classes.logo, { [classes.orangeLogo]: isMobileNavigationOpen },
-                  )}
-                  />
+                  <Link to={LANDING}>
+                    <Logo className={classnames(
+                      classes.logo, { [classes.orangeLogo]: isMobileNavigationOpen },
+                    )}
+                    />
+                  </Link>
                 </div>
                 <div className={classnames(classes.logoWrapper, classes.arrowWrapper)}>
                   <KeyboardArrowDown className={classnames(
@@ -196,6 +198,18 @@ const Header = ({ isTransparent }) => {
                   alignItems="center"
                   className={classes.nav}
                 >
+                  {!isLandingPage && (
+                    <Grid item className={classes.navBtnWrapper}>
+                      <Button
+                        className={classes.navBtn}
+                        disableRipple
+                        component={Link}
+                        to={LANDING}
+                      >
+                        Home
+                      </Button>
+                    </Grid>
+                  )}
                   {/* ADMIN */}
                   {auth && auth.isAdmin && (
                     <Grid item className={classes.navBtnWrapper}>
@@ -276,7 +290,7 @@ const Header = ({ isTransparent }) => {
 };
 
 Header.propTypes = {
-  isTransparent: PropTypes.bool.isRequired,
+  isLandingPage: PropTypes.bool.isRequired,
 };
 
 
