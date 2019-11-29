@@ -5,7 +5,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
 import {
   Drawer,
-  Link as NavigationLink,
   List,
   ListItem,
   Divider,
@@ -115,13 +114,13 @@ const MobileDrawerNavigation = ({
       <nav>
         <List>
           <ListItem className={classes.listItem}>
-            <NavigationLink
-              component={Link}
+            <Link
               to={LANDING}
               className={classes.navLink}
+              onClick={toggleDrawer(false)}
             >
               Home
-            </NavigationLink>
+            </Link>
           </ListItem>
 
           <Divider component="li" className={classes.divider} />
@@ -130,21 +129,21 @@ const MobileDrawerNavigation = ({
             <>
               {auth.isAdmin && (
                 <ListItem className={classes.listItem}>
-                  <NavigationLink
-                    component={Link}
+                  <Link
                     to={ADMIN}
                     className={classes.navLink}
+                    onClick={toggleDrawer(false)}
                   >
                     Admin
-                  </NavigationLink>
+                  </Link>
                 </ListItem>
               )}
 
               <ListItem className={classes.listItem}>
-                <NavigationLink
-                  component={Link}
+                <Link
                   to={PROFILE}
                   className={classes.navLink}
+                  onClick={toggleDrawer(false)}
                 >
                   <Grid container justify="space-between" alignItems="center">
                     <Grid item>
@@ -157,14 +156,14 @@ const MobileDrawerNavigation = ({
                       <ProfileIcon className={classes.icon} />
                     </Grid>
                   </Grid>
-                </NavigationLink>
+                </Link>
               </ListItem>
 
               <ListItem className={classes.listItem}>
-                <NavigationLink
-                  component={Link}
+                <Link
                   to={DASHBOARD}
                   className={classes.navLink}
+                  onClick={toggleDrawer(false)}
                 >
                   <Grid container justify="space-between" alignItems="center">
                     <Grid item>
@@ -177,7 +176,7 @@ const MobileDrawerNavigation = ({
                       <DashboardIcon className={classes.icon} />
                     </Grid>
                   </Grid>
-                </NavigationLink>
+                </Link>
               </ListItem>
 
               <Divider component="li" className={classes.divider} />

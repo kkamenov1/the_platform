@@ -6,6 +6,7 @@ import header from './pages/Header/reducer';
 import app from './app/reducer';
 import becomeGuruModal from './modals/become-guru/reducer';
 import authModal from './modals/auth/reducer';
+import admin from './pages/Admin/reducer';
 
 const createRootReducer = (history) => combineReducers({
   router: connectRouter(history),
@@ -13,6 +14,7 @@ const createRootReducer = (history) => combineReducers({
   header,
   becomeGuruModal,
   authModal,
+  admin,
 });
 
 export default createRootReducer;

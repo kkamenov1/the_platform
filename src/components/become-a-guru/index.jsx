@@ -105,6 +105,7 @@ const BecomeAGuru = ({ firebase }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const steps = getSteps();
+  const auth = useSelector((state) => state.app.auth);
   const becomeGuruModal = useSelector((state) => state.becomeGuruModal);
   const {
     activeStep,
@@ -229,6 +230,8 @@ const BecomeAGuru = ({ firebase }) => {
     firebase.application(applicationUID).update({
       methods: selectedMethods,
       duration,
+      userID: auth.uid,
+      displayName: auth.displayName,
     }).then(() => {
       dispatch(setRatesErrors({}));
     });
