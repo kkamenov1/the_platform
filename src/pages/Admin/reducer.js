@@ -1,7 +1,12 @@
-import { SET_APPLICATIONS, TOGGLE_APPLICATION_VISIBILITY } from './actions';
+import {
+  SET_APPLICATIONS,
+  TOGGLE_APPLICATION_VISIBILITY,
+  SET_APPLICATIONS_LOADING,
+} from './actions';
 
 export const defaultStore = {
   applications: {},
+  loading: false,
 };
 
 export default (state = defaultStore, action) => {
@@ -22,6 +27,12 @@ export default (state = defaultStore, action) => {
             open: action.open,
           },
         },
+      };
+
+    case SET_APPLICATIONS_LOADING:
+      return {
+        ...state,
+        loading: action.loading,
       };
 
     default:

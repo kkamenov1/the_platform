@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { push } from 'connected-react-router';
 import PropTypes from 'prop-types';
 import {
   Typography, AppBar, Tabs, Tab,
@@ -40,7 +42,15 @@ const a11yProps = (index) => ({
 });
 
 const Admin = () => {
+  const dispatch = useDispatch();
+  const auth = useSelector((state) => state.app.auth);
   const [value, setValue] = React.useState(0);
+
+  useEffect(() => {
+    if (!auth || !auth.isAdmin) {
+      dispatch(push('/'));
+    }
+  });
 
   const handleChange = (event, newValue) => {
     setValue(newValue);

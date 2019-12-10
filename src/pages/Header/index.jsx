@@ -135,7 +135,11 @@ const Header = ({ isLandingPage }) => {
   const [, ...navRoutesWithoutHome] = NavigationRoutes;
 
   const openBecomeGuruModal = () => {
-    dispatch(toggleBecomeGuruModal(true));
+    if (auth) {
+      dispatch(toggleBecomeGuruModal(true));
+    } else {
+      dispatch(toggleAuthModal(true, SIGN_IN));
+    }
   };
 
   const openSignInModal = () => {
