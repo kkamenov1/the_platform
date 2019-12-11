@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
@@ -8,8 +8,16 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
-import { setApplications, toggleApplicationVisibility, setApplicationsLoading } from '../actions';
+import Pagination from './pagination';
+import {
+  setApplications,
+  toggleApplicationVisibility,
+  setApplicationsLoading,
+  setLimit,
+} from '../actions';
 import { withFirebase } from '../../../core/lib/Firebase';
+import { addOnPosition } from '../../../core/utils';
+import { APPLICATIONS_PER_PAGE } from '../../../constants/adminPanel';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -58,6 +66,13 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'center',
     padding: '16px 0',
   },
+  paginationWrapper: {
+    width: '95%',
+    margin: 'auto',
+  },
+  loadingWrapper: {
+    marginBottom: 15,
+  },
 }));
 
 const Applications = ({ firebase }) => {
@@ -65,20 +80,44 @@ const Applications = ({ firebase }) => {
   const dispatch = useDispatch();
   const applications = useSelector((state) => state.admin.applications);
   const loading = useSelector((state) => state.admin.loading);
+  const limit = useSelector((state) => state.admin.limit);
+  const [isFinal, setIsFinal] = useState(false);
 
-  useEffect(() => {
+  const getApplications = useCallback(() => {
     dispatch(setApplicationsLoading(true));
 
-    firebase.applications()
-      .on('value', (snapshot) => {
-        dispatch(setApplicationsLoading(true));
-        dispatch(setApplications(snapshot.val()));
+    firebase
+      .applications()
+      .orderByChild('displayName')
+      .limitToLast(limit)
+      .once('value')
+      .then((snapshot) => {
+        const allApplications = [];
+        snapshot.forEach((child) => {
+          allApplications.push({
+            ...child.val(),
+            applicationUID: child.key,
+          });
+        });
+        dispatch(setApplications(allApplications));
         dispatch(setApplicationsLoading(false));
-      }, () => firebase.applications().off());
-  }, [firebase, dispatch]);
 
-  const toggleApplicationExpand = (uid, open) => {
-    dispatch(toggleApplicationVisibility(uid, open));
+        if (allApplications.length % APPLICATIONS_PER_PAGE !== 0) {
+          setIsFinal(true);
+        }
+      });
+  }, [firebase, dispatch, limit]);
+
+  useEffect(() => {
+    getApplications();
+  }, [getApplications]);
+
+  const toggleApplicationExpand = (index, open) => {
+    dispatch(toggleApplicationVisibility([...addOnPosition(
+      index,
+      { ...applications[index], open },
+      applications,
+    )]));
   };
 
   const renderApplicationInfo = (application, prop) => {
@@ -157,8 +196,8 @@ const Applications = ({ firebase }) => {
     return <></>;
   };
 
-  const handleApproveApplication = (applicationUID, application) => {
-    const { userID } = application;
+  const handleApproveApplication = (application) => {
+    const { userID, applicationUID } = application;
 
     firebase
       .user(userID)
@@ -172,23 +211,32 @@ const Applications = ({ firebase }) => {
         };
 
         firebase.user(userID).set(newUser).then(() => {
-          firebase.application(applicationUID).set(null);
+          firebase.application(applicationUID).set(null).then(() => {
+            getApplications();
+          });
         });
       });
   };
 
   const handleRejectApplication = (applicationUID) => {
-    firebase.application(applicationUID).set(null);
+    dispatch(setApplicationsLoading(true));
+    firebase.application(applicationUID).set(null).then(() => {
+      getApplications();
+    });
   };
 
-  const renderApplicationControls = (applicationUID, application) => (
+  const handleLoadMore = () => {
+    dispatch(setLimit(limit + APPLICATIONS_PER_PAGE));
+  };
+
+  const renderApplicationControls = (application) => (
     <div className={classes.controlsWrapper}>
       <Button
         color="secondary"
         variant="contained"
         size="large"
         className={classes.rejectBtn}
-        onClick={() => handleRejectApplication(applicationUID)}
+        onClick={() => handleRejectApplication(application.applicationUID)}
       >
         Reject
       </Button>
@@ -196,7 +244,7 @@ const Applications = ({ firebase }) => {
         color="primary"
         variant="contained"
         size="large"
-        onClick={() => handleApproveApplication(applicationUID, application)}
+        onClick={() => handleApproveApplication(application)}
       >
         Approve
       </Button>
@@ -205,44 +253,60 @@ const Applications = ({ firebase }) => {
 
   return (
     <div className={classes.paper}>
-      {loading ? (
-        <Typography align="center" component="div">
-          <CircularProgress size={60} />
-        </Typography>
-      ) : !applications ? (
+      {!applications ? (
         <Typography align="center" component="div">
           <Typography>There are no applications</Typography>
         </Typography>
       ) : (
-        <List>
-          {Object.keys(applications).map((uid) => (
-            <ListItem key={uid} className={classnames(classes.inlineBlock, classes.mainListItem)}>
-              <Grid
-                container
-                alignItems="center"
-                justify="space-between"
-                className={classes.appUID}
-                onClick={() => toggleApplicationExpand(uid, !applications[uid].open)}
+        <>
+          <List>
+            {applications.map((application, index) => (
+              <ListItem
+                key={application.applicationUID}
+                className={classnames(classes.inlineBlock, classes.mainListItem)}
               >
-                <Grid item>
-                  <Typography component="div" variant="h6">{uid}</Typography>
+                <Grid
+                  container
+                  alignItems="center"
+                  justify="space-between"
+                  className={classes.appUID}
+                  onClick={() => toggleApplicationExpand(index, !application.open)}
+                >
+                  <Grid item>
+                    <Typography component="div" variant="h6">{application.displayName}</Typography>
+                  </Grid>
+                  <Grid item>
+                    {application.open ? <ExpandLess /> : <ExpandMore />}
+                  </Grid>
                 </Grid>
-                <Grid item>
-                  {applications[uid].open ? <ExpandLess /> : <ExpandMore />}
-                </Grid>
-              </Grid>
 
-              <Collapse in={applications[uid].open || false} timeout="auto" unmountOnExit>
-                <List className={classes.subList}>
-                  {Object.keys(applications[uid]).map((prop) => (
-                    renderApplicationInfo(applications[uid], prop)
-                  ))}
-                </List>
-                {renderApplicationControls(uid, applications[uid])}
-              </Collapse>
-            </ListItem>
-          ))}
-        </List>
+                <Collapse in={application.open || false} timeout="auto" unmountOnExit>
+                  <List className={classes.subList}>
+                    {Object.keys(application).map((prop) => (
+                      renderApplicationInfo(application, prop)
+                    ))}
+                  </List>
+                  {renderApplicationControls(application)}
+                </Collapse>
+              </ListItem>
+            ))}
+          </List>
+          {loading && (
+            <Typography
+              component="div"
+              className={classes.loadingWrapper}
+              align="center"
+            >
+              <CircularProgress />
+            </Typography>
+          )}
+
+          {!isFinal && (
+            <Typography className={classes.paginationWrapper} align="center">
+              <Pagination onLoadMore={handleLoadMore} />
+            </Typography>
+          )}
+        </>
       )}
     </div>
   );
