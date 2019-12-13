@@ -20,6 +20,8 @@
 .env.test.local
 .env.production
 .env.production.local
+api/config/admin.dev.json
+api/config/admin.prod.json
 
 npm-debug.log*
 yarn-debug.log*
