@@ -6,7 +6,7 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-require('./routes/adminPage')(app);
+require('./routes/admin')(app);
 
 const PORT = process.env.PORT || 3001;
 app.listen(

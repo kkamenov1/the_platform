@@ -2,15 +2,16 @@ import {
   SET_APPLICATIONS,
   TOGGLE_APPLICATION_VISIBILITY,
   SET_APPLICATIONS_LOADING,
-  SET_LIMIT,
+  SET_MAX_PAGE,
+  SET_PAGE_NUMBER,
 } from './actions';
 
-import { APPLICATIONS_PER_PAGE } from '../../constants/adminPanel';
 
 export const defaultStore = {
   applications: [],
   loading: false,
-  limit: APPLICATIONS_PER_PAGE,
+  maxPage: null,
+  pageNumber: 1,
 };
 
 export default (state = defaultStore, action) => {
@@ -33,10 +34,16 @@ export default (state = defaultStore, action) => {
         loading: action.loading,
       };
 
-    case SET_LIMIT:
+    case SET_MAX_PAGE:
       return {
         ...state,
-        limit: action.limit,
+        maxPage: action.maxPage,
+      };
+
+    case SET_PAGE_NUMBER:
+      return {
+        ...state,
+        pageNumber: action.pageNumber,
       };
 
     default:

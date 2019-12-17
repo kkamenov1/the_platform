@@ -1,7 +1,8 @@
 export const SET_APPLICATIONS = 'SET_APPLICATIONS';
 export const TOGGLE_APPLICATION_VISIBILITY = 'TOGGLE_APPLICATION_VISIBILITY';
 export const SET_APPLICATIONS_LOADING = 'SET_APPLICATIONS_LOADING';
-export const SET_LIMIT = 'SET_LIMIT';
+export const SET_MAX_PAGE = 'SET_MAX_PAGE';
+export const SET_PAGE_NUMBER = 'SET_PAGE_NUMBER';
 
 export const setApplications = (applications) => ({
   type: SET_APPLICATIONS,
@@ -18,7 +19,12 @@ export const setApplicationsLoading = (loading) => ({
   loading,
 });
 
-export const setLimit = (limit) => ({
-  type: SET_LIMIT,
-  limit,
+export const setMaxPage = (maxPage) => ({
+  type: SET_MAX_PAGE,
+  maxPage,
+});
+
+export const setPageNumber = (pageNumber) => ({
+  type: SET_PAGE_NUMBER,
+  pageNumber,
 });

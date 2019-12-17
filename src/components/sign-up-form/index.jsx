@@ -105,7 +105,7 @@ const SignUpForm = ({ firebase }) => {
           displayName: `${inputValues.firstName} ${inputValues.lastName}`,
           isGuru: false,
           isAdmin: false,
-        })))
+        }, { merge: true })))
       .then(() => firebase.doSendEmailVerification())
       .then(() => {
         setInputValues(INITIAL_STATE);

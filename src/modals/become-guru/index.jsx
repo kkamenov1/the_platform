@@ -29,7 +29,7 @@ const BecomeGuruModal = ({ firebase }) => {
       });
 
       /* DELETE RECORD IN DB */
-      firebase.application(applicationUID).set(null);
+      firebase.application(applicationUID).delete();
     }
 
     dispatch(toggleBecomeGuruModal(false));

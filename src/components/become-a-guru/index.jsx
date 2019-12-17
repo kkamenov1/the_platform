@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import classnames from 'classnames';
+import UIDGenerator from 'uid-generator';
 import {
   Stepper,
   Step,
@@ -123,6 +124,8 @@ const BecomeAGuru = ({ firebase }) => {
     duration,
   } = becomeGuruModal;
 
+  const uidgen = new UIDGenerator();
+
   const submitPersonalDetailsStep = () => {
     const formErrors = {};
     const filteredImages = (images || [])
@@ -158,7 +161,7 @@ const BecomeAGuru = ({ firebase }) => {
     // application UID and not to create a new one each time a Continue
     // button is clicked
     if (!applicationUID) {
-      const newApplicationUID = firebase.applications().push().key;
+      const newApplicationUID = uidgen.generateSync();
 
       firebase.application(newApplicationUID).set({
         location,

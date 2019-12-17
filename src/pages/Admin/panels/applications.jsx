@@ -1,4 +1,5 @@
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback } from 'react';
+import axios from 'axios';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
@@ -8,15 +9,16 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
-import Pagination from './pagination';
 import {
   setApplications,
   toggleApplicationVisibility,
   setApplicationsLoading,
-  setLimit,
+  setMaxPage,
+  setPageNumber,
 } from '../actions';
 import { withFirebase } from '../../../core/lib/Firebase';
 import { addOnPosition } from '../../../core/utils';
+import { Pagination } from '../../../core/components';
 import { APPLICATIONS_PER_PAGE } from '../../../constants/adminPanel';
 
 
@@ -70,8 +72,8 @@ const useStyles = makeStyles((theme) => ({
     width: '95%',
     margin: 'auto',
   },
-  loadingWrapper: {
-    marginBottom: 15,
+  progress: {
+    marginTop: 16,
   },
 }));
 
@@ -80,37 +82,34 @@ const Applications = ({ firebase }) => {
   const dispatch = useDispatch();
   const applications = useSelector((state) => state.admin.applications);
   const loading = useSelector((state) => state.admin.loading);
-  const limit = useSelector((state) => state.admin.limit);
-  const [isFinal, setIsFinal] = useState(false);
+  const maxPage = useSelector((state) => state.admin.maxPage);
+  const pageNumber = useSelector((state) => state.admin.pageNumber);
 
   const getApplications = useCallback(() => {
     dispatch(setApplicationsLoading(true));
 
-    firebase
-      .applications()
-      .orderByChild('displayName')
-      .limitToLast(limit)
-      .once('value')
-      .then((snapshot) => {
-        const allApplications = [];
-        snapshot.forEach((child) => {
-          allApplications.push({
-            ...child.val(),
-            applicationUID: child.key,
-          });
-        });
-        dispatch(setApplications(allApplications));
-        dispatch(setApplicationsLoading(false));
-
-        if (allApplications.length % APPLICATIONS_PER_PAGE !== 0) {
-          setIsFinal(true);
-        }
-      });
-  }, [firebase, dispatch, limit]);
+    axios.get('/api/applications', {
+      params: {
+        start: (pageNumber - 1) * APPLICATIONS_PER_PAGE,
+        limit: APPLICATIONS_PER_PAGE,
+      },
+    }).then((response) => {
+      dispatch(setApplications(response.data));
+      dispatch(setApplicationsLoading(false));
+    });
+  }, [dispatch, pageNumber]);
 
   useEffect(() => {
     getApplications();
-  }, [getApplications]);
+
+    firebase
+      .applicationCounter()
+      .get()
+      .then((doc) => {
+        const { count } = doc.data();
+        dispatch(setMaxPage(Math.ceil(count / APPLICATIONS_PER_PAGE)));
+      });
+  }, [firebase, dispatch, getApplications, pageNumber]);
 
   const toggleApplicationExpand = (index, open) => {
     dispatch(toggleApplicationVisibility([...addOnPosition(
@@ -118,6 +117,10 @@ const Applications = ({ firebase }) => {
       { ...applications[index], open },
       applications,
     )]));
+  };
+
+  const handlePageChange = (page) => {
+    dispatch(setPageNumber(page));
   };
 
   const renderApplicationInfo = (application, prop) => {
@@ -129,11 +132,13 @@ const Applications = ({ firebase }) => {
               component="div"
               className={classes.propName}
             >
-              {`- ${prop.toUpperCase()}`}
+              {`- ${prop.toUpperCase()}${!application[prop] && ' : N / A'}`}
             </Typography>
-            <a href={application[prop]} target="_blank" rel="noopener noreferrer">
-              <img src={application[prop]} alt={prop} className={classes.img} />
-            </a>
+            {application[prop] && (
+              <a href={application[prop]} target="_blank" rel="noopener noreferrer">
+                <img src={application[prop]} alt={prop} className={classes.img} />
+              </a>
+            )}
           </ListItem>
         );
       }
@@ -149,10 +154,10 @@ const Applications = ({ firebase }) => {
             </Typography>
 
             <List className={classes.imgList}>
-              {application[prop].map((img) => (
+              {application[prop].map((img, index) => (
                 <ListItem key={img}>
                   <a href={img} target="_blank" rel="noopener noreferrer">
-                    <img src={img} alt={prop} className={classes.img} />
+                    <img src={img} alt={`${prop}-${index + 1}`} className={classes.img} />
                   </a>
                 </ListItem>
               ))}
@@ -188,7 +193,7 @@ const Applications = ({ firebase }) => {
             component="div"
             className={classes.propName}
           >
-            {`- ${prop.toUpperCase()} : ${application[prop]}`}
+            {`- ${prop.toUpperCase()} : ${application[prop] ? application[prop] : 'N / A'}`}
           </Typography>
         </ListItem>
       );
@@ -211,7 +216,7 @@ const Applications = ({ firebase }) => {
         };
 
         firebase.user(userID).set(newUser).then(() => {
-          firebase.application(applicationUID).set(null).then(() => {
+          firebase.application(applicationUID).delete().then(() => {
             getApplications();
           });
         });
@@ -219,14 +224,9 @@ const Applications = ({ firebase }) => {
   };
 
   const handleRejectApplication = (applicationUID) => {
-    dispatch(setApplicationsLoading(true));
-    firebase.application(applicationUID).set(null).then(() => {
+    firebase.application(applicationUID).delete().then(() => {
       getApplications();
     });
-  };
-
-  const handleLoadMore = () => {
-    dispatch(setLimit(limit + APPLICATIONS_PER_PAGE));
   };
 
   const renderApplicationControls = (application) => (
@@ -253,7 +253,15 @@ const Applications = ({ firebase }) => {
 
   return (
     <div className={classes.paper}>
-      {!applications ? (
+      {loading ? (
+        <Typography
+          component="div"
+          className={classes.loadingWrapper}
+          align="center"
+        >
+          <CircularProgress size={60} className={classes.progress} />
+        </Typography>
+      ) : !applications.length ? (
         <Typography align="center" component="div">
           <Typography>There are no applications</Typography>
         </Typography>
@@ -291,19 +299,16 @@ const Applications = ({ firebase }) => {
               </ListItem>
             ))}
           </List>
-          {loading && (
-            <Typography
-              component="div"
-              className={classes.loadingWrapper}
-              align="center"
-            >
-              <CircularProgress />
-            </Typography>
-          )}
 
-          {!isFinal && (
+          {maxPage && (
             <Typography className={classes.paginationWrapper} align="center">
-              <Pagination onLoadMore={handleLoadMore} />
+              <Pagination
+                type="full"
+                pageNumber={pageNumber}
+                maxPage={maxPage}
+                onPageChange={handlePageChange}
+                visiblePages={5}
+              />
             </Typography>
           )}
         </>
@@ -317,6 +322,7 @@ Applications.propTypes = {
     applications: PropTypes.func.isRequired,
     application: PropTypes.func.isRequired,
     user: PropTypes.func.isRequired,
+    applicationCounter: PropTypes.func.isRequired,
   }).isRequired,
 };
 

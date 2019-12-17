@@ -1,1 +1,1 @@
-export const APPLICATIONS_PER_PAGE = 2;
+export const APPLICATIONS_PER_PAGE = 5;

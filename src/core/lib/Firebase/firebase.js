@@ -1,6 +1,6 @@
 import app from 'firebase/app';
 import 'firebase/auth';
-import 'firebase/database';
+import 'firebase/firestore';
 import 'firebase/storage';
 
 const firebaseConfig = {
@@ -18,9 +18,12 @@ class Firebase {
   constructor() {
     app.initializeApp(firebaseConfig);
 
+    this.fieldValue = app.firestore.FieldValue;
+    this.emailAuthProvider = app.auth.EmailAuthProvider;
+
     this.auth = app.auth();
-    this.db = app.database();
     this.storage = app.storage();
+    this.db = app.firestore();
 
     this.googleProvider = new app.auth.GoogleAuthProvider();
     this.facebookProvider = new app.auth.FacebookAuthProvider();
@@ -29,9 +32,9 @@ class Firebase {
   onAuthUserListener = (next, fallback) => this.auth.onAuthStateChanged((authUser) => {
     if (authUser) {
       this.user(authUser.uid)
-        .once('value')
+        .get()
         .then((snapshot) => {
-          const dbUser = snapshot.val();
+          const dbUser = snapshot.data();
           // merge auth and db user
           const newAuthUser = {
             /* if further information is needed from authUser ==> provide it here */
@@ -73,15 +76,19 @@ class Firebase {
 
   // *** User API ***
 
-  users = () => this.db.ref('users');
+  users = () => this.db.collection('users');
 
-  user = (uid) => this.db.ref(`users/${uid}`);
+  user = (uid) => this.db.collection('users').doc(uid);
 
   // *** Application API ***
 
-  applications = () => this.db.ref('applications');
+  applications = () => this.db.collection('applications');
 
-  application = (uid) => this.db.ref(`applications/${uid}`);
+  application = (uid) => this.db.collection('applications').doc(uid);
+
+  // *** Application Counters API ***
+
+  applicationCounter = () => this.db.doc('counters/application');
 
   // *** Storage API ***
 
