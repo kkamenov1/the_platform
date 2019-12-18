@@ -2,16 +2,20 @@ import {
   SET_APPLICATIONS,
   TOGGLE_APPLICATION_VISIBILITY,
   SET_APPLICATIONS_LOADING,
-  SET_MAX_PAGE,
-  SET_PAGE_NUMBER,
+  SET_TOTAL_APPLICATIONS_COUNT,
+  SET_PAGE,
+  SET_ROWS_PER_PAGE,
 } from './actions';
+
+import { APPLICATIONS_PER_PAGE1 } from '../../constants/adminPanel';
 
 
 export const defaultStore = {
   applications: [],
   loading: false,
-  maxPage: null,
-  pageNumber: 1,
+  count: null,
+  page: 0,
+  rowsPerPage: APPLICATIONS_PER_PAGE1,
 };
 
 export default (state = defaultStore, action) => {
@@ -34,16 +38,22 @@ export default (state = defaultStore, action) => {
         loading: action.loading,
       };
 
-    case SET_MAX_PAGE:
+    case SET_TOTAL_APPLICATIONS_COUNT:
       return {
         ...state,
-        maxPage: action.maxPage,
+        count: action.count,
       };
 
-    case SET_PAGE_NUMBER:
+    case SET_PAGE:
       return {
         ...state,
-        pageNumber: action.pageNumber,
+        page: action.page,
+      };
+
+    case SET_ROWS_PER_PAGE:
+      return {
+        ...state,
+        rowsPerPage: action.rowsPerPage,
       };
 
     default:

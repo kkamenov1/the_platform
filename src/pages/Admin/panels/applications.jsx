@@ -1,103 +1,126 @@
 import React, { useEffect, useCallback } from 'react';
 import axios from 'axios';
-import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Typography, List, ListItem, Collapse, Grid, Button, CircularProgress,
+  Paper,
+  TablePagination,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Grid,
+  Tooltip,
+  Zoom,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
 import {
   setApplications,
-  toggleApplicationVisibility,
-  setApplicationsLoading,
-  setMaxPage,
-  setPageNumber,
+  setTotalApplicationsCount,
+  setPage,
+  setRowsPerPage,
 } from '../actions';
+import MenuButton from './menu-button';
+import {
+  APPLICATIONS_PER_PAGE1,
+  APPLICATIONS_PER_PAGE2,
+  APPLICATIONS_PER_PAGE3,
+} from '../../../constants/adminPanel';
+
 import { withFirebase } from '../../../core/lib/Firebase';
-import { addOnPosition } from '../../../core/utils';
-import { Pagination } from '../../../core/components';
-import { APPLICATIONS_PER_PAGE } from '../../../constants/adminPanel';
 
-
-const useStyles = makeStyles((theme) => ({
-  inlineBlock: {
-    display: 'inline-block',
-  },
-  paper: {
-    width: '100%',
-    maxWidth: 960,
-    margin: '0 auto',
-
-    [theme.breakpoints.up('md')]: {
-      margin: '20px auto',
-    },
-  },
-  mainListItem: {
-    padding: 0,
-    borderRadius: 4,
-    backgroundColor: theme.palette.grey['200'],
-    width: '95%',
-    margin: '16px auto',
+const useStyles = makeStyles({
+  imgLink: {
     display: 'block',
-  },
-  subList: {
-    borderTop: `1px solid ${theme.palette.grey['300']}`,
-  },
-  propName: {
-    fontWeight: theme.typography.fontWeightMedium,
-  },
-  appUID: {
-    cursor: 'pointer',
-    padding: '12px 16px',
-  },
-  imgList: {
-    display: 'inline-flex',
+    width: 50,
+    height: 50,
   },
   img: {
-    width: 80,
-    height: 80,
+    width: '100%',
+    height: '100%',
     objectFit: 'cover',
   },
-  rejectBtn: {
-    marginRight: 10,
+  introduction: {
+    whiteSpace: 'nowrap',
+    maxWidth: 170,
+    textOverflow: 'ellipsis',
+    overflow: 'hidden',
+    cursor: 'pointer',
   },
-  controlsWrapper: {
-    textAlign: 'center',
-    padding: '16px 0',
+});
+
+const columns = [
+  { id: 'applicationUID', label: 'Application ID', minWidth: 170 },
+  { id: 'displayName', label: 'Name', minWidth: 170 },
+  { id: 'birthday', label: 'Birthday', minWidth: 100 },
+  { id: 'location', label: 'Location', minWidth: 50 },
+  { id: 'languages', label: 'Languages', minWidth: 170 },
+  { id: 'images', label: 'Images', minWidth: 170 },
+  { id: 'sport', label: 'Sport', minWidth: 100 },
+  { id: 'introduction', label: 'Introduction', minWidth: 170 },
+  { id: 'certificate', label: 'Certificate', minWidth: 100 },
+  { id: 'methods', label: 'Methods', minWidth: 100 },
+  {
+    id: 'duration', label: 'Duration', minWidth: 100, align: 'right',
   },
-  paginationWrapper: {
-    width: '95%',
-    margin: 'auto',
-  },
-  progress: {
-    marginTop: 16,
-  },
-}));
+];
+
+const createData = ({
+  applicationUID,
+  displayName,
+  birthday,
+  location,
+  languages,
+  images,
+  sport,
+  introduction,
+  certificate,
+  methods,
+  duration,
+}) => ({
+  applicationUID,
+  displayName,
+  birthday,
+  location,
+  languages,
+  images,
+  sport,
+  introduction,
+  certificate,
+  methods,
+  duration,
+});
 
 const Applications = ({ firebase }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const applications = useSelector((state) => state.admin.applications);
-  const loading = useSelector((state) => state.admin.loading);
-  const maxPage = useSelector((state) => state.admin.maxPage);
-  const pageNumber = useSelector((state) => state.admin.pageNumber);
+  const totalApplicationsCount = useSelector((state) => state.admin.count);
+  const page = useSelector((state) => state.admin.page);
+  const rowsPerPage = useSelector((state) => state.admin.rowsPerPage);
+
+  const handleChangePage = (event, newPage) => {
+    dispatch(setPage(newPage));
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    dispatch(setRowsPerPage(+event.target.value));
+    dispatch(setPage(0));
+  };
 
   const getApplications = useCallback(() => {
-    dispatch(setApplicationsLoading(true));
-
     axios.get('/api/applications', {
       params: {
-        start: (pageNumber - 1) * APPLICATIONS_PER_PAGE,
-        limit: APPLICATIONS_PER_PAGE,
+        start: page * rowsPerPage,
+        limit: rowsPerPage,
       },
     }).then((response) => {
-      dispatch(setApplications(response.data));
-      dispatch(setApplicationsLoading(false));
+      const items = response.data;
+      const mappedItems = items.map((item) => createData(item));
+      dispatch(setApplications(mappedItems));
     });
-  }, [dispatch, pageNumber]);
+  }, [dispatch, page, rowsPerPage]);
 
   useEffect(() => {
     getApplications();
@@ -107,213 +130,133 @@ const Applications = ({ firebase }) => {
       .get()
       .then((doc) => {
         const { count } = doc.data();
-        dispatch(setMaxPage(Math.ceil(count / APPLICATIONS_PER_PAGE)));
+        dispatch(setTotalApplicationsCount(count));
       });
-  }, [firebase, dispatch, getApplications, pageNumber]);
+  }, [firebase, dispatch, getApplications, page, rowsPerPage]);
 
-  const toggleApplicationExpand = (index, open) => {
-    dispatch(toggleApplicationVisibility([...addOnPosition(
-      index,
-      { ...applications[index], open },
-      applications,
-    )]));
-  };
+  // const handleApproveApplication = (application) => {
+  //   const { userID, applicationUID } = application;
 
-  const handlePageChange = (page) => {
-    dispatch(setPageNumber(page));
-  };
+  //   firebase
+  //     .user(userID)
+  //     .once('value')
+  //     .then((snapshot) => {
+  //       const user = snapshot.val();
+  //       const newUser = {
+  //         ...user,
+  //         ...application,
+  //         isGuru: true,
+  //       };
 
-  const renderApplicationInfo = (application, prop) => {
-    if (prop !== 'open') {
-      if (prop === 'certificate') {
+  //       firebase.user(userID).set(newUser).then(() => {
+  //         firebase.application(applicationUID).delete().then(() => {
+  //           getApplications();
+  //         });
+  //       });
+  //     });
+  // };
+
+  // const handleRejectApplication = (applicationUID) => {
+  //   firebase.application(applicationUID).delete().then(() => {
+  //     getApplications();
+  //   });
+  // };
+
+  const renderValue = (value, columnId) => {
+    switch (columnId) {
+      case 'languages':
+        return value.join(', ');
+
+      case 'images':
         return (
-          <ListItem className={classes.inlineBlock}>
-            <Typography
-              component="div"
-              className={classes.propName}
-            >
-              {`- ${prop.toUpperCase()}${!application[prop] && ' : N / A'}`}
-            </Typography>
-            {application[prop] && (
-              <a href={application[prop]} target="_blank" rel="noopener noreferrer">
-                <img src={application[prop]} alt={prop} className={classes.img} />
+          <Grid container>
+            {value.map((img, index) => (
+              <a
+                href={img}
+                key={index}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={classes.imgLink}
+              >
+                <img src={img} alt={`guru-images-${index + 1}`} className={classes.img} />
               </a>
-            )}
-          </ListItem>
+            ))}
+          </Grid>
         );
-      }
 
-      if (prop === 'images') {
+      case 'introduction':
         return (
-          <ListItem className={classes.inlineBlock}>
-            <Typography
-              component="div"
-              className={classes.propName}
-            >
-              {`- ${prop.toUpperCase()}`}
-            </Typography>
-
-            <List className={classes.imgList}>
-              {application[prop].map((img, index) => (
-                <ListItem key={img}>
-                  <a href={img} target="_blank" rel="noopener noreferrer">
-                    <img src={img} alt={`${prop}-${index + 1}`} className={classes.img} />
-                  </a>
-                </ListItem>
-              ))}
-            </List>
-          </ListItem>
+          <Tooltip title={value} TransitionComponent={Zoom}>
+            <div className={classes.introduction}>
+              {value}
+            </div>
+          </Tooltip>
         );
-      }
 
-      if (prop === 'methods') {
+      case 'certificate':
         return (
-          <ListItem className={classes.inlineBlock}>
-            <Typography
-              component="div"
-              className={classes.propName}
-            >
-              {`- ${prop.toUpperCase()}`}
-            </Typography>
-
-            <List>
-              {application[prop].map((method) => (
-                <ListItem key={`${method.name}-${method.price}`}>
-                  {`${method.name} - ${method.price}$`}
-                </ListItem>
-              ))}
-            </List>
-          </ListItem>
+          <a href={value} target="_blank" rel="noopener noreferrer" className={classes.imgLink}>
+            <img src={value} alt="guru-certificate" className={classes.img} />
+          </a>
         );
-      }
 
-      return (
-        <ListItem className={classes.inlineBlock}>
-          <Typography
-            component="div"
-            className={classes.propName}
-          >
-            {`- ${prop.toUpperCase()} : ${application[prop] ? application[prop] : 'N / A'}`}
-          </Typography>
-        </ListItem>
-      );
+      case 'methods':
+        return <MenuButton items={value} />;
+
+      default:
+        return value;
     }
-    return <></>;
   };
-
-  const handleApproveApplication = (application) => {
-    const { userID, applicationUID } = application;
-
-    firebase
-      .user(userID)
-      .once('value')
-      .then((snapshot) => {
-        const user = snapshot.val();
-        const newUser = {
-          ...user,
-          ...application,
-          isGuru: true,
-        };
-
-        firebase.user(userID).set(newUser).then(() => {
-          firebase.application(applicationUID).delete().then(() => {
-            getApplications();
-          });
-        });
-      });
-  };
-
-  const handleRejectApplication = (applicationUID) => {
-    firebase.application(applicationUID).delete().then(() => {
-      getApplications();
-    });
-  };
-
-  const renderApplicationControls = (application) => (
-    <div className={classes.controlsWrapper}>
-      <Button
-        color="secondary"
-        variant="contained"
-        size="large"
-        className={classes.rejectBtn}
-        onClick={() => handleRejectApplication(application.applicationUID)}
-      >
-        Reject
-      </Button>
-      <Button
-        color="primary"
-        variant="contained"
-        size="large"
-        onClick={() => handleApproveApplication(application)}
-      >
-        Approve
-      </Button>
-    </div>
-  );
 
   return (
-    <div className={classes.paper}>
-      {loading ? (
-        <Typography
-          component="div"
-          className={classes.loadingWrapper}
-          align="center"
-        >
-          <CircularProgress size={60} className={classes.progress} />
-        </Typography>
-      ) : !applications.length ? (
-        <Typography align="center" component="div">
-          <Typography>There are no applications</Typography>
-        </Typography>
-      ) : (
-        <>
-          <List>
-            {applications.map((application, index) => (
-              <ListItem
-                key={application.applicationUID}
-                className={classnames(classes.inlineBlock, classes.mainListItem)}
-              >
-                <Grid
-                  container
-                  alignItems="center"
-                  justify="space-between"
-                  className={classes.appUID}
-                  onClick={() => toggleApplicationExpand(index, !application.open)}
-                >
-                  <Grid item>
-                    <Typography component="div" variant="h6">{application.displayName}</Typography>
-                  </Grid>
-                  <Grid item>
-                    {application.open ? <ExpandLess /> : <ExpandMore />}
-                  </Grid>
-                </Grid>
-
-                <Collapse in={application.open || false} timeout="auto" unmountOnExit>
-                  <List className={classes.subList}>
-                    {Object.keys(application).map((prop) => (
-                      renderApplicationInfo(application, prop)
-                    ))}
-                  </List>
-                  {renderApplicationControls(application)}
-                </Collapse>
-              </ListItem>
-            ))}
-          </List>
-
-          {maxPage && (
-            <Typography className={classes.paginationWrapper} align="center">
-              <Pagination
-                type="full"
-                pageNumber={pageNumber}
-                maxPage={maxPage}
-                onPageChange={handlePageChange}
-                visiblePages={5}
-              />
-            </Typography>
-          )}
-        </>
+    <>
+      {totalApplicationsCount && (
+        <Paper>
+          <Table stickyHeader aria-label="sticky table">
+            <TableHead>
+              <TableRow>
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    align={column.align}
+                    style={{ minWidth: column.minWidth }}
+                  >
+                    {column.label}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {applications.map((application) => (
+                <TableRow hover role="checkbox" tabIndex={-1} key={application.applicationUID}>
+                  {columns.map((column) => {
+                    const value = application[column.id];
+                    return (
+                      <TableCell key={column.id} align={column.align}>
+                        {value && renderValue(value, column.id)}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <TablePagination
+            rowsPerPageOptions={[
+              APPLICATIONS_PER_PAGE1,
+              APPLICATIONS_PER_PAGE2,
+              APPLICATIONS_PER_PAGE3,
+            ]}
+            component="div"
+            count={totalApplicationsCount}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onChangePage={handleChangePage}
+            onChangeRowsPerPage={handleChangeRowsPerPage}
+          />
+        </Paper>
       )}
-    </div>
+    </>
   );
 };
 
