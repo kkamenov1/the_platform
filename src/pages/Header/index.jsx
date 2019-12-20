@@ -72,6 +72,9 @@ const useStyles = makeStyles((theme) => ({
       borderBottom: `2px solid ${theme.palette.common.white}`,
     },
   },
+  activeLink: {
+    borderBottom: `2px solid ${theme.palette.common.white}`,
+  },
   mobileNavOpen: {
     backgroundColor: theme.palette.common.white,
   },
@@ -121,6 +124,9 @@ const Header = ({ isLandingPage }) => {
 
   const isMobileNavigationOpen = useSelector((state) => state.header.isMobileNavigationOpen);
   const auth = useSelector((state) => state.app.auth);
+  const router = useSelector((state) => state.router);
+
+  const isAdminPage = router.location.pathname.indexOf('/admin') !== -1;
 
   const toggleDrawer = (open) => (event) => {
     if (!isMobile) return;
@@ -216,7 +222,11 @@ const Header = ({ isLandingPage }) => {
                   )}
                   {/* ADMIN */}
                   {auth && auth.isAdmin && (
-                    <Grid item className={classes.navBtnWrapper}>
+                    <Grid
+                      item
+                      className={classnames(classes.navBtnWrapper,
+                        { [classes.activeLink]: isAdminPage })}
+                    >
                       <Button
                         className={classes.navBtn}
                         disableRipple
