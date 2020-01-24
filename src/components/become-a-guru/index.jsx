@@ -234,6 +234,7 @@ const BecomeAGuru = ({ firebase }) => {
       methods: selectedMethods,
       duration,
       userID: auth.uid,
+      photoURL: auth.photoURL,
       displayName: auth.displayName,
     }).then(() => {
       dispatch(setRatesErrors({}));
