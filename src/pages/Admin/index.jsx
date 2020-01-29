@@ -6,7 +6,7 @@ import {
   Typography, AppBar, Tabs, Tab,
 } from '@material-ui/core';
 import SwipeableViews from 'react-swipeable-views';
-import Applications from './panels/applications';
+import Applications from './panels/applications/applications';
 
 import { withFirebase } from '../../core/lib/Firebase';
 

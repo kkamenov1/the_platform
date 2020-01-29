@@ -14,7 +14,6 @@ const fakeIt = () => {
     languages: ['Bulgarian', 'English'],
     sport: 'bodybuilding',
     introduction: 'test introduction',
-    certificate: faker.random.image(),
     duration: faker.random.number(),
     methods: [
       { name: faker.name.findName(), price: faker.random.number() },
@@ -23,7 +22,6 @@ const fakeIt = () => {
     ],
     objectID: faker.random.uuid(),
     userID: faker.random.uuid(),
-    // images: [faker.random.image(), faker.random.image()]
   })
 }
 
