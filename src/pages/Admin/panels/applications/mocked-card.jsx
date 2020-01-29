@@ -41,7 +41,8 @@ const useStyles = makeStyles({
   },
   media: {
     width: '100%',
-    height: 230,
+    height: 0,
+    paddingTop: '75%', // 16:9 => 56.25%
   },
   rightBtn: {
     marginLeft: 'auto',
