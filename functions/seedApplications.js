@@ -20,9 +20,8 @@ const fakeIt = () => {
       { name: faker.name.findName(), price: faker.random.number() },
       { name: faker.name.findName(), price: faker.random.number() }
     ],
-    objectID: faker.random.uuid(),
     userID: faker.random.uuid(),
   })
 }
 
-Array(10).fill(0).forEach(fakeIt);
+Array(50).fill(0).forEach(fakeIt);

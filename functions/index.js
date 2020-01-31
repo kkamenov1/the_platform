@@ -75,7 +75,7 @@ exports.searchApplications = functions.https.onRequest((req, res) => {
       const applications = [];
   
       snapshot.forEach((doc) => {
-        applications.push(doc.data());
+        applications.push({applicationUID: doc.id, ...doc.data()});
       });
   
       const result = applications.filter((application) => {

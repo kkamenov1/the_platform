@@ -4,6 +4,7 @@ import {
   SET_TOTAL_APPLICATIONS_COUNT,
   SET_PAGE,
   SET_PAGE_SIZE,
+  SET_QUERY,
 } from './actions';
 
 export const defaultStore = {
@@ -12,6 +13,7 @@ export const defaultStore = {
   count: 0,
   page: 1,
   pageSize: 8,
+  query: '',
 };
 
 export default (state = defaultStore, action) => {
@@ -44,6 +46,14 @@ export default (state = defaultStore, action) => {
       return {
         ...state,
         pageSize: action.pageSize,
+        page: 1,
+      };
+
+    case SET_QUERY:
+      return {
+        ...state,
+        query: action.query,
+        page: 1,
       };
 
     default:

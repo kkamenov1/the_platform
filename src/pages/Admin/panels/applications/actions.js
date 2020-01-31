@@ -3,6 +3,7 @@ export const SET_APPLICATIONS_LOADING = 'SET_APPLICATIONS_LOADING';
 export const SET_TOTAL_APPLICATIONS_COUNT = 'SET_TOTAL_APPLICATIONS_COUNT';
 export const SET_PAGE = 'SET_PAGE';
 export const SET_PAGE_SIZE = 'SET_PAGE_SIZE';
+export const SET_QUERY = 'SET_QUERY';
 
 export const setApplications = (hits) => ({
   type: SET_HITS,
@@ -27,4 +28,9 @@ export const setPage = (page) => ({
 export const setPageSize = (pageSize) => ({
   type: SET_PAGE_SIZE,
   pageSize,
+});
+
+export const setQuery = (query) => ({
+  type: SET_QUERY,
+  query,
 });

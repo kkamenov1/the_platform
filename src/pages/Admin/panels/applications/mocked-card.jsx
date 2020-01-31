@@ -70,16 +70,6 @@ const MockedCard = () => {
           <div className={classnames(classes.title, classes.animated)} />
           <div className={classnames(classes.subtitle, classes.animated)} />
         </Typography>
-
-        <Typography component="div" paragraph>
-          <div className={classnames(classes.title, classes.animated)} />
-          <div className={classnames(classes.subtitle, classes.animated)} />
-        </Typography>
-
-        <Typography component="div" paragraph>
-          <div className={classnames(classes.title, classes.animated)} />
-          <div className={classnames(classes.subtitle, classes.animated)} />
-        </Typography>
       </CardContent>
       <CardActions disableSpacing>
         <div className={classnames(classes.circle, classes.animated)} />

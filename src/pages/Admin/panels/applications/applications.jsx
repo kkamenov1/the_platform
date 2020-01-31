@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { Typography } from '@material-ui/core';
@@ -16,6 +16,7 @@ import {
   setPage,
   setPageSize,
   setApplicationsLoading,
+  setQuery,
 } from './actions';
 import { withFirebase } from '../../../../core/lib/Firebase';
 
@@ -51,9 +52,9 @@ const Applications = ({ firebase }) => {
   const page = useSelector((state) => state.admin.applications.page);
   const pageSize = useSelector((state) => state.admin.applications.pageSize);
   const loading = useSelector((state) => state.admin.applications.loading);
-  const [query, setQuery] = React.useState('');
+  const query = useSelector((state) => state.admin.applications.query);
 
-  React.useEffect(() => {
+  const executeQuery = useCallback(() => {
     dispatch(setApplicationsLoading(true));
     api.applications.get({ query, page, pageSize }).then((response) => {
       dispatch(setApplications(response.data.hits));
@@ -62,8 +63,12 @@ const Applications = ({ firebase }) => {
     });
   }, [query, page, pageSize, dispatch]);
 
+  useEffect(() => {
+    executeQuery();
+  }, [executeQuery]);
+
   const handeQueryChange = (event) => {
-    setQuery(event.target.value);
+    dispatch(setQuery(event.target.value));
   };
 
   const handlePageChange = (pageNumber) => {
@@ -77,8 +82,19 @@ const Applications = ({ firebase }) => {
     dispatch(setPageSize(event.target.value));
   };
 
-  const handleRejectApplication = (objectID) => {
-    firebase.application(objectID).delete();
+  const handleRejectApplication = (applicationID) => {
+    firebase.application(applicationID).delete().then(() => {
+      executeQuery();
+    });
+  };
+
+  const handleApproveApplication = async (userID, applicationUID) => {
+    const applicationDoc = await firebase.application(applicationUID).get();
+    const userDoc = await firebase.user(userID).get();
+    await firebase.user(userID).update({
+      ...userDoc.data(),
+      ...applicationDoc.data(),
+    }).then(() => handleRejectApplication(applicationUID));
   };
 
   return (
@@ -114,6 +130,7 @@ const Applications = ({ firebase }) => {
         <Hits
           hits={applications}
           handleRejectApplication={handleRejectApplication}
+          handleApproveApplication={handleApproveApplication}
           loading={loading}
           pageSize={pageSize}
         />
@@ -123,7 +140,7 @@ const Applications = ({ firebase }) => {
           type="full"
           pageNumber={page}
           maxPage={Math.ceil(nbHits / pageSize)}
-          visiblePages={3}
+          visiblePages={5}
           onPageChange={handlePageChange}
         />
       </Typography>
@@ -134,6 +151,7 @@ const Applications = ({ firebase }) => {
 Applications.propTypes = {
   firebase: PropTypes.shape({
     application: PropTypes.func.isRequired,
+    user: PropTypes.func.isRequired,
   }).isRequired,
 };
 

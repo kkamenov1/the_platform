@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SearchHit = ({ hit, handleRejectApplication }) => {
+const SearchHit = ({ hit, handleRejectApplication, handleApproveApplication }) => {
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState(false);
 
@@ -80,6 +80,16 @@ const SearchHit = ({ hit, handleRejectApplication }) => {
       <CardContent>
         <Typography component="div" paragraph>
           <Typography variant="button">
+            ID
+          </Typography>
+          <Tooltip title={hit.applicationUID}>
+            <Typography variant="body2" color="textSecondary" noWrap component="div">
+              {hit.applicationUID}
+            </Typography>
+          </Tooltip>
+        </Typography>
+        <Typography component="div" paragraph>
+          <Typography variant="button">
             Location
           </Typography>
           <Tooltip title={hit.location}>
@@ -89,42 +99,16 @@ const SearchHit = ({ hit, handleRejectApplication }) => {
           </Tooltip>
         </Typography>
 
-        <Typography component="div" paragraph>
-          <Typography variant="button">
-            Languages
-          </Typography>
-          <Typography variant="body2" color="textSecondary" noWrap component="div">
-            {hit.languages.join(', ')}
-          </Typography>
-        </Typography>
-
-        <Typography component="div" paragraph>
-          <Typography variant="button">
-            Birthday
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="div">
-            {new Date(hit.birthday).toLocaleDateString()}
-          </Typography>
-        </Typography>
-
-        <Typography component="div">
-          <Typography variant="button">
-            Sport
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="div">
-            {hit.sport}
-          </Typography>
-        </Typography>
       </CardContent>
       <CardActions disableSpacing>
         <Tooltip title="Approve">
-          <IconButton>
+          <IconButton onClick={() => handleApproveApplication(hit.userID, hit.applicationUID)}>
             <CheckIcon />
           </IconButton>
         </Tooltip>
 
         <Tooltip title="Reject">
-          <IconButton onClick={() => handleRejectApplication(hit.objectID)}>
+          <IconButton onClick={() => handleRejectApplication(hit.applicationUID)}>
             <ClearIcon />
           </IconButton>
         </Tooltip>
@@ -140,6 +124,33 @@ const SearchHit = ({ hit, handleRejectApplication }) => {
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
+          <Typography component="div" paragraph>
+            <Typography variant="button">
+            Languages
+            </Typography>
+            <Typography variant="body2" color="textSecondary" noWrap component="div">
+              {hit.languages.join(', ')}
+            </Typography>
+          </Typography>
+
+          <Typography component="div" paragraph>
+            <Typography variant="button">
+            Birthday
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="div">
+              {new Date(hit.birthday).toLocaleDateString()}
+            </Typography>
+          </Typography>
+
+          <Typography component="div" paragraph>
+            <Typography variant="button">
+            Sport
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="div">
+              {hit.sport}
+            </Typography>
+          </Typography>
+
           <Typography component="div" paragraph>
             <Typography variant="button">
               Introduction
@@ -167,8 +178,13 @@ const SearchHit = ({ hit, handleRejectApplication }) => {
               Methods
             </Typography>
 
-            {hit.methods.map((method) => (
-              <Typography variant="body2" color="textSecondary" component="div">
+            {hit.methods.map((method, i) => (
+              <Typography
+                key={i}
+                variant="body2"
+                color="textSecondary"
+                component="div"
+              >
                 {`${method.name} - $${method.price}`}
               </Typography>
             ))}
@@ -190,9 +206,8 @@ const SearchHit = ({ hit, handleRejectApplication }) => {
 
 SearchHit.propTypes = {
   hit: PropTypes.object.isRequired,
-  firebase: PropTypes.shape({
-    application: PropTypes.func.isRequired,
-  }).isRequired,
+  handleRejectApplication: PropTypes.func.isRequired,
+  handleApproveApplication: PropTypes.func.isRequired,
 };
 
 export default SearchHit;
