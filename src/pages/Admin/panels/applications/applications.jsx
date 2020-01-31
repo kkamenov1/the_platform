@@ -1,6 +1,7 @@
 import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
+import { useSnackbar } from 'notistack';
 import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { animateScroll as scroll } from 'react-scroll';
@@ -47,6 +48,7 @@ const useStyles = makeStyles({
 const Applications = ({ firebase }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
   const applications = useSelector((state) => state.admin.applications.hits);
   const nbHits = useSelector((state) => state.admin.applications.count);
   const page = useSelector((state) => state.admin.applications.page);
@@ -82,10 +84,14 @@ const Applications = ({ firebase }) => {
     dispatch(setPageSize(event.target.value));
   };
 
-  const handleRejectApplication = (applicationID) => {
-    firebase.application(applicationID).delete().then(() => {
-      executeQuery();
-    });
+  const triggerSnackbar = (variant, message) => {
+    enqueueSnackbar(message, { variant });
+  };
+
+  const handleRejectApplication = async (applicationUID) => {
+    await firebase.application(applicationUID).delete();
+    executeQuery();
+    triggerSnackbar('error', 'Application deleted');
   };
 
   const handleApproveApplication = async (userID, applicationUID) => {
@@ -94,7 +100,10 @@ const Applications = ({ firebase }) => {
     await firebase.user(userID).update({
       ...userDoc.data(),
       ...applicationDoc.data(),
-    }).then(() => handleRejectApplication(applicationUID));
+    });
+    await firebase.application(applicationUID).delete();
+    executeQuery();
+    triggerSnackbar('success', 'Application approved');
   };
 
   return (
@@ -109,12 +118,14 @@ const Applications = ({ firebase }) => {
         >
           {`${nbHits} ${nbHits !== 1 ? 'results' : 'result'} found`}
         </Typography>
-        <div className={classes.pageSelectorWrapper}>
-          <PageSizeSelector
-            pageSize={pageSize}
-            onPageSizeChange={handlePageSizeChange}
-          />
-        </div>
+        {nbHits > 0 && (
+          <div className={classes.pageSelectorWrapper}>
+            <PageSizeSelector
+              pageSize={pageSize}
+              onPageSizeChange={handlePageSizeChange}
+            />
+          </div>
+        )}
       </div>
 
       <Typography

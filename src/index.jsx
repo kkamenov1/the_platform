@@ -1,17 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
+import { SnackbarProvider } from 'notistack';
 import App from './app/App';
 import * as serviceWorker from './serviceWorker';
 import configureStore from './store';
 import Firebase, { FirebaseContext } from './core/lib/Firebase';
+
 
 const store = configureStore();
 
 ReactDOM.render(
   <Provider store={store}>
     <FirebaseContext.Provider value={new Firebase()}>
-      <App />
+      <SnackbarProvider maxSnack={3}>
+        <App />
+      </SnackbarProvider>
     </FirebaseContext.Provider>
   </Provider>,
   document.getElementById('root'),
