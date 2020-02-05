@@ -20,7 +20,7 @@ const fakeIt = () => {
       { name: faker.name.findName(), price: faker.random.number() },
       { name: faker.name.findName(), price: faker.random.number() }
     ],
-    userID: faker.random.uuid(),
+    userID: faker.random.uuid()
   })
 }
 

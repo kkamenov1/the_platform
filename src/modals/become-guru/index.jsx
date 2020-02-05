@@ -44,6 +44,7 @@ const BecomeGuruModal = ({ firebase }) => {
       open={open}
       onClose={closeModal}
       noPadding
+      expanded
     >
       <BecomeAGuru />
     </Modal>

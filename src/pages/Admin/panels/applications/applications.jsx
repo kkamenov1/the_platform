@@ -2,22 +2,24 @@ import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { useSnackbar } from 'notistack';
-import { Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Typography, useMediaQuery } from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { animateScroll as scroll } from 'react-scroll';
 import api from '../../../../api';
 import Hits from './hits';
 import SearchBox from './search-box';
 import PageSizeSelector from './page-size-selector';
 import MockedHits from './mocked-hits';
-import { Pagination } from '../../../../core/components';
+import SearchHit from './search-hit';
+import { Pagination, Modal } from '../../../../core/components';
 import {
-  setApplications,
-  setTotalApplicationsCount,
   setPage,
-  setPageSize,
-  setApplicationsLoading,
   setQuery,
+  setPageSize,
+  setApplications,
+  setApplicationsLoading,
+  toggleApplicationsModal,
+  setTotalApplicationsCount,
 } from './actions';
 import { withFirebase } from '../../../../core/lib/Firebase';
 
@@ -43,6 +45,9 @@ const useStyles = makeStyles({
     right: 8,
     transform: 'translate(0, -50%)',
   },
+  paperWidthSm600: {
+    maxWidth: 600,
+  },
 });
 
 const Applications = ({ firebase }) => {
@@ -55,6 +60,10 @@ const Applications = ({ firebase }) => {
   const pageSize = useSelector((state) => state.admin.applications.pageSize);
   const loading = useSelector((state) => state.admin.applications.loading);
   const query = useSelector((state) => state.admin.applications.query);
+  const modalOpen = useSelector((state) => state.admin.applications.modalOpen);
+  const selectedHit = useSelector((state) => state.admin.applications.selectedHit);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const executeQuery = useCallback(() => {
     dispatch(setApplicationsLoading(true));
@@ -88,10 +97,19 @@ const Applications = ({ firebase }) => {
     enqueueSnackbar(message, { variant });
   };
 
+  const toggleModal = (open, hit) => {
+    dispatch(toggleApplicationsModal(open, hit));
+  };
+
   const handleRejectApplication = async (applicationUID) => {
     await firebase.application(applicationUID).delete();
     executeQuery();
     triggerSnackbar('error', 'Application deleted');
+    if (modalOpen) {
+      toggleModal(false, null);
+    }
+
+    // TODO: SEND EMAIL TO USER FOR REJECTED APPLICATION
   };
 
   const handleApproveApplication = async (userID, applicationUID) => {
@@ -104,10 +122,30 @@ const Applications = ({ firebase }) => {
     await firebase.application(applicationUID).delete();
     executeQuery();
     triggerSnackbar('success', 'Application approved');
+    if (modalOpen) {
+      toggleModal(false, null);
+    }
+
+    // TODO: SEND EMAIL TO USER FOR APPROVED APPLICATION
   };
 
   return (
     <div className={classes.container}>
+      {selectedHit && (
+        <Modal
+          fullScreen={isMobile}
+          open={modalOpen}
+          onClose={() => toggleModal(false, null)}
+          noPadding
+        >
+          <SearchHit
+            hit={selectedHit}
+            handleRejectApplication={handleRejectApplication}
+            handleApproveApplication={handleApproveApplication}
+            showDetails
+          />
+        </Modal>
+      )}
       <SearchBox query={query} onQueryChange={handeQueryChange} />
 
       <div className={classes.upperSearchWrapper}>
@@ -142,6 +180,7 @@ const Applications = ({ firebase }) => {
           hits={applications}
           handleRejectApplication={handleRejectApplication}
           handleApproveApplication={handleApproveApplication}
+          toggleModal={toggleModal}
           loading={loading}
           pageSize={pageSize}
         />

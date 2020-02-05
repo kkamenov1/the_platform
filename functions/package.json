@@ -13,7 +13,6 @@
     "node": "8"
   },
   "dependencies": {
-    "algoliasearch": "^3.35.1",
     "cors": "^2.8.5",
     "faker": "^4.1.0",
     "firebase-admin": "^8.6.0",

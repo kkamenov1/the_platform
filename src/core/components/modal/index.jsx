@@ -41,6 +41,7 @@ const Modal = ({
   children,
   other,
   noPadding,
+  expanded,
 }) => {
   const classes = useStyles();
 
@@ -52,7 +53,7 @@ const Modal = ({
       classes={{
         root: classes.root,
         paper: classes.dialogPaper,
-        paperWidthSm: !noPadding ? classes.paperWidthSm600 : classes.paperWidthSm900,
+        paperWidthSm: expanded ? classes.paperWidthSm900 : classes.paperWidthSm600,
       }}
       {...other}
     >
@@ -75,6 +76,7 @@ const Modal = ({
 Modal.defaultProps = {
   fullScreen: false,
   noPadding: false,
+  expanded: false,
   other: {},
 };
 
@@ -87,6 +89,7 @@ Modal.propTypes = {
     PropTypes.node,
   ]).isRequired,
   noPadding: PropTypes.bool,
+  expanded: PropTypes.bool,
   other: PropTypes.shape({}),
 };
 

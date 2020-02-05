@@ -5,6 +5,7 @@ import {
   SET_PAGE,
   SET_PAGE_SIZE,
   SET_QUERY,
+  TOGGLE_APPLICATIONS_MODAL,
 } from './actions';
 
 export const defaultStore = {
@@ -14,6 +15,8 @@ export const defaultStore = {
   page: 1,
   pageSize: 8,
   query: '',
+  modalOpen: false,
+  selectedHit: null,
 };
 
 export default (state = defaultStore, action) => {
@@ -54,6 +57,13 @@ export default (state = defaultStore, action) => {
         ...state,
         query: action.query,
         page: 1,
+      };
+
+    case TOGGLE_APPLICATIONS_MODAL:
+      return {
+        ...state,
+        modalOpen: action.open,
+        selectedHit: action.selectedHit,
       };
 
     default:
