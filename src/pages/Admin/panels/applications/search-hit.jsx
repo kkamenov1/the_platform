@@ -246,7 +246,7 @@ const SearchHit = ({
         </Tooltip>
 
         <Tooltip title="Reject">
-          <IconButton onClick={() => handleRejectApplication(hit.applicationUID)}>
+          <IconButton onClick={() => handleRejectApplication(hit.userID, hit.applicationUID)}>
             <ClearIcon />
           </IconButton>
         </Tooltip>

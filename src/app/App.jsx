@@ -16,6 +16,7 @@ import {
 } from '../pages';
 import BecomeGuruModal from '../modals/become-guru';
 import AuthModal from '../modals/auth';
+import UserSubmittedApplicationModal from '../modals/user-submitted-application';
 
 const App = ({ firebase }) => {
   const dispatch = useDispatch();
@@ -41,6 +42,7 @@ const App = ({ firebase }) => {
       <Header isLandingPage={isLandingPage} />
       <AuthModal />
       <BecomeGuruModal />
+      <UserSubmittedApplicationModal />
 
       <main style={{ paddingTop: isLandingPage ? 0 : 80 }}>
         <Switch>

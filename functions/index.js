@@ -1,10 +1,18 @@
 const functions = require('firebase-functions');
 const cors = require('cors')({ origin: true });
+const nodemailer = require('nodemailer');
+const aws = require('aws-sdk');
 const admin = require('firebase-admin');
 
 admin.initializeApp();
 
 const db = admin.firestore();
+
+aws.config.update({
+  accessKeyId: 'AKIAQQ7IXSAEOMZ5QQJ3',
+  secretAccessKey: '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',
+  region: 'eu-central-1'
+});
 
 const sanitizeString = (str) => str.trim().toLowerCase();
 
@@ -42,4 +50,38 @@ exports.searchApplications = functions.https.onRequest((req, res) => {
       res.status(404).json(err);
     });
   });
+});
+
+// TODO: improve this and configure AWS SES in the AWS console after
+// you create an email server and get a real domain
+exports.emailMessage = functions.https.onRequest((req, res) => {
+  cors(req, res, () => {
+    if (req.method !== 'POST') {
+      res.status(400).json({ err: 'Please send a POST request' });
+      return;
+    }
+
+    const { name, email, message } = req.body;
+
+    const transporter = nodemailer.createTransport({
+      SES: new aws.SES({
+          apiVersion: '2010-12-01'
+      })
+    });
+
+    transporter.sendMail({
+      from: 'no-reply@gymgurus.com',
+      to: email,
+      subject: 'Message',
+      text: 'I hope this message gets sent!',
+    }, (err, info) => {
+      if (err){
+        console.log(err.message);
+      }
+
+      res.status(200).send({
+        message: "success"
+      });
+    });
+  })
 });

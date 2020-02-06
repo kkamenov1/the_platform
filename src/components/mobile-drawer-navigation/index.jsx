@@ -21,6 +21,7 @@ import {
 } from '../../constants/routes';
 import { toggleAuthModal } from '../../modals/auth/actions';
 import { toggleBecomeGuruModal } from '../../modals/become-guru/actions';
+import { toggleUserSubmittedApplicationModal } from '../../modals/user-submitted-application/actions';
 import { ReactComponent as GymIcon } from '../../svg/gym.svg';
 import { ReactComponent as DashboardIcon } from '../../svg/dashboard.svg';
 import { ReactComponent as ProfileIcon } from '../../svg/profile.svg';
@@ -90,7 +91,13 @@ const MobileDrawerNavigation = ({
   const auth = useSelector((state) => state.app.auth);
 
   const openBecomeGuruModal = () => {
-    dispatch(toggleBecomeGuruModal(true));
+    if (auth && !auth.hasSubmittedApplication) {
+      dispatch(toggleBecomeGuruModal(true));
+    } else if (auth && auth.hasSubmittedApplication) {
+      dispatch(toggleUserSubmittedApplicationModal(true));
+    } else {
+      dispatch(toggleAuthModal(true, SIGN_IN));
+    }
   };
 
   const openSignInModal = () => {

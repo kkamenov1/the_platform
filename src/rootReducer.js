@@ -6,6 +6,7 @@ import header from './pages/Header/reducer';
 import app from './app/reducer';
 import becomeGuruModal from './modals/become-guru/reducer';
 import authModal from './modals/auth/reducer';
+import userSubmittedApplicationModal from './modals/user-submitted-application/reducer';
 import admin from './pages/Admin/reducer';
 
 const createRootReducer = (history) => combineReducers({
@@ -14,6 +15,7 @@ const createRootReducer = (history) => combineReducers({
   header,
   becomeGuruModal,
   authModal,
+  userSubmittedApplicationModal,
   admin,
 });
 

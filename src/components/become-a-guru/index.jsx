@@ -26,6 +26,7 @@ import {
   clearBecomeGuruModal,
   toggleBecomeGuruModal,
 } from '../../modals/become-guru/actions';
+import { setApplicationSubmitted } from '../../app/actions';
 import { withFirebase } from '../../core/lib/Firebase';
 
 const useStyles = makeStyles((theme) => ({
@@ -230,6 +231,13 @@ const BecomeAGuru = ({ firebase }) => {
       return false;
     }
 
+    // prevent user from submitting another application while having 1 pending
+    firebase.user(auth.uid).set({
+      hasSubmittedApplication: true,
+    }, { merge: true }).then(() => {
+      dispatch(setApplicationSubmitted(true));
+    });
+
     firebase.application(applicationUID).update({
       methods: selectedMethods,
       duration,
@@ -313,22 +321,22 @@ const BecomeAGuru = ({ firebase }) => {
           </div>
 
           {isMobile && (
-            <MobileStepper
-              steps={steps.length + 1}
-              position="bottom"
-              variant="text"
-              activeStep={activeStep}
-              nextButton={(
-                <Button size="small" onClick={handleNext}>
-                  {generateButtonLabel()}
-                </Button>
-              )}
-              backButton={(
-                <Button size="small" onClick={handleBack} disabled={activeStep <= 0 || activeStep >= 3}>
-                  Back
-                </Button>
-              )}
-            />
+          <MobileStepper
+            steps={steps.length + 1}
+            position="bottom"
+            variant="text"
+            activeStep={activeStep}
+            nextButton={(
+              <Button size="small" onClick={handleNext}>
+                {generateButtonLabel()}
+              </Button>
+                )}
+            backButton={(
+              <Button size="small" onClick={handleBack} disabled={activeStep <= 0 || activeStep >= 3}>
+                    Back
+              </Button>
+                )}
+          />
           )}
 
           <Grid
@@ -339,16 +347,16 @@ const BecomeAGuru = ({ firebase }) => {
           >
             <Grid item>
               {activeStep > 0 && activeStep < 3 && (
-                <Fab
-                  variant="extended"
-                  size="medium"
-                  color="inherit"
-                  aria-label="back"
-                  onClick={handleBack}
-                  className={classnames(classes.fab, classes.backBtn)}
-                >
-                  Back
-                </Fab>
+              <Fab
+                variant="extended"
+                size="medium"
+                color="inherit"
+                aria-label="back"
+                onClick={handleBack}
+                className={classnames(classes.fab, classes.backBtn)}
+              >
+                    Back
+              </Fab>
               )}
             </Grid>
 
@@ -375,6 +383,7 @@ BecomeAGuru.propTypes = {
   firebase: PropTypes.shape({
     application: PropTypes.func.isRequired,
     applications: PropTypes.func.isRequired,
+    user: PropTypes.func.isRequired,
   }).isRequired,
 };
 

@@ -21,6 +21,8 @@ import {
   toggleApplicationsModal,
   setTotalApplicationsCount,
 } from './actions';
+import { setApplicationSubmitted } from '../../../../app/actions';
+
 import { withFirebase } from '../../../../core/lib/Firebase';
 
 const useStyles = makeStyles({
@@ -74,6 +76,13 @@ const Applications = ({ firebase }) => {
     });
   }, [query, page, pageSize, dispatch]);
 
+  const resetUserSubmittedApplication = async (userID) => {
+    await firebase.user(userID).set({
+      hasSubmittedApplication: false,
+    }, { merge: true });
+    dispatch(setApplicationSubmitted(false));
+  };
+
   useEffect(() => {
     executeQuery();
   }, [executeQuery]);
@@ -101,7 +110,7 @@ const Applications = ({ firebase }) => {
     dispatch(toggleApplicationsModal(open, hit));
   };
 
-  const handleRejectApplication = async (applicationUID) => {
+  const handleRejectApplication = async (userID, applicationUID) => {
     await firebase.application(applicationUID).delete();
     executeQuery();
     triggerSnackbar('error', 'Application deleted');
@@ -109,8 +118,11 @@ const Applications = ({ firebase }) => {
       toggleModal(false, null);
     }
 
+    resetUserSubmittedApplication(userID);
+
     // TODO: SEND EMAIL TO USER FOR REJECTED APPLICATION
   };
+
 
   const handleApproveApplication = async (userID, applicationUID) => {
     const applicationDoc = await firebase.application(applicationUID).get();
@@ -125,6 +137,8 @@ const Applications = ({ firebase }) => {
     if (modalOpen) {
       toggleModal(false, null);
     }
+
+    resetUserSubmittedApplication(userID);
 
     // TODO: SEND EMAIL TO USER FOR APPROVED APPLICATION
   };

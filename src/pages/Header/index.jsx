@@ -21,6 +21,7 @@ import AvatarNavButton from '../../components/avatar-nav-button';
 import { toggleMobileNavigation } from './actions';
 import { toggleBecomeGuruModal } from '../../modals/become-guru/actions';
 import { toggleAuthModal } from '../../modals/auth/actions';
+import { toggleUserSubmittedApplicationModal } from '../../modals/user-submitted-application/actions';
 import {
   SIGN_IN,
   SIGN_UP,
@@ -125,7 +126,6 @@ const Header = ({ isLandingPage }) => {
   const isMobileNavigationOpen = useSelector((state) => state.header.isMobileNavigationOpen);
   const auth = useSelector((state) => state.app.auth);
   const router = useSelector((state) => state.router);
-
   const isAdminPage = router.location.pathname.indexOf('/admin') !== -1;
 
   const toggleDrawer = (open) => (event) => {
@@ -141,8 +141,10 @@ const Header = ({ isLandingPage }) => {
   const [, ...navRoutesWithoutHome] = NavigationRoutes;
 
   const openBecomeGuruModal = () => {
-    if (auth) {
+    if (auth && !auth.hasSubmittedApplication) {
       dispatch(toggleBecomeGuruModal(true));
+    } else if (auth && auth.hasSubmittedApplication) {
+      dispatch(toggleUserSubmittedApplicationModal(true));
     } else {
       dispatch(toggleAuthModal(true, SIGN_IN));
     }
