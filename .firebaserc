@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "gymgurus-c97bd"
+    "default": "gymgurus-c97bd",
+    "production": "gymgurus-prod-2072e",
+    "development": "gymgurus-c97bd"
   }
 }

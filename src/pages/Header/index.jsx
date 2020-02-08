@@ -241,15 +241,17 @@ const Header = ({ isLandingPage }) => {
                   )}
 
                   {/* BECOME GURU */}
-                  <Grid item className={classes.navBtnWrapper}>
-                    <Button
-                      className={classes.navBtn}
-                      disableRipple
-                      onClick={openBecomeGuruModal}
-                    >
-                      {navRoutesWithoutHome[0].name}
-                    </Button>
-                  </Grid>
+                  {!auth || (auth && !auth.isGuru) ? (
+                    <Grid item className={classes.navBtnWrapper}>
+                      <Button
+                        className={classes.navBtn}
+                        disableRipple
+                        onClick={openBecomeGuruModal}
+                      >
+                        {navRoutesWithoutHome[0].name}
+                      </Button>
+                    </Grid>
+                  ) : <></>}
 
                   {/* HELP */}
                   <Grid item className={classes.navBtnWrapper}>

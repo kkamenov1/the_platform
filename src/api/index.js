@@ -1,17 +1,16 @@
 import axios from 'axios';
 import qs from 'qs';
 
-const REGION = 'us-central1';
 const PROJECT = process.env.REACT_APP_PROJECT_ID;
 const client = axios.create();
 
-const base = `https://${REGION}-${PROJECT}.cloudfunctions.net`;
+const base = `https://${PROJECT}.firebaseapp.com/api/v1`;
 
 const applications = {
   get: ({ query, page, pageSize }) => {
     const queryString = qs.stringify({ q: query, page, pageSize });
     return client.get(
-      `${base}/searchApplications${queryString && `?${queryString}`}`,
+      `${base}/applications${queryString && `?${queryString}`}`,
     );
   },
 };

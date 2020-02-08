@@ -130,6 +130,7 @@ const Applications = ({ firebase }) => {
     await firebase.user(userID).update({
       ...userDoc.data(),
       ...applicationDoc.data(),
+      isGuru: true,
     });
     await firebase.application(applicationUID).delete();
     executeQuery();

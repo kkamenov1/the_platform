@@ -190,37 +190,41 @@ const MobileDrawerNavigation = ({
             </>
           )}
 
-          <ListItem className={classes.listItem}>
-            <Button
-              className={classnames(classes.navLink, classes.navBtn)}
-              disableRipple
-              onClick={openBecomeGuruModal}
-            >
-              <Typography
-                component="span"
-                className={classes.navLink}
-                align="left"
-              >
-                Become a GURU
-              </Typography>
-              <div className={classes.iconWrapper}>
-                <GymIcon />
-              </div>
-              <Typography
-                className={classnames(classes.infoText, classes.displayBlock)}
-                component="span"
-                align="left"
-              >
-                Become part of the
-                {' '}
-                <strong>GYMGURUS</strong>
-                {' '}
-                family and start earning money today.
-              </Typography>
-            </Button>
-          </ListItem>
+          {!auth || (auth && !auth.isGuru) ? (
+            <>
+              <ListItem className={classes.listItem}>
+                <Button
+                  className={classnames(classes.navLink, classes.navBtn)}
+                  disableRipple
+                  onClick={openBecomeGuruModal}
+                >
+                  <Typography
+                    component="span"
+                    className={classes.navLink}
+                    align="left"
+                  >
+                    Become a GURU
+                  </Typography>
+                  <div className={classes.iconWrapper}>
+                    <GymIcon />
+                  </div>
+                  <Typography
+                    className={classnames(classes.infoText, classes.displayBlock)}
+                    component="span"
+                    align="left"
+                  >
+                    Become part of the
+                    {' '}
+                    <strong>GYMGURUS</strong>
+                    {' '}
+                    family and start earning money today.
+                  </Typography>
+                </Button>
+              </ListItem>
+              <Divider component="li" className={classes.divider} />
+            </>
+          ) : <></>}
 
-          <Divider component="li" className={classes.divider} />
 
           <ListItem className={classes.listItem}>
             <Button
