@@ -15,6 +15,7 @@ import {
   ListItem,
   Slide,
 } from '@material-ui/core';
+import { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import {
   PlacesAutoComplete,
   FormError,
@@ -31,6 +32,7 @@ import {
   setGuruLocation,
   setFormValues,
   setPersonalDetailsErrors,
+  setGeoLocation,
 } from '../../../modals/become-guru/actions';
 import { FILE_MEGABYTES, KILOBYTE } from '../../../constants/files';
 
@@ -101,6 +103,19 @@ const PersonalDetailsStep = ({ firebase }) => {
   const handleLocationChange = (loc) => {
     dispatch(setGuruLocation(loc));
     dispatch(setPersonalDetailsErrors({ ...errors, location: null }));
+  };
+
+  const handleLocationSelect = (loc) => {
+    geocodeByAddress(loc)
+      .then((results) => getLatLng(results[0]))
+      .then((latLng) => {
+        dispatch(setGuruLocation(loc));
+        dispatch(setGeoLocation(latLng));
+        dispatch(setPersonalDetailsErrors({ ...errors, location: null }));
+      })
+      .catch((error) => {
+        dispatch(setPersonalDetailsErrors({ ...errors, location: error }));
+      });
   };
 
   const handleInputChange = (e) => {
@@ -179,6 +194,7 @@ const PersonalDetailsStep = ({ firebase }) => {
           <PlacesAutoComplete
             value={location}
             onChange={handleLocationChange}
+            onSelect={handleLocationSelect}
             shouldFetchSuggestions={location.length > 1}
             searchOptions={{ types: ['(cities)'] }}
           />

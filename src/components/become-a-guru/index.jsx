@@ -123,6 +123,7 @@ const BecomeAGuru = ({ firebase }) => {
     introduction,
     certificate,
     duration,
+    _geoloc,
   } = becomeGuruModal;
 
   const uidgen = new UIDGenerator();
@@ -166,6 +167,7 @@ const BecomeAGuru = ({ firebase }) => {
 
       firebase.application(newApplicationUID).set({
         location,
+        _geoloc,
         languages,
         birthday: birthDate.toDateString(),
         images: filteredImages,
@@ -176,6 +178,7 @@ const BecomeAGuru = ({ firebase }) => {
     } else {
       firebase.application(applicationUID).update({
         location,
+        _geoloc,
         languages,
         birthday: birthDate.toDateString(),
         images: filteredImages,

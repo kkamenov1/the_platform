@@ -13,6 +13,7 @@ import {
   Header,
   Landing,
   Admin,
+  Listing,
 } from '../pages';
 import BecomeGuruModal from '../modals/become-guru';
 import AuthModal from '../modals/auth';
@@ -48,6 +49,7 @@ const App = ({ firebase }) => {
         <Switch>
           <Route exact path={routes.LANDING} component={Landing} />
           <Route path={routes.ADMIN} component={Admin} />
+          <Route path={routes.LISTING} component={Listing} />
         </Switch>
       </main>
     </ConnectedRouter>
