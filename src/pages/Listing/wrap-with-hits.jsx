@@ -1,14 +1,17 @@
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 import algoliasearch from 'algoliasearch';
+import classnames from 'classnames';
 import {
   InstantSearch,
-  ClearRefinements,
-  SearchBox,
   Pagination,
-  Configure,
 } from 'react-instantsearch-dom';
 import { makeStyles } from '@material-ui/core/styles';
+import { Grid, FormControlLabel, Switch } from '@material-ui/core';
+import { setLocation, toggleMap } from './actions';
 import CustomHits from './hits';
+import Places from './places';
 
 const useStyles = makeStyles((theme) => ({
   hitsContainer: {
@@ -20,40 +23,111 @@ const useStyles = makeStyles((theme) => ({
   map: {
     width: 'calc(100% - 840px)',
     position: 'fixed',
-    top: 80,
+    top: 160,
     right: 0,
+  },
+
+  hideMap: {
+    display: 'none',
+  },
+
+  toolbar: {
+    width: '100%',
+    backgroundColor: theme.palette.common.white,
+    height: 80,
+    borderBottom: `1px solid ${theme.palette.divider}`,
+    padding: '0 24px',
   },
 }));
 
+const searchClient = algoliasearch( // TODO: move that in env variables
+  'K50KABYMX9',
+  'b21248284e21ea5c231e9ed63ea2ce19',
+);
+
+const fallbackLocation = {
+  lat: 37.7793,
+  lng: -122.419,
+};
+
 const WrapWithHits = ({ children }) => {
   const classes = useStyles();
-  const searchClient = algoliasearch(
-    'K50KABYMX9',
-    'b21248284e21ea5c231e9ed63ea2ce19',
-  );
+  const dispatch = useDispatch();
+  const location = useSelector((state) => state.listing.currentLocation);
+  const showMap = useSelector((state) => state.listing.showMap);
 
-  const searchParameters = {
-    hitsPerPage: 3,
+  React.useEffect(() => {
+    const geo = navigator.geolocation;
+
+    if (geo) {
+      geo.getCurrentPosition((position) => {
+        dispatch(setLocation({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        }));
+      });
+    } else {
+      dispatch(setLocation(fallbackLocation));
+    }
+  }, [dispatch]);
+
+  const handleToggleMap = (event) => {
+    dispatch(toggleMap(event.target.checked));
   };
 
   return (
     <InstantSearch searchClient={searchClient} indexName="users">
-      <Configure {...searchParameters} />
       <div>
-        <SearchBox
-          translations={{
-            placeholder: 'Search...',
-          }}
-        />
-        {/* <ClearRefinements translations={{ reset: 'Clear all filters' }} /> */}
+        <Grid
+          container
+          className={classes.toolbar}
+          justify="space-between"
+          alignItems="center"
+        >
+          <Grid item>
+            <Places defaultRefinement={location} />
+          </Grid>
+
+          <Grid item>
+            <FormControlLabel
+              control={(
+                <Switch
+                  checked={showMap}
+                  onChange={handleToggleMap}
+                  value="map"
+                  color="primary"
+                />
+              )}
+              label="Show Map"
+              labelPlacement="start"
+            />
+          </Grid>
+        </Grid>
+
         <div className={classes.hitsContainer}>
           <CustomHits />
           <Pagination showLast />
         </div>
-        <div className={classes.map}>{children}</div>
+        <div className={classnames(classes.map, {
+          [classes.hideMap]: !showMap,
+        })}
+        >
+          {children}
+        </div>
       </div>
     </InstantSearch>
   );
+};
+
+WrapWithHits.defaultProps = {
+  children: null,
+};
+
+WrapWithHits.propTypes = {
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+  ]),
 };
 
 export default WrapWithHits;
