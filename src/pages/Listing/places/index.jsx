@@ -1,8 +1,24 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { TextField } from '@material-ui/core';
+import { TextField, withStyles } from '@material-ui/core';
 import places from 'places.js';
 import connect from './connector';
+
+const styles = {
+  input: {
+    width: 200,
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    padding: '10px 30px 10px 14px',
+    transition: 'width 0.4s ease-in-out',
+
+    '&:focus': {
+      width: 350,
+      transition: 'width 0.4s ease-in-out',
+    },
+  },
+};
 
 class Places extends Component {
   componentDidMount() {
@@ -26,6 +42,7 @@ class Places extends Component {
   createRef = (c) => (this.element = c);
 
   render() {
+    const { classes } = this.props;
     return (
       <TextField
         type="text"
@@ -35,7 +52,7 @@ class Places extends Component {
         margin="none"
         inputProps={{
           ref: this.createRef,
-          style: { minWidth: 350, padding: '10px 14px' },
+          className: classes.input,
         }}
       />
     );
@@ -47,4 +64,4 @@ Places.propTypes = {
   defaultRefinement: PropTypes.object.isRequired,
 };
 
-export default connect(Places);
+export default withStyles(styles)(connect(Places));

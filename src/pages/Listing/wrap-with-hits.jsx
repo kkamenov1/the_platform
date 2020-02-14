@@ -5,19 +5,34 @@ import algoliasearch from 'algoliasearch';
 import classnames from 'classnames';
 import {
   InstantSearch,
-  Pagination,
 } from 'react-instantsearch-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import { Grid, FormControlLabel, Switch } from '@material-ui/core';
+import {
+  Grid,
+  FormControlLabel,
+  Switch,
+  Typography,
+} from '@material-ui/core';
 import { setLocation, toggleMap } from './actions';
 import CustomHits from './hits';
 import Places from './places';
+import CustomPagination from './pagination';
+import { fallbackLocation } from '../../core/config';
 
 const useStyles = makeStyles((theme) => ({
+  '@global': {
+    body: {
+      background: theme.palette.common.white,
+    },
+  },
   hitsContainer: {
     width: 840,
-    padding: 24,
+    padding: '100px 24px 24px 24px',
     backgroundColor: theme.palette.common.white,
+  },
+
+  hitsContainerExpanded: {
+    width: '100%',
   },
 
   map: {
@@ -33,10 +48,16 @@ const useStyles = makeStyles((theme) => ({
 
   toolbar: {
     width: '100%',
+    position: 'fixed',
+    zIndex: 999,
     backgroundColor: theme.palette.common.white,
     height: 80,
     borderBottom: `1px solid ${theme.palette.divider}`,
     padding: '0 24px',
+  },
+
+  paginationWrapper: {
+    margin: '30px 0 50px 0',
   },
 }));
 
@@ -44,11 +65,6 @@ const searchClient = algoliasearch( // TODO: move that in env variables
   'K50KABYMX9',
   'b21248284e21ea5c231e9ed63ea2ce19',
 );
-
-const fallbackLocation = {
-  lat: 37.7793,
-  lng: -122.419,
-};
 
 const WrapWithHits = ({ children }) => {
   const classes = useStyles();
@@ -104,9 +120,11 @@ const WrapWithHits = ({ children }) => {
           </Grid>
         </Grid>
 
-        <div className={classes.hitsContainer}>
-          <CustomHits />
-          <Pagination showLast />
+        <div className={classnames(classes.hitsContainer, { [classes.hitsContainerExpanded]: !showMap })}>
+          <CustomHits showMap={showMap} />
+          <Typography align="center" component="div" className={classes.paginationWrapper}>
+            <CustomPagination />
+          </Typography>
         </div>
         <div className={classnames(classes.map, {
           [classes.hideMap]: !showMap,

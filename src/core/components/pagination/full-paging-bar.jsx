@@ -135,6 +135,7 @@ const FullPagingBar = ({
   visiblePages,
   onPageChange,
   separator,
+  createURL,
 }) => {
   const classes = useStyles();
   if (maxPage <= 1) {
@@ -174,6 +175,7 @@ const FullPagingBar = ({
       return (
         <Button
           key={item.display}
+          href={createURL && createURL(item.display)}
           onClick={() => onPageChange(Number(item.display))}
           className={classes.pageItem}
         >
@@ -188,6 +190,7 @@ const FullPagingBar = ({
         <Button
           color="primary"
           variant="contained"
+          href={createURL && createURL(pageNumber - 1)}
           onClick={() => onPageChange(pageNumber - 1)}
         >
           PREV
@@ -198,6 +201,7 @@ const FullPagingBar = ({
         <Button
           color="primary"
           variant="contained"
+          href={createURL && createURL(pageNumber + 1)}
           onClick={() => onPageChange(pageNumber + 1)}
         >
           NEXT

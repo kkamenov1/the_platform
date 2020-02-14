@@ -44,17 +44,17 @@ const fakeUser = () => {
     isAdmin: false,
     isGuru: true,
     photoURL: faker.image.avatar(),
+    certificate: faker.image.imageUrl(),
     _geoloc: {
-      lat: 34.052235,
-      lng: -118.243683,
+      lat: +faker.address.latitude(),
+      lng: +faker.address.longitude(),
     },
   });
 }
 
-// const seed = () => ({
-//   applications: Array(50).fill(0).forEach(fakeApplication),
-//   users: Array(50).fill(0).forEach(fakeUser)
-// });
+const seed = () => ({
+  applications: Array(50).fill(0).forEach(fakeApplication),
+  users: Array(50).fill(0).forEach(fakeUser)
+});
 
-// seed();
-Array(1).fill(0).forEach(fakeUser)
+seed();

@@ -17,7 +17,7 @@ import {
 import { red } from '@material-ui/core/colors';
 import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
-import CarouselArrow from './carousel-arrow';
+import { generateTileSliderConfig, fallbackImage } from '../../../../core/config';
 
 const useStyles = makeStyles((theme) => ({
   media: {
@@ -54,21 +54,7 @@ const SearchHit = ({
 }) => {
   const classes = useStyles();
   const sliderRef = React.useRef(null);
-
-  const sliderSettings = {
-    arrows: true,
-    infinite: true,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    lazyLoad: true,
-    nextArrow: <CarouselArrow
-      onClick={() => sliderRef.slickGoTo(hit.slideIndex + 1)}
-    />,
-    prevArrow: <CarouselArrow
-      prevArrow
-      onClick={() => sliderRef.slickGoTo(hit.slideIndex - 1)}
-    />,
-  };
+  const sliderSettings = generateTileSliderConfig(hit, sliderRef);
 
   const Content = (
     <>
@@ -108,8 +94,8 @@ const SearchHit = ({
         ) : (
           <CardMedia
             className={classes.media}
-            image="https://res.cloudinary.com/dl766ebzy/image/upload/v1578058214/no_image_camera_big_lspgbi.jpg"
-            title="No Image"
+            image={fallbackImage.src}
+            title={fallbackImage.alt}
           />
         )}
       </Slider>
