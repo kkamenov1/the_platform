@@ -10,3 +10,7 @@ export const addOnPosition = (pos, val, arr) => arr.map((item, idx) => {
   if (idx === pos) return val;
   return item;
 });
+
+export const getMinimalPrice = (methods) => Math.min(
+  ...methods.map((item) => Number(item.price)),
+);

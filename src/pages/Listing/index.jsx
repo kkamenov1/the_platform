@@ -2,34 +2,45 @@ import React from 'react';
 import {
   GeoSearch,
   Control,
-  Marker,
 } from 'react-instantsearch-dom-maps';
 import { Configure } from 'react-instantsearch-dom';
 import WrapWithHits from './wrap-with-hits';
+import CustomMapMarker from './custom-map-marker';
+import { MAP_ZOOM_LEVEL } from '../../core/config';
 
-const zoom = 12;
+const Listing = () => {
+  const [selectedHit, setSelectedHit] = React.useState(null);
 
-const Listing = () => (
-  <WrapWithHits>
-    <Configure hitsPerPage={20} aroundRadius={5000} />
+  const onHitOver = (hit) => {
+    setSelectedHit(hit);
+  };
 
-    <div style={{ height: 'calc(100vh - 160px)' }}>
-      <GeoSearch
-        google={window.google}
-        initialZoom={zoom}
-        maxZoom={zoom}
-      >
-        {({ hits }) => (
-          <div>
-            <Control />
-            {hits.map((hit) => (
-              <Marker key={hit.objectID} hit={hit} />
-            ))}
-          </div>
-        )}
-      </GeoSearch>
-    </div>
-  </WrapWithHits>
-);
+  return (
+    <WrapWithHits selectedHit={selectedHit} onHitOver={onHitOver}>
+      <Configure hitsPerPage={20} aroundRadius={5000} />
+
+      <div style={{ height: 'calc(100vh - 160px)' }}>
+        <GeoSearch
+          google={window.google}
+          initialZoom={MAP_ZOOM_LEVEL}
+          maxZoom={MAP_ZOOM_LEVEL}
+        >
+          {({ hits }) => (
+            <div>
+              <Control />
+              {hits.map((hit) => (
+                <CustomMapMarker
+                  hit={hit}
+                  onHitOver={onHitOver}
+                  selectedHit={selectedHit}
+                />
+              ))}
+            </div>
+          )}
+        </GeoSearch>
+      </div>
+    </WrapWithHits>
+  );
+};
 
 export default Listing;

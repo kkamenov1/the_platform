@@ -14,7 +14,8 @@ import {
 } from '@material-ui/core';
 import Slider from 'react-slick';
 import { connectHits } from 'react-instantsearch-dom';
-import { generateTileSliderConfig, fallbackImage } from '../../core/config';
+import { generateTileSliderConfig, FALLBACK_IMAGE } from '../../core/config';
+import { getMinimalPrice } from '../../core/utils';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -86,11 +87,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const getMinimalPrice = (methods) => Math.min(
-  ...methods.map((item) => Number(item.price)),
-);
-
-const Hits = ({ hits, showMap }) => {
+const Hits = ({
+  hits,
+  selectedHit,
+  onHitOver,
+  showMap,
+}) => {
   const classes = useStyles();
   const sliderRef = React.useRef(null);
 
@@ -106,7 +108,7 @@ const Hits = ({ hits, showMap }) => {
           durationAttribute,
         ];
         const sliderSettings = generateTileSliderConfig(hit, sliderRef);
-        const images = hit.images || [fallbackImage.src];
+        const images = hit.images || [FALLBACK_IMAGE.src];
         const allImages = hit.certificate
           ? [...images, hit.certificate]
           : images;
@@ -116,6 +118,8 @@ const Hits = ({ hits, showMap }) => {
             <Card
               className={classes.card}
               key={hit.objectID}
+              onMouseEnter={() => onHitOver(hit)}
+              onMouseLeave={() => onHitOver(null)}
             >
               <Grid container>
                 <Grid item xs={showMap ? 5 : 12} className={classes.hover}>

@@ -1,17 +1,20 @@
 import generateTileSliderConfig from './tile-slider-config';
 
-const fallbackLocation = {
+const FALLBACK_LOCATION = {
   lat: 37.7793,
   lng: -122.419,
 };
 
-const fallbackImage = {
+const FALLBACK_IMAGE = {
   src: 'https://res.cloudinary.com/dl766ebzy/image/upload/v1578058214/no_image_camera_big_lspgbi.jpg',
   alt: 'No Image',
 };
 
+const MAP_ZOOM_LEVEL = 12;
+
 export {
   generateTileSliderConfig,
-  fallbackLocation,
-  fallbackImage,
+  FALLBACK_LOCATION,
+  FALLBACK_IMAGE,
+  MAP_ZOOM_LEVEL,
 };

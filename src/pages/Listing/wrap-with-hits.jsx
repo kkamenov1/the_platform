@@ -16,8 +16,8 @@ import {
 import { setLocation, toggleMap } from './actions';
 import CustomHits from './hits';
 import Places from './places';
-import CustomPagination from './pagination';
-import { fallbackLocation } from '../../core/config';
+import CustomPagination from './custom-pagination';
+import { FALLBACK_LOCATION } from '../../core/config';
 
 const useStyles = makeStyles((theme) => ({
   '@global': {
@@ -66,7 +66,7 @@ const searchClient = algoliasearch( // TODO: move that in env variables
   'b21248284e21ea5c231e9ed63ea2ce19',
 );
 
-const WrapWithHits = ({ children }) => {
+const WrapWithHits = ({ children, selectedHit, onHitOver }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const location = useSelector((state) => state.listing.currentLocation);
@@ -83,7 +83,7 @@ const WrapWithHits = ({ children }) => {
         }));
       });
     } else {
-      dispatch(setLocation(fallbackLocation));
+      dispatch(setLocation(FALLBACK_LOCATION));
     }
   }, [dispatch]);
 
@@ -121,7 +121,7 @@ const WrapWithHits = ({ children }) => {
         </Grid>
 
         <div className={classnames(classes.hitsContainer, { [classes.hitsContainerExpanded]: !showMap })}>
-          <CustomHits showMap={showMap} />
+          <CustomHits selectedHit={selectedHit} onHitOver={onHitOver} showMap={showMap} />
           <Typography align="center" component="div" className={classes.paginationWrapper}>
             <CustomPagination />
           </Typography>

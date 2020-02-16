@@ -17,7 +17,7 @@ import {
 import { red } from '@material-ui/core/colors';
 import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
-import { generateTileSliderConfig, fallbackImage } from '../../../../core/config';
+import { generateTileSliderConfig, FALLBACK_IMAGE } from '../../../../core/config';
 
 const useStyles = makeStyles((theme) => ({
   media: {
@@ -94,8 +94,8 @@ const SearchHit = ({
         ) : (
           <CardMedia
             className={classes.media}
-            image={fallbackImage.src}
-            title={fallbackImage.alt}
+            image={FALLBACK_IMAGE.src}
+            title={FALLBACK_IMAGE.alt}
           />
         )}
       </Slider>
