@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  GeoSearch,
-  Control,
-} from 'react-instantsearch-dom-maps';
+import { GeoSearch, Control } from 'react-instantsearch-dom-maps';
 import { Configure } from 'react-instantsearch-dom';
 import WrapWithHits from './wrap-with-hits';
 import CustomMapMarker from './custom-map-marker';
@@ -30,6 +27,7 @@ const Listing = () => {
               <Control />
               {hits.map((hit) => (
                 <CustomMapMarker
+                  key={hit.objectID}
                   hit={hit}
                   onHitOver={onHitOver}
                   selectedHit={selectedHit}
