@@ -12,11 +12,16 @@ const styles = {
     overflow: 'hidden',
     padding: '10px 30px 10px 14px',
     transition: 'width 0.4s ease-in-out',
+    backgroundColor: 'white',
 
     '&:focus': {
       width: 350,
       transition: 'width 0.4s ease-in-out',
     },
+  },
+
+  formControl: {
+    marginLeft: 20,
   },
 };
 
@@ -50,6 +55,7 @@ class Places extends Component {
         id="address-input"
         placeholder="Anywhere"
         margin="none"
+        className={classes.formControl}
         inputProps={{
           ref: this.createRef,
           className: classes.input,

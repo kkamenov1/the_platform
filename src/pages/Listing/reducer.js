@@ -1,7 +1,4 @@
-import {
-  SET_LOCATION,
-  TOGGLE_MAP,
-} from './actions';
+import { TOGGLE_MAP } from './actions';
 
 export const defaultStore = {
   currentLocation: {},
@@ -10,11 +7,6 @@ export const defaultStore = {
 
 export default (state = defaultStore, action) => {
   switch (action.type) {
-    case SET_LOCATION:
-      return {
-        ...state,
-        currentLocation: action.location,
-      };
 
     case TOGGLE_MAP:
       return {

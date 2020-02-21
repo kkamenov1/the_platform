@@ -1,23 +1,22 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import algoliasearch from 'algoliasearch';
 import classnames from 'classnames';
-import {
-  InstantSearch,
-} from 'react-instantsearch-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Grid,
   FormControlLabel,
   Switch,
   Typography,
+  Fab,
 } from '@material-ui/core';
-import { setLocation, toggleMap } from './actions';
+import FilterListIcon from '@material-ui/icons/FilterList';
+import { setLocation } from '../../app/actions';
+import { toggleMap } from './actions';
 import CustomHits from './hits';
-import Places from './places';
 import CustomPagination from './custom-pagination';
 import { FALLBACK_LOCATION } from '../../core/config';
+
 
 const useStyles = makeStyles((theme) => ({
   '@global': {
@@ -59,17 +58,17 @@ const useStyles = makeStyles((theme) => ({
   paginationWrapper: {
     margin: '30px 0 50px 0',
   },
-}));
 
-const searchClient = algoliasearch( // TODO: move that in env variables
-  'K50KABYMX9',
-  'b21248284e21ea5c231e9ed63ea2ce19',
-);
+  filterBtn: {
+    boxShadow: 'none',
+    backgroundColor: theme.palette.common.white,
+    border: `1px solid ${theme.palette.grey[400]}`,
+  },
+}));
 
 const WrapWithHits = ({ children, selectedHit, onHitOver }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const location = useSelector((state) => state.listing.currentLocation);
   const showMap = useSelector((state) => state.listing.showMap);
 
   React.useEffect(() => {
@@ -92,48 +91,56 @@ const WrapWithHits = ({ children, selectedHit, onHitOver }) => {
   };
 
   return (
-    <InstantSearch searchClient={searchClient} indexName="users">
-      <div>
-        <Grid
-          container
-          className={classes.toolbar}
-          justify="space-between"
-          alignItems="center"
-        >
-          <Grid item>
-            <Places defaultRefinement={location} />
-          </Grid>
+    <div>
+      <Grid
+        container
+        className={classes.toolbar}
+        justify="space-between"
+        alignItems="center"
+      >
+        <Grid item>
 
-          <Grid item>
-            <FormControlLabel
-              control={(
-                <Switch
-                  checked={showMap}
-                  onChange={handleToggleMap}
-                  value="map"
-                  color="primary"
-                />
-              )}
-              label="Show Map"
-              labelPlacement="start"
-            />
-          </Grid>
+          <Fab
+            variant="extended"
+            size="medium"
+            color="inherit"
+            aria-label="filter"
+            className={classes.filterBtn}
+          >
+            Filter By
+            <FilterListIcon />
+          </Fab>
         </Grid>
 
-        <div className={classnames(classes.hitsContainer, { [classes.hitsContainerExpanded]: !showMap })}>
-          <CustomHits selectedHit={selectedHit} onHitOver={onHitOver} showMap={showMap} />
-          <Typography align="center" component="div" className={classes.paginationWrapper}>
-            <CustomPagination />
-          </Typography>
-        </div>
-        <div className={classnames(classes.map, {
-          [classes.hideMap]: !showMap,
-        })}
-        >
-          {children}
-        </div>
+        <Grid item>
+          <FormControlLabel
+            control={(
+              <Switch
+                checked={showMap}
+                onChange={handleToggleMap}
+                value="map"
+                color="primary"
+              />
+              )}
+            label="Show Map"
+            labelPlacement="start"
+          />
+        </Grid>
+      </Grid>
+
+      <div className={classnames(classes.hitsContainer, { [classes.hitsContainerExpanded]: !showMap })}>
+        <CustomHits selectedHit={selectedHit} onHitOver={onHitOver} showMap={showMap} />
+        <Typography align="center" component="div" className={classes.paginationWrapper}>
+          <CustomPagination />
+        </Typography>
       </div>
-    </InstantSearch>
+      <div className={classnames(classes.map, {
+        [classes.hideMap]: !showMap,
+      })}
+      >
+        {children}
+      </div>
+    </div>
   );
 };
 

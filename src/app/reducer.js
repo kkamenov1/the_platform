@@ -1,7 +1,14 @@
-import { SET_AUTH_USER, SET_APPLICATION_SUBMITTED } from './actions';
+import {
+  SET_AUTH_USER,
+  SET_APPLICATION_SUBMITTED,
+  SET_LOCATION,
+} from './actions';
+
+import { FALLBACK_LOCATION } from '../core/config';
 
 export const defaultStore = {
   auth: JSON.parse(localStorage.getItem('authUser')),
+  location: FALLBACK_LOCATION,
 };
 
 export default (state = defaultStore, action) => {
@@ -19,6 +26,13 @@ export default (state = defaultStore, action) => {
           ...state.auth,
           hasSubmittedApplication: action.hasSubmittedApplication,
         },
+      };
+    }
+
+    case SET_LOCATION: {
+      return {
+        ...state,
+        location: action.location,
       };
     }
 
