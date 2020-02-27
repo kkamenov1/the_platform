@@ -12,9 +12,10 @@ import {
 } from '@material-ui/core';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import { setLocation } from '../../app/actions';
-import { toggleMap } from './actions';
+import { toggleMap, toggleRefinementsModal } from './actions';
 import CustomHits from './hits';
 import CustomPagination from './custom-pagination';
+import RefinementsModal from './refinements-modal';
 import { FALLBACK_LOCATION } from '../../core/config';
 
 
@@ -24,6 +25,7 @@ const useStyles = makeStyles((theme) => ({
       background: theme.palette.common.white,
     },
   },
+
   hitsContainer: {
     width: 840,
     padding: '100px 24px 24px 24px',
@@ -47,8 +49,8 @@ const useStyles = makeStyles((theme) => ({
 
   toolbar: {
     width: '100%',
+    zIndex: 1,
     position: 'fixed',
-    zIndex: 999,
     backgroundColor: theme.palette.common.white,
     height: 80,
     borderBottom: `1px solid ${theme.palette.divider}`,
@@ -63,6 +65,11 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: 'none',
     backgroundColor: theme.palette.common.white,
     border: `1px solid ${theme.palette.grey[400]}`,
+
+    '&:hover': {
+      backgroundColor: theme.palette.common.white,
+      border: `1px solid ${theme.palette.common.black}`,
+    },
   },
 }));
 
@@ -90,8 +97,13 @@ const WrapWithHits = ({ children, selectedHit, onHitOver }) => {
     dispatch(toggleMap(event.target.checked));
   };
 
+  const openRefinementsModal = () => {
+    dispatch(toggleRefinementsModal(true));
+  };
+
   return (
     <div>
+      <RefinementsModal />
       <Grid
         container
         className={classes.toolbar}
@@ -99,13 +111,13 @@ const WrapWithHits = ({ children, selectedHit, onHitOver }) => {
         alignItems="center"
       >
         <Grid item>
-
           <Fab
             variant="extended"
             size="medium"
             color="inherit"
             aria-label="filter"
             className={classes.filterBtn}
+            onClick={openRefinementsModal}
           >
             Filter By
             <FilterListIcon />
@@ -121,7 +133,7 @@ const WrapWithHits = ({ children, selectedHit, onHitOver }) => {
                 value="map"
                 color="primary"
               />
-              )}
+            )}
             label="Show Map"
             labelPlacement="start"
           />

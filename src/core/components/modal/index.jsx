@@ -39,9 +39,9 @@ const Modal = ({
   open,
   onClose,
   children,
-  other,
   noPadding,
   expanded,
+  ...other
 }) => {
   const classes = useStyles();
 

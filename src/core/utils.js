@@ -14,3 +14,5 @@ export const addOnPosition = (pos, val, arr) => arr.map((item, idx) => {
 export const getMinimalPrice = (methods) => Math.min(
   ...methods.map((item) => Number(item.price)),
 );
+
+export const formatNumber = (value) => Number(value).toLocaleString();

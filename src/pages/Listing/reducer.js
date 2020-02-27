@@ -1,17 +1,23 @@
-import { TOGGLE_MAP } from './actions';
+import { TOGGLE_MAP, TOGGLE_REFINEMENTS_MODAL } from './actions';
 
 export const defaultStore = {
   currentLocation: {},
   showMap: true,
+  refinementsModalOpen: false,
 };
 
 export default (state = defaultStore, action) => {
   switch (action.type) {
-
     case TOGGLE_MAP:
       return {
         ...state,
         showMap: action.show,
+      };
+
+    case TOGGLE_REFINEMENTS_MODAL:
+      return {
+        ...state,
+        refinementsModalOpen: action.open,
       };
 
     default:

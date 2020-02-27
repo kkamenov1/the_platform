@@ -29,8 +29,8 @@ const searchClient = algoliasearch( // TODO: move that in env variables
 
 const App = ({ firebase }) => {
   const dispatch = useDispatch();
-  const pathname = useSelector((state) => state.router.location.pathname);
-  const isLandingPage = pathname === '/';
+  const location = useSelector((state) => state.router.location);
+  const isLandingPage = location.pathname === '/';
 
   useEffect(() => {
     firebase
@@ -46,7 +46,10 @@ const App = ({ firebase }) => {
 
   return (
     <ConnectedRouter history={history}>
-      <InstantSearch searchClient={searchClient} indexName="users">
+      <InstantSearch
+        searchClient={searchClient}
+        indexName="users"
+      >
         <CssBaseline />
         <Header />
         <AuthModal />

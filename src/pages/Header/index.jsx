@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTheme, makeStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
@@ -317,10 +316,5 @@ const Header = () => {
     </div>
   );
 };
-
-Header.propTypes = {
-  isLandingPage: PropTypes.bool.isRequired,
-};
-
 
 export default Header;

@@ -30,7 +30,7 @@ const fakeUser = () => {
     birthday: new Date(faker.date.past()),
     location: faker.address.city() + ', ' + faker.address.country(),
     languages: ['Bulgarian', 'English'],
-    sport: 'bodybuilding',
+    sport: 'crossfit',
     introduction: 'test introduction',
     duration: faker.random.number(),
     methods: [
