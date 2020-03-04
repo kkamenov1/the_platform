@@ -20,13 +20,12 @@ import {
 import BecomeGuruModal from '../modals/become-guru';
 import AuthModal from '../modals/auth';
 import UserSubmittedApplicationModal from '../modals/user-submitted-application';
+import { DEBOUNCE_TIME } from '../core/config';
 
 const searchClient = algoliasearch( // TODO: move that in env variables
   'K50KABYMX9',
   'b21248284e21ea5c231e9ed63ea2ce19',
 );
-
-const DEBOUNCE_TIME = 700;
 
 const routeStateDefaultValues = {
   page: '1',
@@ -35,11 +34,24 @@ const routeStateDefaultValues = {
   languages: undefined,
   duration: '',
   hitsPerPage: '20',
-  q: '',
 };
+
+const getCategorySlug = (name) => name
+  .split(', ')
+  .map((item) => item.split(' ').join('-'))
+  .join('--');
+
+const getCategoryName = (slug) => slug
+  .split('--')
+  .map(decodeURIComponent)
+  .join(' ');
 
 const createURL = (searchState) => {
   const queryParameters = {};
+  const categoryPath = searchState.category
+    ? `${getCategorySlug(searchState.category)}/`
+    : '';
+
   const routeState = {
     page: String(searchState.page),
     methods: searchState.refinementList && searchState.refinementList['methods.name'],
@@ -52,7 +64,6 @@ const createURL = (searchState) => {
       || ''}`,
     hitsPerPage:
       (searchState.hitsPerPage && String(searchState.hitsPerPage)) || undefined,
-    q: searchState.q && searchState.q,
   };
 
   if (routeState.page && routeState.page !== routeStateDefaultValues.page) {
@@ -91,24 +102,22 @@ const createURL = (searchState) => {
     queryParameters.hitsPerPage = routeState.hitsPerPage;
   }
 
-  if (
-    routeState.q
-    && routeState.q !== routeStateDefaultValues.q
-  ) {
-    queryParameters.q = routeState.q;
-  }
-
   const queryString = qs.stringify(queryParameters, {
     addQueryPrefix: true,
     arrayFormat: 'comma',
   });
 
-  return `/gurus${queryString}`;
+  return `/gurus/${categoryPath}${queryString}`;
 };
 
 const searchStateToUrl = (searchState) => (searchState ? createURL(searchState) : '');
 
 const urlToSearchState = async (location) => {
+  const pathnameMatches = location.pathname.match(/gurus\/(.*?)\/?$/);
+  const category = getCategoryName(
+    (pathnameMatches && pathnameMatches[1]) || '',
+  );
+
   const queryParameters = qs.parse(location.search.slice(1));
   const {
     page = 1,
@@ -117,7 +126,6 @@ const urlToSearchState = async (location) => {
     languages = [],
     duration,
     hitsPerPage,
-    q = '',
   } = queryParameters;
 
   const allSports = Array.isArray(sport) ? sport : [sport].filter(Boolean);
@@ -162,8 +170,8 @@ const urlToSearchState = async (location) => {
     searchState.hitsPerPage = hitsPerPage;
   }
 
-  if (q) {
-    await geocodeByAddress(q)
+  if (category) {
+    await geocodeByAddress(decodeURIComponent(category))
       .then((results) => getLatLng(results[0]))
       .then((latLng) => {
         searchState.aroundLatLng = latLng;

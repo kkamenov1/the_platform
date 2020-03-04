@@ -11,10 +11,12 @@ const FALLBACK_IMAGE = {
 };
 
 const MAP_ZOOM_LEVEL = 12;
+const DEBOUNCE_TIME = 700;
 
 export {
   generateTileSliderConfig,
   FALLBACK_LOCATION,
   FALLBACK_IMAGE,
   MAP_ZOOM_LEVEL,
+  DEBOUNCE_TIME,
 };

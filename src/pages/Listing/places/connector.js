@@ -11,7 +11,7 @@ export default createConnector({
     return {
       ...searchState,
       aroundLatLng: nextValue,
-      q: newValue,
+      category: newValue,
       boundingBox: {},
     };
   },
