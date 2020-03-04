@@ -6,6 +6,7 @@ import { Route, Switch } from 'react-router-dom';
 import { CssBaseline } from '@material-ui/core';
 import { InstantSearch } from 'react-instantsearch-dom';
 import algoliasearch from 'algoliasearch';
+import { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import { history } from '../store';
 import * as routes from '../constants/routes';
 import { withFirebase } from '../core/lib/Firebase';
@@ -34,7 +35,7 @@ const routeStateDefaultValues = {
   languages: undefined,
   duration: '',
   hitsPerPage: '20',
-  aroundLatLng: {},
+  q: '',
 };
 
 const createURL = (searchState) => {
@@ -51,7 +52,7 @@ const createURL = (searchState) => {
       || ''}`,
     hitsPerPage:
       (searchState.hitsPerPage && String(searchState.hitsPerPage)) || undefined,
-    aroundLatLng: searchState.aroundLatLng && searchState.aroundLatLng,
+    q: searchState.q && searchState.q,
   };
 
   if (routeState.page && routeState.page !== routeStateDefaultValues.page) {
@@ -91,10 +92,10 @@ const createURL = (searchState) => {
   }
 
   if (
-    routeState.aroundLatLng
-    && routeState.aroundLatLng !== routeStateDefaultValues.aroundLatLng
+    routeState.q
+    && routeState.q !== routeStateDefaultValues.q
   ) {
-    queryParameters.aroundLatLng = routeState.aroundLatLng;
+    queryParameters.q = routeState.q;
   }
 
   const queryString = qs.stringify(queryParameters, {
@@ -107,7 +108,7 @@ const createURL = (searchState) => {
 
 const searchStateToUrl = (searchState) => (searchState ? createURL(searchState) : '');
 
-const urlToSearchState = (location) => {
+const urlToSearchState = async (location) => {
   const queryParameters = qs.parse(location.search.slice(1));
   const {
     page = 1,
@@ -116,7 +117,7 @@ const urlToSearchState = (location) => {
     languages = [],
     duration,
     hitsPerPage,
-    aroundLatLng = {},
+    q = '',
   } = queryParameters;
 
   const allSports = Array.isArray(sport) ? sport : [sport].filter(Boolean);
@@ -161,12 +162,15 @@ const urlToSearchState = (location) => {
     searchState.hitsPerPage = hitsPerPage;
   }
 
-  if (Object.keys(aroundLatLng).length) {
-    const parsedAroundLatLng = {};
-    Object
-      .keys(aroundLatLng)
-      .map((key) => parsedAroundLatLng[key] = Number(aroundLatLng[key]));
-    searchState.aroundLatLng = parsedAroundLatLng;
+  if (q) {
+    await geocodeByAddress(q)
+      .then((results) => getLatLng(results[0]))
+      .then((latLng) => {
+        searchState.aroundLatLng = latLng;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   return searchState;
@@ -181,6 +185,12 @@ const App = ({ firebase }) => {
 
   const [searchState, setSearchState] = React.useState(urlToSearchState(location));
   const [debouncedSetState, setDebouncedSetState] = React.useState(null);
+
+  useEffect(() => {
+    (async () => {
+      setSearchState(await urlToSearchState(location));
+    })();
+  }, [location]);
 
   useEffect(() => {
     firebase

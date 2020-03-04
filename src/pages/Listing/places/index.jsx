@@ -32,11 +32,12 @@ class Places extends Component {
     const autocomplete = places({
       container: this.element,
       type: 'city',
+      language: 'en',
       aroundLatLngViaIP: false,
     });
 
     autocomplete.on('change', (event) => {
-      refine(event.suggestion.latlng);
+      refine(event.suggestion.latlng, event.suggestion.value);
     });
 
     autocomplete.on('clear', () => {

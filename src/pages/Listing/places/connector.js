@@ -7,10 +7,11 @@ export default createConnector({
     return {};
   },
 
-  refine(props, searchState, nextValue) {
+  refine(props, searchState, nextValue, newValue) {
     return {
       ...searchState,
       aroundLatLng: nextValue,
+      q: newValue,
       boundingBox: {},
     };
   },

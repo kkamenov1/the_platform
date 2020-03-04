@@ -7,7 +7,6 @@ import { MAP_ZOOM_LEVEL } from '../../core/config';
 
 const Listing = () => {
   const [selectedHit, setSelectedHit] = React.useState(null);
-
   const onHitOver = (hit) => {
     setSelectedHit(hit);
   };
