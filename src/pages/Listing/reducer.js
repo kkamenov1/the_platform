@@ -1,7 +1,9 @@
-import { TOGGLE_MAP, TOGGLE_REFINEMENTS_MODAL } from './actions';
+import {
+  TOGGLE_MAP,
+  TOGGLE_REFINEMENTS_MODAL,
+} from './actions';
 
 export const defaultStore = {
-  currentLocation: {},
   showMap: true,
   refinementsModalOpen: false,
 };

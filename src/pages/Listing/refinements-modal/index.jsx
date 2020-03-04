@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTheme, makeStyles } from '@material-ui/core/styles';
 import {
@@ -13,7 +13,7 @@ import {
 import RefinementList from './widgets/refinement-list';
 import SaveFiltersBtn from './widgets/save-filters-btn';
 import ClearFiltersBtn from './widgets/clear-filters-btn';
-import RangeSlider from './widgets/range-slider';
+// import RangeSlider from './widgets/range-slider';
 import ResultsNumber from './widgets/results-number';
 import { toggleRefinementsModal } from '../actions';
 
@@ -28,21 +28,11 @@ const useStyles = makeStyles({
 });
 
 const RefinementsModal = () => {
-  const descriptionElementRef = useRef(null);
   const dispatch = useDispatch();
   const theme = useTheme();
   const classes = useStyles();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const refinementsModalOpen = useSelector((state) => state.listing.refinementsModalOpen);
-
-  useEffect(() => {
-    if (refinementsModalOpen) {
-      const { current: descriptionElement } = descriptionElementRef;
-      if (descriptionElement !== null) {
-        descriptionElement.focus();
-      }
-    }
-  }, [refinementsModalOpen]);
 
   const closeModal = () => {
     dispatch(toggleRefinementsModal(false));
@@ -57,6 +47,7 @@ const RefinementsModal = () => {
       onClose={closeModal}
       aria-labelledby="scroll-dialog-title"
       aria-describedby="scroll-dialog-description"
+      keepMounted
     >
       <DialogTitle
         id="scroll-dialog-title"
@@ -76,10 +67,10 @@ const RefinementsModal = () => {
         <DialogContentText
           id="scroll-dialog-description"
           tabIndex={-1}
-          ref={descriptionElementRef}
+          component="div"
         >
           <RefinementList attribute="sport" header="Sport" divider />
-          <RangeSlider attribute="duration" header="Duration" divider />
+          {/* <RangeSlider attribute="duration" header="Duration" divider /> */}
           <RefinementList attribute="methods.name" header="Methods" divider />
           <RefinementList attribute="languages" header="Languages" />
         </DialogContentText>

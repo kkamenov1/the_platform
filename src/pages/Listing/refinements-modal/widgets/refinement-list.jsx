@@ -8,7 +8,6 @@ import {
 const RefinementList = ({
   items,
   refine,
-  createURL,
   header,
   divider,
 }) => (
@@ -17,12 +16,16 @@ const RefinementList = ({
       <Typography variant="button" component="h6" gutterBottom>{header}</Typography>
       {items.map((item) => {
         const handleChange = () => {
-          createURL(item.value);
           refine(item.value);
         };
 
         return (
-          <Grid container justify="space-between" alignItems="center">
+          <Grid
+            key={item.label}
+            container
+            justify="space-between"
+            alignItems="center"
+          >
             <Grid item>
               <Typography>
                 {item.label}

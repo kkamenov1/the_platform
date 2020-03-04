@@ -17,12 +17,11 @@ export default createConnector({
 
   getSearchParameters(searchParameters, props, searchState) {
     const currentRefinement = searchState.aroundLatLng || props.defaultRefinement;
-
     return searchParameters
       .setQueryParameter('insideBoundingBox')
       .setQueryParameter(
         'aroundLatLng',
-        `${currentRefinement.lat}, ${currentRefinement.lng}`,
+        `${Number(currentRefinement.lat)}, ${Number(currentRefinement.lng)}`,
       );
   },
 });

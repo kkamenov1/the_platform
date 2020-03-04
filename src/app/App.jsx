@@ -1,12 +1,10 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import qs from 'qs';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
-import { ConnectedRouter } from 'connected-react-router';
 import { CssBaseline } from '@material-ui/core';
-import {
-  InstantSearch,
-} from 'react-instantsearch-dom';
+import { InstantSearch } from 'react-instantsearch-dom';
 import algoliasearch from 'algoliasearch';
 import { history } from '../store';
 import * as routes from '../constants/routes';
@@ -27,10 +25,162 @@ const searchClient = algoliasearch( // TODO: move that in env variables
   'b21248284e21ea5c231e9ed63ea2ce19',
 );
 
+const DEBOUNCE_TIME = 700;
+
+const routeStateDefaultValues = {
+  page: '1',
+  methods: undefined,
+  sport: undefined,
+  languages: undefined,
+  duration: '',
+  hitsPerPage: '20',
+  aroundLatLng: {},
+};
+
+const createURL = (searchState) => {
+  const queryParameters = {};
+  const routeState = {
+    page: String(searchState.page),
+    methods: searchState.refinementList && searchState.refinementList['methods.name'],
+    sport: searchState.refinementList && searchState.refinementList.sport,
+    languages: searchState.refinementList && searchState.refinementList.languages,
+    duration:
+      searchState.range
+      && searchState.range.duration
+      && `${searchState.range.duration.min || ''}:${searchState.range.duration.max
+      || ''}`,
+    hitsPerPage:
+      (searchState.hitsPerPage && String(searchState.hitsPerPage)) || undefined,
+    aroundLatLng: searchState.aroundLatLng && searchState.aroundLatLng,
+  };
+
+  if (routeState.page && routeState.page !== routeStateDefaultValues.page) {
+    queryParameters.page = routeState.page;
+  }
+
+  if (
+    routeState.methods
+    && routeState.methods !== routeStateDefaultValues.methods
+  ) {
+    queryParameters.methods = routeState.methods.map(encodeURIComponent);
+  }
+
+  if (
+    routeState.sport
+    && routeState.sport !== routeStateDefaultValues.sport
+  ) {
+    queryParameters.sport = routeState.sport.map(encodeURIComponent);
+  }
+
+  if (
+    routeState.languages
+    && routeState.languages !== routeStateDefaultValues.languages
+  ) {
+    queryParameters.languages = routeState.languages.map(encodeURIComponent);
+  }
+
+  if (routeState.duration && routeState.duration !== routeStateDefaultValues.duration) {
+    queryParameters.duration = routeState.duration;
+  }
+
+  if (
+    routeState.hitsPerPage
+    && routeState.hitsPerPage !== routeStateDefaultValues.hitsPerPage
+  ) {
+    queryParameters.hitsPerPage = routeState.hitsPerPage;
+  }
+
+  if (
+    routeState.aroundLatLng
+    && routeState.aroundLatLng !== routeStateDefaultValues.aroundLatLng
+  ) {
+    queryParameters.aroundLatLng = routeState.aroundLatLng;
+  }
+
+  const queryString = qs.stringify(queryParameters, {
+    addQueryPrefix: true,
+    arrayFormat: 'comma',
+  });
+
+  return `/gurus${queryString}`;
+};
+
+const searchStateToUrl = (searchState) => (searchState ? createURL(searchState) : '');
+
+const urlToSearchState = (location) => {
+  const queryParameters = qs.parse(location.search.slice(1));
+  const {
+    page = 1,
+    sport = [],
+    methods = [],
+    languages = [],
+    duration,
+    hitsPerPage,
+    aroundLatLng = {},
+  } = queryParameters;
+
+  const allSports = Array.isArray(sport) ? sport : [sport].filter(Boolean);
+  const allMethods = Array.isArray(methods) ? methods : [methods].filter(Boolean);
+  const allLanguages = Array.isArray(languages) ? languages : [languages].filter(Boolean);
+
+  const searchState = {
+    range: {},
+  };
+
+  if (page) {
+    searchState.page = page;
+  }
+
+  if (allSports.length) {
+    searchState.refinementList = {
+      sport: allSports.map(decodeURIComponent),
+    };
+  }
+
+  if (allMethods.length) {
+    searchState.refinementList = {
+      [methods.name]: allMethods.map(decodeURIComponent),
+    };
+  }
+
+  if (allLanguages.length) {
+    searchState.refinementList = {
+      languages: allLanguages.map(decodeURIComponent),
+    };
+  }
+
+  if (duration) {
+    const [min, max = undefined] = duration.split(':');
+    searchState.range.duration = {
+      min: min || undefined,
+      max: max || undefined,
+    };
+  }
+
+  if (hitsPerPage) {
+    searchState.hitsPerPage = hitsPerPage;
+  }
+
+  if (Object.keys(aroundLatLng).length) {
+    const parsedAroundLatLng = {};
+    Object
+      .keys(aroundLatLng)
+      .map((key) => parsedAroundLatLng[key] = Number(aroundLatLng[key]));
+    searchState.aroundLatLng = parsedAroundLatLng;
+  }
+
+  return searchState;
+};
+
+
 const App = ({ firebase }) => {
   const dispatch = useDispatch();
   const location = useSelector((state) => state.router.location);
+  const auth = useSelector((state) => state.app.auth);
   const isLandingPage = location.pathname === '/';
+
+  const [searchState, setSearchState] = React.useState(urlToSearchState(location));
+  const [debouncedSetState, setDebouncedSetState] = React.useState(null);
 
   useEffect(() => {
     firebase
@@ -42,29 +192,42 @@ const App = ({ firebase }) => {
         localStorage.removeItem('authUser');
         dispatch(setAuthUser(null));
       });
-  });
+  }, [auth, dispatch, firebase]);
+
+  const onSearchStateChange = (updatedSearchState) => {
+    clearTimeout(debouncedSetState);
+
+    setDebouncedSetState(
+      setTimeout(() => {
+        history.push(searchStateToUrl(updatedSearchState), updatedSearchState);
+      }, DEBOUNCE_TIME),
+    );
+
+    setSearchState(updatedSearchState);
+  };
 
   return (
-    <ConnectedRouter history={history}>
-      <InstantSearch
-        searchClient={searchClient}
-        indexName="users"
-      >
-        <CssBaseline />
-        <Header />
-        <AuthModal />
-        <BecomeGuruModal />
-        <UserSubmittedApplicationModal />
+    <InstantSearch
+      searchClient={searchClient}
+      indexName="users"
+      searchState={searchState}
+      onSearchStateChange={onSearchStateChange}
+      createURL={createURL}
+    >
+      <CssBaseline />
+      <Header />
+      <AuthModal />
+      <BecomeGuruModal />
+      <UserSubmittedApplicationModal />
 
-        <main style={{ paddingTop: isLandingPage ? 0 : 80 }}>
-          <Switch>
-            <Route exact path={routes.LANDING} component={Landing} />
-            <Route path={routes.ADMIN} component={Admin} />
-            <Route path={routes.LISTING} component={Listing} />
-          </Switch>
-        </main>
-      </InstantSearch>
-    </ConnectedRouter>
+      <main style={{ paddingTop: isLandingPage ? 0 : 80 }}>
+        <Switch>
+          <Route exact path={routes.LANDING} component={Landing} />
+          <Route path={routes.ADMIN} component={Admin} />
+          <Route path={routes.LISTING} component={Listing} />
+        </Switch>
+      </main>
+    </InstantSearch>
   );
 };
 
