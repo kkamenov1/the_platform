@@ -13,6 +13,7 @@ export default createConnector({
       aroundLatLng: nextValue,
       category: newValue,
       boundingBox: {},
+      page: 1,
     };
   },
 

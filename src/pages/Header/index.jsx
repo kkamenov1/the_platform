@@ -16,7 +16,7 @@ import { KeyboardArrowDown } from '@material-ui/icons';
 
 import { ReactComponent as Logo } from '../../svg/logo.svg';
 import {
-  NavigationRoutes, ADMIN, LANDING, LISTING,
+  NavigationRoutes, ADMIN, LANDING,
 } from '../../constants/routes';
 import MobileDrawerNavigation from '../../components/mobile-drawer-navigation';
 import AvatarNavButton from '../../components/avatar-nav-button';
@@ -28,7 +28,6 @@ import {
   SIGN_IN,
   SIGN_UP,
 } from '../../constants/authModalPages';
-import Places from '../Listing/places';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -130,10 +129,8 @@ const Header = () => {
   const isMobileNavigationOpen = useSelector((state) => state.header.isMobileNavigationOpen);
   const auth = useSelector((state) => state.app.auth);
   const router = useSelector((state) => state.router);
-  const location = useSelector((state) => state.app.location);
   const isAdminPage = router.location.pathname.indexOf(ADMIN) !== -1;
   const isLandingPage = router.location.pathname === LANDING;
-  const isListingPage = router.location.pathname.indexOf(LISTING) !== -1;
 
   const toggleDrawer = (open) => (event) => {
     if (!isMobile) return;
@@ -202,8 +199,6 @@ const Header = () => {
                   />
                 </div>
               </Button>
-              {isListingPage && <Places defaultRefinement={location} />}
-
             </Grid>
 
 

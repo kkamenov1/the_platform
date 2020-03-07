@@ -17,6 +17,7 @@ import CustomHits from './hits';
 import CustomPagination from './custom-pagination';
 import RefinementsModal from './refinements-modal';
 import { FALLBACK_LOCATION } from '../../core/config';
+import Places from './places';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -77,6 +78,7 @@ const WrapWithHits = ({ children, selectedHit, onHitOver }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const showMap = useSelector((state) => state.listing.showMap);
+  const location = useSelector((state) => state.app.location);
 
   React.useEffect(() => {
     const geo = navigator.geolocation;
@@ -111,6 +113,7 @@ const WrapWithHits = ({ children, selectedHit, onHitOver }) => {
         alignItems="center"
       >
         <Grid item>
+          <Places defaultRefinement={location} />
           <Fab
             variant="extended"
             size="medium"
