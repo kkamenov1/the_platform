@@ -20,7 +20,6 @@ import UserSubmittedApplicationModal from '../modals/user-submitted-application'
 const App = ({ firebase }) => {
   const dispatch = useDispatch();
   const location = useSelector((state) => state.router.location);
-  const auth = useSelector((state) => state.app.auth);
   const isLandingPage = location.pathname === '/';
 
   useEffect(() => {
@@ -33,7 +32,7 @@ const App = ({ firebase }) => {
         localStorage.removeItem('authUser');
         dispatch(setAuthUser(null));
       });
-  }, [auth, dispatch, firebase]);
+  }, [dispatch, firebase]);
 
   return (
     <>

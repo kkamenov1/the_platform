@@ -28,6 +28,7 @@ import {
 } from '../../modals/become-guru/actions';
 import { setApplicationSubmitted } from '../../app/actions';
 import { withFirebase } from '../../core/lib/Firebase';
+import { getMinimalPrice } from '../../core/utils';
 
 const useStyles = makeStyles((theme) => ({
   left: {
@@ -241,12 +242,18 @@ const BecomeAGuru = ({ firebase }) => {
       dispatch(setApplicationSubmitted(true));
     });
 
+    const mappedSelectedMethods = selectedMethods.map((item) => ({
+      name: item.name,
+      price: item.price,
+    }));
+
     firebase.application(applicationUID).update({
-      methods: selectedMethods,
+      methods: mappedSelectedMethods,
       duration,
       userID: auth.uid,
       photoURL: auth.photoURL,
       displayName: auth.displayName,
+      priceFrom: getMinimalPrice(selectedMethods),
     }).then(() => {
       dispatch(setRatesErrors({}));
     });
@@ -336,7 +343,7 @@ const BecomeAGuru = ({ firebase }) => {
                 )}
             backButton={(
               <Button size="small" onClick={handleBack} disabled={activeStep <= 0 || activeStep >= 3}>
-                    Back
+                Back
               </Button>
                 )}
           />
@@ -358,7 +365,7 @@ const BecomeAGuru = ({ firebase }) => {
                 onClick={handleBack}
                 className={classnames(classes.fab, classes.backBtn)}
               >
-                    Back
+                Back
               </Fab>
               )}
             </Grid>

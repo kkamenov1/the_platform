@@ -115,14 +115,12 @@ const WrapWithHits = ({ children, selectedHit, onHitOver }) => {
         <Grid item>
           <Places defaultRefinement={location} />
           <Fab
-            variant="extended"
-            size="medium"
+            size="small"
             color="inherit"
             aria-label="filter"
             className={classes.filterBtn}
             onClick={openRefinementsModal}
           >
-            Filter By
             <FilterListIcon />
           </Fab>
         </Grid>

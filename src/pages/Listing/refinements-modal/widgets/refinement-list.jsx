@@ -13,7 +13,15 @@ const RefinementList = ({
 }) => (
   <>
     <div style={{ padding: '24px 0' }}>
-      <Typography variant="button" component="h6" gutterBottom>{header}</Typography>
+      {header && (
+        <Typography
+          variant="button"
+          component="h6"
+          gutterBottom
+        >
+          {header}
+        </Typography>
+      )}
       {items.map((item) => {
         const handleChange = () => {
           refine(item.value);
@@ -48,14 +56,13 @@ const RefinementList = ({
 );
 
 RefinementList.defaultProps = {
-  header: null,
+  header: '',
   divider: false,
 };
 
 RefinementList.propTypes = {
   items: PropTypes.array.isRequired,
   refine: PropTypes.func.isRequired,
-  createURL: PropTypes.func.isRequired,
   header: PropTypes.string,
   divider: PropTypes.bool,
 };

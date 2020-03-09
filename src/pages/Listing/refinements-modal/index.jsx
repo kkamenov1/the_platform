@@ -13,7 +13,7 @@ import {
 import RefinementList from './widgets/refinement-list';
 import SaveFiltersBtn from './widgets/save-filters-btn';
 import ClearFiltersBtn from './widgets/clear-filters-btn';
-// import RangeSlider from './widgets/range-slider';
+import RangeSlider from './widgets/range-slider';
 import ResultsNumber from './widgets/results-number';
 import { toggleRefinementsModal } from '../actions';
 
@@ -70,7 +70,8 @@ const RefinementsModal = () => {
           component="div"
         >
           <RefinementList attribute="sport" header="Sport" divider />
-          {/* <RangeSlider attribute="duration" header="Duration" divider /> */}
+          <RangeSlider attribute="priceFrom" header="Price" divider unit="$" />
+          <RangeSlider attribute="duration" header="Duration (Days)" divider />
           <RefinementList attribute="methods.name" header="Methods" divider />
           <RefinementList attribute="languages" header="Languages" />
         </DialogContentText>

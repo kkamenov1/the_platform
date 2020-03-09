@@ -19,6 +19,7 @@ const searchClient = algoliasearch(
 const routeStateDefaultValues = {
   page: '1',
   methods: undefined,
+  priceFrom: '',
   sport: undefined,
   languages: undefined,
   duration: '',
@@ -49,6 +50,7 @@ const urlToSearchState = async (location) => {
     methods = [],
     languages = [],
     duration,
+    priceFrom,
     hitsPerPage,
     boundingBox = {},
   } = queryParameters;
@@ -80,6 +82,14 @@ const urlToSearchState = async (location) => {
   if (allLanguages.length) {
     searchState.refinementList = {
       languages: allLanguages.map(decodeURIComponent),
+    };
+  }
+
+  if (priceFrom) {
+    const [min, max = undefined] = priceFrom.split(':');
+    searchState.range.priceFrom = {
+      min: min || undefined,
+      max: max || undefined,
     };
   }
 
@@ -148,14 +158,19 @@ const Listing = ({ match, location }) => {
 
     const routeState = {
       page: String(updatedSearchState.page),
-      methods: updatedSearchState.refinementList && updatedSearchState.refinementList['methods.name'],
       sport: updatedSearchState.refinementList && updatedSearchState.refinementList.sport,
       languages: updatedSearchState.refinementList && updatedSearchState.refinementList.languages,
+      priceFrom:
+        updatedSearchState.range
+          && updatedSearchState.range.priceFrom
+          && `${updatedSearchState.range.priceFrom.min || ''}:${updatedSearchState.range.priceFrom.max
+          || ''}`,
+      methods: updatedSearchState.refinementList && updatedSearchState.refinementList['methods.name'],
       duration:
-      updatedSearchState.range
-        && updatedSearchState.range.duration
-        && `${updatedSearchState.range.duration.min || ''}:${updatedSearchState.range.duration.max
-        || ''}`,
+        updatedSearchState.range
+          && updatedSearchState.range.duration
+          && `${updatedSearchState.range.duration.min || ''}:${updatedSearchState.range.duration.max
+          || ''}`,
       hitsPerPage:
         (updatedSearchState.hitsPerPage && String(updatedSearchState.hitsPerPage)) || undefined,
       boundingBox: updatedSearchState.boundingBox && updatedSearchState.boundingBox,
@@ -163,6 +178,10 @@ const Listing = ({ match, location }) => {
 
     if (routeState.page && routeState.page !== routeStateDefaultValues.page) {
       queryParameters.page = routeState.page;
+    }
+
+    if (routeState.priceFrom && routeState.priceFrom !== routeStateDefaultValues.priceFrom) {
+      queryParameters.priceFrom = routeState.priceFrom;
     }
 
     if (

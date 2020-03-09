@@ -32,7 +32,7 @@ const fakeUser = () => {
     languages: ['Bulgarian', 'English'],
     sport: 'crossfit',
     introduction: 'test introduction',
-    duration: faker.random.number(),
+    duration: Math.floor(Math.random() * 101) + 1,
     methods: [
       { name: faker.name.findName(), price: faker.random.number() },
       { name: faker.name.findName(), price: faker.random.number() },
@@ -44,7 +44,7 @@ const fakeUser = () => {
     isAdmin: false,
     isGuru: true,
     photoURL: faker.image.avatar(),
-    certificate: faker.image.imageUrl(),
+    priceFrom: Math.floor(Math.random() * 1000) + 1,
     _geoloc: {
       lat: +faker.address.latitude(),
       lng: +faker.address.longitude(),
@@ -57,4 +57,5 @@ const seed = () => ({
   users: Array(50).fill(0).forEach(fakeUser)
 });
 
-seed();
+// seed();
+Array(30).fill(0).forEach(fakeUser);

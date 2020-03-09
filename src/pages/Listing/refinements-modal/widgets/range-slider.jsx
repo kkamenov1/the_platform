@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { connectRange } from 'react-instantsearch-dom';
 import { Slider, Typography, Divider } from '@material-ui/core';
+
+const valuetext = (value) => `${value} days`;
 
 const RangeSlider = ({
   min,
@@ -11,17 +13,9 @@ const RangeSlider = ({
   canRefine,
   header,
   divider,
+  unit,
 }) => {
-  const [values, setValues] = useState([
-    currentRefinement.min,
-    currentRefinement.max,
-  ]);
-
-  useEffect(() => {
-    setValues([currentRefinement.min, currentRefinement.max]);
-  }, [currentRefinement, min, max]);
-
-  if (!canRefine) {
+  if (!canRefine || max - min <= 2) {
     return null;
   }
 
@@ -29,19 +23,14 @@ const RangeSlider = ({
     refine({ min: newValue[0], max: newValue[1] });
   };
 
-  const valuetext = (value) => `${value} days`;
-
-  const minSafe = min || 1;
-  const maxSafe = max || 100;
-
   const marks = [
     {
-      value: minSafe,
-      label: `${minSafe}`,
+      value: min,
+      label: `${min}${unit}`,
     },
     {
-      value: maxSafe,
-      label: `${maxSafe}`,
+      value: max,
+      label: `${max}${unit}`,
     },
   ];
 
@@ -49,13 +38,13 @@ const RangeSlider = ({
     <>
       <div style={{ padding: '24px 0' }}>
         {header && (
-        <Typography variant="button" component="h6">{header}</Typography>
+          <Typography variant="button" component="h6">{header}</Typography>
         )}
         <Slider
-          value={values}
-          min={minSafe}
-          max={maxSafe}
-          onChange={handleChange}
+          min={min}
+          max={max}
+          defaultValue={Object.values(currentRefinement)}
+          onChangeCommitted={handleChange}
           valueLabelDisplay="auto"
           aria-labelledby="range-slider"
           getAriaValueText={valuetext}
@@ -71,8 +60,9 @@ const RangeSlider = ({
 RangeSlider.defaultProps = {
   min: 1,
   max: 100,
-  header: null,
+  header: '',
   divider: false,
+  unit: '',
 };
 
 RangeSlider.propTypes = {
@@ -86,6 +76,7 @@ RangeSlider.propTypes = {
   canRefine: PropTypes.bool.isRequired,
   header: PropTypes.string,
   divider: PropTypes.bool,
+  unit: PropTypes.string,
 };
 
 export default connectRange(RangeSlider);

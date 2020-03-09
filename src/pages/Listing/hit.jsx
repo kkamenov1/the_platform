@@ -12,7 +12,6 @@ import {
   Avatar,
 } from '@material-ui/core';
 import Slider from 'react-slick';
-import { getMinimalPrice } from '../../core/utils';
 import { generateTileSliderConfig, FALLBACK_IMAGE } from '../../core/config';
 
 const useStyles = makeStyles((theme) => ({
@@ -94,7 +93,7 @@ const Hit = ({
   const classes = useStyles();
   const sliderRef = React.useRef(null);
 
-  const minPriceAttribute = `From $${getMinimalPrice(hit.methods)}`;
+  const minPriceAttribute = `From $${hit.priceFrom}`;
   const durationAttribute = `For ${hit.duration} days`;
   const attributesForRegularContent = [
     hit.languages.join(', '),
@@ -213,6 +212,7 @@ Hit.propTypes = {
     photoURL: PropTypes.string,
     certificate: PropTypes.string,
     images: PropTypes.arrayOf(PropTypes.string),
+    priceFrom: PropTypes.number,
   }).isRequired,
   onHitOver: PropTypes.func.isRequired,
   showMap: PropTypes.bool.isRequired,

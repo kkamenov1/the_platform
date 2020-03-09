@@ -16,7 +16,6 @@ import {
   bindToggle,
   bindPopper,
 } from 'material-ui-popup-state/hooks';
-import { getMinimalPrice } from '../../core/utils';
 import Hit from './hit';
 
 const useStyles = makeStyles((theme) => ({
@@ -59,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
 const CustomMapMarker = ({ hit, onHitOver, selectedHit }) => {
   const classes = useStyles();
   const ref = React.useRef();
-  const minPriceAttribute = `$${getMinimalPrice(hit.methods)}`;
+  const minPriceAttribute = `$${hit.priceFrom}`;
   const popupState = usePopupState({ variant: 'popper', popupId: 'popper' });
 
   return (
@@ -135,6 +134,7 @@ CustomMapMarker.propTypes = {
     languages: PropTypes.arrayOf(PropTypes.string),
     location: PropTypes.string,
     sport: PropTypes.string,
+    priceFrom: PropTypes.number,
   }),
 };
 

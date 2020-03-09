@@ -19,10 +19,6 @@ const styles = {
       transition: 'width 0.4s ease-in-out',
     },
   },
-
-  formControl: {
-    marginLeft: 20,
-  },
 };
 
 class Places extends Component {
@@ -56,7 +52,6 @@ class Places extends Component {
         id="address-input"
         placeholder="Anywhere"
         margin="none"
-        className={classes.formControl}
         inputProps={{
           ref: this.createRef,
           className: classes.input,
@@ -69,6 +64,7 @@ class Places extends Component {
 Places.propTypes = {
   refine: PropTypes.func.isRequired,
   defaultRefinement: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(connect(Places));

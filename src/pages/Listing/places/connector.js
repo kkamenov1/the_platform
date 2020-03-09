@@ -14,6 +14,7 @@ export default createConnector({
       category: newValue,
       boundingBox: {},
       page: 1,
+      range: {},
     };
   },
 
