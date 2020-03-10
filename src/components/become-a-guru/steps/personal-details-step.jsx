@@ -196,7 +196,6 @@ const PersonalDetailsStep = ({ firebase }) => {
             onChange={handleLocationChange}
             onSelect={handleLocationSelect}
             shouldFetchSuggestions={location.length > 1}
-            searchOptions={{ types: ['(cities)'] }}
           />
           <FormError>
             {errors && errors.location}
