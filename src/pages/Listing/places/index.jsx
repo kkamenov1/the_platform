@@ -5,17 +5,24 @@ import places from 'places.js';
 import connect from './connector';
 
 const styles = {
+  formControl: {
+    position: 'absolute',
+    top: '50%',
+    transform: 'translate(0, -50%)',
+    zIndex: 999,
+  },
+
   input: {
-    width: 200,
+    width: 300,
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
-    padding: '10px 30px 10px 14px',
+    padding: '15px 30px 15px 14px',
     transition: 'width 0.4s ease-in-out',
     backgroundColor: 'white',
 
     '&:focus': {
-      width: 350,
+      width: 375,
       transition: 'width 0.4s ease-in-out',
     },
   },
@@ -52,6 +59,7 @@ class Places extends Component {
         id="address-input"
         placeholder="Anywhere"
         margin="none"
+        className={classes.formControl}
         inputProps={{
           ref: this.createRef,
           className: classes.input,

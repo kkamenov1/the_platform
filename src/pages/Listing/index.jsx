@@ -8,7 +8,11 @@ import qs from 'qs';
 import { history } from '../../store';
 import WrapWithHits from './wrap-with-hits';
 import CustomMapMarker from './custom-map-marker';
-import { MAP_ZOOM_LEVEL, DEBOUNCE_TIME } from '../../core/config';
+import {
+  MAP_ZOOM_LEVEL,
+  DEBOUNCE_TIME,
+  HITS_PER_PAGE_LISTING,
+} from '../../core/config';
 
 
 const searchClient = algoliasearch(
@@ -23,7 +27,7 @@ const routeStateDefaultValues = {
   sport: undefined,
   languages: undefined,
   duration: '',
-  hitsPerPage: '20',
+  hitsPerPage: '10',
   boundingBox: {},
 };
 
@@ -254,7 +258,7 @@ const Listing = ({ match, location }) => {
       createURL={createURL}
     >
       <WrapWithHits selectedHit={selectedHit} onHitOver={onHitOver}>
-        <Configure hitsPerPage={20} aroundRadius={5000} />
+        <Configure hitsPerPage={HITS_PER_PAGE_LISTING} aroundRadius={5000} />
 
         <div style={{ height: 'calc(100vh - 160px)' }}>
           <GeoSearch
