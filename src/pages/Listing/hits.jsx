@@ -61,9 +61,10 @@ const Hits = ({
   hits,
   onHitOver,
   showMap,
+  location,
 }) => {
   const dispatch = useDispatch();
-  const location = useSelector((state) => state.app.location);
+  const currentLocation = useSelector((state) => state.app.location);
   const classes = useStyles();
 
   const handleToggleMap = (event) => {
@@ -86,7 +87,7 @@ const Hits = ({
         alignItems="center"
       >
         <Grid item>
-          <Places defaultRefinement={location} />
+          <Places defaultRefinement={currentLocation} location={location} />
           <div className={classes.dummy} />
           {hits && hits.length > HITS_PER_PAGE_LISTING / 2 ? (
             <Fab
@@ -142,12 +143,14 @@ const Hits = ({
 
 Hits.defaultProps = {
   showMap: true,
+  location: undefined,
 };
 
 Hits.propTypes = {
   hits: PropTypes.array.isRequired,
   showMap: PropTypes.bool,
   onHitOver: PropTypes.func.isRequired,
+  location: PropTypes.string,
 };
 
 export default connectHits(Hits);

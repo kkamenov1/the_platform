@@ -16,3 +16,14 @@ export const getMinimalPrice = (methods) => Math.min(
 );
 
 export const formatNumber = (value) => Number(value).toLocaleString();
+
+export const getCategorySlug = (name) => name
+  .split(', ')
+  .map((item) => item.split(' ').join('-'))
+  .join('--');
+
+export const getCategoryName = (slug) => slug
+  .split('--')
+  .map(decodeURIComponent)
+  .map((item) => item.split('-').join(' '))
+  .join(', ');

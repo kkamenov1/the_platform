@@ -43,7 +43,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const WrapWithHits = ({ children, selectedHit, onHitOver }) => {
+const WrapWithHits = ({
+  children,
+  selectedHit,
+  onHitOver,
+  location,
+}) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const showMap = useSelector((state) => state.listing.showMap);
@@ -66,7 +71,12 @@ const WrapWithHits = ({ children, selectedHit, onHitOver }) => {
   return (
     <>
       <div className={classnames(classes.hitsContainer, { [classes.hitsContainerExpanded]: !showMap })}>
-        <CustomHits selectedHit={selectedHit} onHitOver={onHitOver} showMap={showMap} />
+        <CustomHits
+          selectedHit={selectedHit}
+          onHitOver={onHitOver}
+          showMap={showMap}
+          location={location}
+        />
         <Typography align="center" component="div" className={classes.paginationWrapper}>
           <CustomPagination />
         </Typography>
@@ -83,6 +93,8 @@ const WrapWithHits = ({ children, selectedHit, onHitOver }) => {
 
 WrapWithHits.defaultProps = {
   children: null,
+  location: undefined,
+  selectedHit: {},
 };
 
 WrapWithHits.propTypes = {
@@ -90,6 +102,9 @@ WrapWithHits.propTypes = {
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,
   ]),
+  selectedHit: PropTypes.object,
+  onHitOver: PropTypes.func.isRequired,
+  location: PropTypes.string,
 };
 
 export default WrapWithHits;

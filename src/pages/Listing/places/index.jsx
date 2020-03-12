@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { TextField, withStyles } from '@material-ui/core';
 import places from 'places.js';
 import connect from './connector';
+import { getCategoryName } from '../../../core/utils';
+
 
 const styles = {
   formControl: {
@@ -29,14 +31,24 @@ const styles = {
 };
 
 class Places extends Component {
-  componentDidMount() {
-    const { refine, defaultRefinement } = this.props;
+  constructor(props) {
+    super(props);
+    this.state = {
+      autocompleteInstance: undefined,
+    };
+  }
 
+  componentDidMount() {
+    const { refine, defaultRefinement, location } = this.props;
     const autocomplete = places({
       container: this.element,
       type: 'city',
       language: 'en',
       aroundLatLngViaIP: false,
+    });
+
+    this.setState({
+      autocompleteInstance: autocomplete,
     });
 
     autocomplete.on('change', (event) => {
@@ -46,7 +58,21 @@ class Places extends Component {
     autocomplete.on('clear', () => {
       refine(defaultRefinement);
     });
+
+    autocomplete.setVal((location && getCategoryName(location)) || '');
+    window.addEventListener('popstate', this.handlePopState);
   }
+
+  componentWillUnmount() {
+    window.removeEventListener('popstate', this.handlePopState);
+  }
+
+  handlePopState = () => {
+    const { location } = this.props;
+    const { autocompleteInstance } = this.state;
+    autocompleteInstance.setVal((location && getCategoryName(location)) || '');
+    autocompleteInstance.close();
+  };
 
   createRef = (c) => (this.element = c);
 
@@ -69,10 +95,15 @@ class Places extends Component {
   }
 }
 
+Places.defaultProps = {
+  location: undefined,
+};
+
 Places.propTypes = {
   refine: PropTypes.func.isRequired,
   defaultRefinement: PropTypes.object.isRequired,
   classes: PropTypes.object.isRequired,
+  location: PropTypes.string,
 };
 
 export default withStyles(styles)(connect(Places));

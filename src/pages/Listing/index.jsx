@@ -13,6 +13,7 @@ import {
   DEBOUNCE_TIME,
   HITS_PER_PAGE_LISTING,
 } from '../../core/config';
+import { getCategorySlug, getCategoryName } from '../../core/utils';
 
 
 const searchClient = algoliasearch(
@@ -30,16 +31,6 @@ const routeStateDefaultValues = {
   hitsPerPage: '10',
   boundingBox: {},
 };
-
-const getCategorySlug = (name) => name
-  .split(', ')
-  .map((item) => item.split(' ').join('-'))
-  .join('--');
-
-const getCategoryName = (slug) => slug
-  .split('--')
-  .map(decodeURIComponent)
-  .join(', ');
 
 const urlToSearchState = async (location) => {
   const pathnameMatches = location.pathname.match(/gurus\/(.*?)\/?$/);
@@ -157,8 +148,7 @@ const Listing = ({ match, location }) => {
     const queryParameters = {};
     const categoryPath = updatedSearchState.category
       ? `${getCategorySlug(updatedSearchState.category)}`
-      : match.params.location ? `${match.params.location}`
-        : '';
+      : '';
 
     const routeState = {
       page: String(updatedSearchState.page),
@@ -257,7 +247,11 @@ const Listing = ({ match, location }) => {
       onSearchStateChange={onSearchStateChange}
       createURL={createURL}
     >
-      <WrapWithHits selectedHit={selectedHit} onHitOver={onHitOver}>
+      <WrapWithHits
+        selectedHit={selectedHit}
+        onHitOver={onHitOver}
+        location={match.params.location}
+      >
         <Configure hitsPerPage={HITS_PER_PAGE_LISTING} aroundRadius={5000} />
 
         <div style={{ height: 'calc(100vh - 160px)' }}>
