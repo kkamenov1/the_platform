@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Button, FormControl } from '@material-ui/core';
-import { InputWithLabel, SimpleSelect } from '../../core/components';
-import sports from '../../constants/sports';
+import places from 'places.js';
+import { Link } from 'react-router-dom';
+import { InputWithLabel, SimpleSelect } from '../../../core/components';
+import sports from '../../../constants/sports';
+import { getCategorySlug } from '../../../core/utils';
 
 const useStyles = makeStyles((theme) => ({
   outerModalContainer: {
@@ -43,10 +46,39 @@ const useStyles = makeStyles((theme) => ({
 
 const SearchTrainersWindow = () => {
   const classes = useStyles();
-  const [value, setSelectValue] = React.useState('');
+  const [sport, setSport] = useState('');
+  const [autocompleteInstance, setAutocompleteInstance] = useState();
+  const ref = useRef();
 
   const onSportSelectChange = (event) => {
-    setSelectValue(event.target.value);
+    setSport(event.target.value);
+  };
+
+  useEffect(() => {
+    const autocomplete = places({
+      container: ref.current,
+      type: 'city',
+      language: 'en',
+      aroundLatLngViaIP: false,
+    });
+
+    setAutocompleteInstance(autocomplete);
+
+    autocomplete.on('change', (event) => {
+      autocomplete.setVal(event.suggestion.value);
+    });
+
+    autocomplete.on('clear', () => {
+      autocomplete.setVal('');
+    });
+  }, [setAutocompleteInstance]);
+
+  const buildUrl = () => {
+    const category = autocompleteInstance && autocompleteInstance.getVal()
+      ? `/${getCategorySlug(autocompleteInstance.getVal())}`
+      : '';
+    const sportQueryString = sport ? `?sport=${sport}` : '';
+    return `/gurus${category}${sportQueryString}`;
   };
 
   return (
@@ -62,20 +94,22 @@ const SearchTrainersWindow = () => {
 
         <div>
           <form className={classes.form}>
-            <InputWithLabel id="place" placeholder="Anywhere" label="where" />
+            <InputWithLabel id="place" placeholder="Anywhere" label="where" inputProps={{ ref }} />
             <SimpleSelect
               id="sport"
               label="Sport"
               name="sport"
               options={sports}
               onChange={onSportSelectChange}
-              selectedValue={value}
+              selectedValue={sport}
             />
             <FormControl className={classes.searchBtnWrapper} fullWidth>
               <Button
                 size="large"
                 variant="contained"
                 color="primary"
+                component={Link}
+                to={() => buildUrl()}
               >
                 Search
               </Button>

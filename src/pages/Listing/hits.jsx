@@ -16,7 +16,8 @@ import Hit from './hit';
 import Places from './places';
 import RefinementsModal from './refinements-modal';
 import { toggleMap, toggleRefinementsModal } from './actions';
-import { HITS_PER_PAGE_LISTING } from '../../core/config';
+import { ClearFiltersBtn } from './widgets';
+import { ReactComponent as NoResultsMagnifier } from '../../svg/no-results-magnifier.svg';
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
@@ -49,11 +50,17 @@ const useStyles = makeStyles((theme) => ({
 
   noResultsContainer: {
     marginTop: 100,
+    marginBottom: 20,
   },
 
   dummy: {
     width: 360,
     display: 'inline-block',
+  },
+
+  magnifier: {
+    width: 140,
+    height: 140,
   },
 }));
 
@@ -77,9 +84,7 @@ const Hits = ({
 
   return (
     <>
-      {hits && hits.length > HITS_PER_PAGE_LISTING / 2 ? (
-        <RefinementsModal />
-      ) : null}
+      <RefinementsModal />
       <Grid
         container
         className={classes.toolbar}
@@ -89,17 +94,15 @@ const Hits = ({
         <Grid item>
           <Places defaultRefinement={currentLocation} location={location} />
           <div className={classes.dummy} />
-          {hits && hits.length > HITS_PER_PAGE_LISTING / 2 ? (
-            <Fab
-              size="small"
-              color="inherit"
-              aria-label="filter"
-              className={classes.filterBtn}
-              onClick={openRefinementsModal}
-            >
-              <FilterListIcon />
-            </Fab>
-          ) : null}
+          <Fab
+            size="small"
+            color="inherit"
+            aria-label="filter"
+            className={classes.filterBtn}
+            onClick={openRefinementsModal}
+          >
+            <FilterListIcon />
+          </Fab>
         </Grid>
 
         <Grid item>
@@ -127,15 +130,25 @@ const Hits = ({
           ))}
         </Grid>
       ) : (
-        <div className={classes.noResultsContainer}>
+        <Typography
+          component="div"
+          className={classes.noResultsContainer}
+          align="center"
+        >
+          <Typography component="div" paragraph>
+            <NoResultsMagnifier className={classes.magnifier} />
+          </Typography>
           <Typography variant="h6" component="h6" paragraph>
             No results found
           </Typography>
           <Typography variant="body2" component="p" paragraph>
-            No gurus found for that location. Maybe you can search for other location.
+            No gurus found for that location. Maybe you can search for other location or try to reset your applied filters.
+          </Typography>
+          <Typography component="div" paragraph>
+            <ClearFiltersBtn variant="outlined" />
           </Typography>
           <Divider />
-        </div>
+        </Typography>
       )}
     </>
   );

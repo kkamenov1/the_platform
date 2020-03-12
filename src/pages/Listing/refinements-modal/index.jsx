@@ -10,11 +10,13 @@ import {
   DialogActions,
   Grid,
 } from '@material-ui/core';
-import RefinementList from './widgets/refinement-list';
-import SaveFiltersBtn from './widgets/save-filters-btn';
-import ClearFiltersBtn from './widgets/clear-filters-btn';
-import RangeSlider from './widgets/range-slider';
-import ResultsNumber from './widgets/results-number';
+import {
+  RefinementList,
+  SaveFiltersBtn,
+  ClearFiltersBtn,
+  RangeSlider,
+  ResultsNumber,
+} from '../widgets';
 import { toggleRefinementsModal } from '../actions';
 
 const useStyles = makeStyles({
@@ -77,8 +79,12 @@ const RefinementsModal = () => {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <ClearFiltersBtn />
-        <SaveFiltersBtn onClick={closeModal} />
+        <ClearFiltersBtn variant="outlined" />
+        <SaveFiltersBtn
+          variant="contained"
+          color="primary"
+          onClick={closeModal}
+        />
       </DialogActions>
     </Dialog>
   );

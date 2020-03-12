@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connectStats } from 'react-instantsearch-dom';
-import { formatNumber } from '../../../../core/utils';
+import { formatNumber } from '../../../core/utils';
 
 const ResultsNumber = ({ nbHits }) => (
   <div>

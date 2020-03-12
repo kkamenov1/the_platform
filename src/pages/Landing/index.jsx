@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import SearchTrainersWindow from '../../components/search-trainers-window';
+import SearchTrainersWindow from './search-trainers-window';
 
 const useStyles = makeStyles((theme) => ({
   outerContainer: {

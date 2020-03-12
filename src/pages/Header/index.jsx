@@ -13,10 +13,12 @@ import {
   useMediaQuery,
 } from '@material-ui/core';
 import { KeyboardArrowDown } from '@material-ui/icons';
-
 import { ReactComponent as Logo } from '../../svg/logo.svg';
 import {
-  NavigationRoutes, ADMIN, LANDING,
+  NavigationRoutes,
+  ADMIN,
+  LANDING,
+  LISTING_DEFAULT,
 } from '../../constants/routes';
 import MobileDrawerNavigation from '../../components/mobile-drawer-navigation';
 import AvatarNavButton from '../../components/avatar-nav-button';
@@ -215,18 +217,18 @@ const Header = () => {
                   alignItems="center"
                   className={classes.nav}
                 >
-                  {!isLandingPage && (
-                    <Grid item className={classes.navBtnWrapper}>
-                      <Button
-                        className={classes.navBtn}
-                        disableRipple
-                        component={Link}
-                        to={LANDING}
-                      >
-                        Home
-                      </Button>
-                    </Grid>
-                  )}
+                  {/* GURUS */}
+                  <Grid item className={classes.navBtnWrapper}>
+                    <Button
+                      className={classes.navBtn}
+                      disableRipple
+                      component={Link}
+                      to={LISTING_DEFAULT}
+                    >
+                      Gurus
+                    </Button>
+                  </Grid>
+
                   {/* ADMIN */}
                   {auth && auth.isAdmin && (
                     <Grid

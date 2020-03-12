@@ -2,12 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connectStats } from 'react-instantsearch-dom';
 import { Button } from '@material-ui/core';
-import { formatNumber } from '../../../../core/utils';
+import { formatNumber } from '../../../core/utils';
 
-const SaveFiltersBtn = ({ nbHits, onClick }) => (
+const SaveFiltersBtn = ({ nbHits, onClick, ...btnProps }) => (
   <Button
-    color="primary"
     onClick={onClick}
+    {...btnProps}
   >
     {`See ${formatNumber(nbHits)} ${nbHits !== 1 ? 'results' : 'result'}`}
   </Button>
