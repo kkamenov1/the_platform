@@ -33,12 +33,6 @@ import { useIsMobile } from '../../core/hooks';
 
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  grow: {
-    flexGrow: 1,
-  },
   menuButton: {
     marginLeft: -12,
     marginRight: 20,
@@ -164,7 +158,7 @@ const Header = () => {
   };
 
   return (
-    <div className={classes.root}>
+    <>
       <MobileDrawerNavigation toggleDrawer={toggleDrawer} open={isMobileNavigationOpen} />
       <AppBar
         position="static"
@@ -200,12 +194,12 @@ const Header = () => {
                   </div>
                 </Button>
               ) : (
-                  <Link to={LANDING}>
-                    <Logo className={classnames(
-                      classes.logo, { [classes.orangeLogo]: isMobileNavigationOpen },
-                    )}
-                    />
-                  </Link>
+                <Link to={LANDING}>
+                  <Logo className={classnames(
+                    classes.logo, { [classes.orangeLogo]: isMobileNavigationOpen },
+                  )}
+                  />
+                </Link>
               )}
             </Grid>
 
@@ -315,7 +309,7 @@ const Header = () => {
 
         </Toolbar>
       </AppBar>
-    </div>
+    </>
   );
 };
 
