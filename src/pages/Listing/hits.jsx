@@ -18,6 +18,7 @@ import RefinementsModal from './refinements-modal';
 import { toggleMap, toggleRefinementsModal } from './actions';
 import { ClearFiltersBtn } from './widgets';
 import { ReactComponent as NoResultsMagnifier } from '../../svg/no-results-magnifier.svg';
+import { useIsMobile } from '../../core/hooks';
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
@@ -37,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: 'none',
     backgroundColor: theme.palette.common.white,
     border: `1px solid ${theme.palette.grey[400]}`,
+    marginLeft: 10,
 
     '&:hover': {
       backgroundColor: theme.palette.common.white,
@@ -51,11 +53,6 @@ const useStyles = makeStyles((theme) => ({
   noResultsContainer: {
     marginTop: 100,
     marginBottom: 20,
-  },
-
-  dummy: {
-    width: 360,
-    display: 'inline-block',
   },
 
   magnifier: {
@@ -73,6 +70,7 @@ const Hits = ({
   const dispatch = useDispatch();
   const currentLocation = useSelector((state) => state.app.location);
   const classes = useStyles();
+  const isMobile = useIsMobile('md');
 
   const handleToggleMap = (event) => {
     dispatch(toggleMap(event.target.checked));
@@ -91,9 +89,8 @@ const Hits = ({
         justify="space-between"
         alignItems="center"
       >
-        <Grid item>
+        <Grid item xs={12} md={6} container alignItems="center">
           <Places defaultRefinement={currentLocation} location={location} />
-          <div className={classes.dummy} />
           <Fab
             size="small"
             color="inherit"
@@ -105,27 +102,36 @@ const Hits = ({
           </Fab>
         </Grid>
 
-        <Grid item>
-          <FormControlLabel
-            control={(
-              <Switch
-                checked={showMap}
-                onChange={handleToggleMap}
-                value="map"
-                color="primary"
-              />
-            )}
-            label="Show Map"
-            labelPlacement="start"
-          />
-        </Grid>
+        {!isMobile && (
+          <Grid item>
+            <FormControlLabel
+              control={(
+                <Switch
+                  checked={showMap}
+                  onChange={handleToggleMap}
+                  value="map"
+                  color="primary"
+                />
+              )}
+              label="Show Map"
+              labelPlacement="start"
+            />
+          </Grid>
+        )}
       </Grid>
       {hits && hits.length ? (
-        <Grid container spacing={!showMap ? 4 : 0} className={classes.container}>
+        <Grid container spacing={!showMap || isMobile ? 4 : 0} className={classes.container}>
           {hits.map((hit, i) => (
-            <Grid key={hit.objectID + i} item xs={showMap ? 12 : 3}>
+            <Grid
+              item
+              key={hit.objectID + i}
+              xs={showMap || isMobile ? 12 : 3}
+              sm={!showMap || isMobile ? 6 : 12}
+              md={!showMap || isMobile ? 4 : 12}
+              lg={!showMap ? 3 : 12}
+            >
               <Hit hit={hit} onHitOver={onHitOver} showMap={showMap} />
-              {showMap && <Divider />}
+              {showMap && !isMobile && <Divider />}
             </Grid>
           ))}
         </Grid>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useTheme, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
 
 import { Link } from 'react-router-dom';
@@ -10,7 +10,6 @@ import {
   Grid,
   Button,
   Hidden,
-  useMediaQuery,
 } from '@material-ui/core';
 import { KeyboardArrowDown } from '@material-ui/icons';
 import { ReactComponent as Logo } from '../../svg/logo.svg';
@@ -30,6 +29,7 @@ import {
   SIGN_IN,
   SIGN_UP,
 } from '../../constants/authModalPages';
+import { useIsMobile } from '../../core/hooks';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -125,8 +125,7 @@ const useStyles = makeStyles((theme) => ({
 const Header = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useIsMobile('sm');
 
   const isMobileNavigationOpen = useSelector((state) => state.header.isMobileNavigationOpen);
   const auth = useSelector((state) => state.app.auth);
@@ -179,35 +178,41 @@ const Header = () => {
       >
         <Toolbar className={classes.toolBar}>
 
-          <Grid container alignItems="center">
-            <Grid item xs={12} md={6} container alignItems="center">
-              <Button
-                className={classes.logoBtn}
-                onClick={toggleDrawer(!isMobileNavigationOpen)}
-                disableRipple
-              >
-                <div className={classes.logoWrapper}>
+          <Grid container alignItems="center" justify="space-between">
+            <Grid item>
+              {isMobile ? (
+                <Button
+                  className={classes.logoBtn}
+                  onClick={toggleDrawer(!isMobileNavigationOpen)}
+                  disableRipple
+                >
+                  <div className={classes.logoWrapper}>
+                    <Logo className={classnames(
+                      classes.logo, { [classes.orangeLogo]: isMobileNavigationOpen },
+                    )}
+                    />
+                  </div>
+                  <div className={classes.logoWrapper}>
+                    <KeyboardArrowDown className={classnames(
+                      classes.arrow, { [classes.rotateArrow]: isMobileNavigationOpen },
+                    )}
+                    />
+                  </div>
+                </Button>
+              ) : (
                   <Link to={LANDING}>
                     <Logo className={classnames(
                       classes.logo, { [classes.orangeLogo]: isMobileNavigationOpen },
                     )}
                     />
                   </Link>
-                </div>
-                <div className={classnames(classes.logoWrapper, classes.arrowWrapper)}>
-                  <KeyboardArrowDown className={classnames(
-                    classes.arrow, { [classes.rotateArrow]: isMobileNavigationOpen },
-                  )}
-                  />
-                </div>
-              </Button>
+              )}
             </Grid>
 
 
             <Hidden smDown>
               <Grid
                 item
-                xs={6}
                 className={classes.navigationWrapper}
               >
                 <Grid

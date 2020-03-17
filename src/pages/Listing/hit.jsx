@@ -13,6 +13,7 @@ import {
 } from '@material-ui/core';
 import Slider from 'react-slick';
 import { generateTileSliderConfig, FALLBACK_IMAGE } from '../../core/config';
+import { useIsMobile } from '../../core/hooks';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -92,7 +93,7 @@ const Hit = ({
 }) => {
   const classes = useStyles();
   const sliderRef = React.useRef(null);
-
+  const isMobile = useIsMobile('md');
   const minPriceAttribute = `From $${hit.priceFrom}`;
   const durationAttribute = `For ${hit.duration} days`;
   const attributesForRegularContent = [
@@ -116,7 +117,7 @@ const Hit = ({
       onMouseLeave={() => onHitOver(null)}
     >
       <Grid container>
-        <Grid item xs={showMap ? 5 : 12} className={classes.hover}>
+        <Grid item xs={!showMap || isMobile ? 12 : 5} className={classes.hover}>
           <Slider ref={sliderRef} {...sliderSettings}>
             {allImages.map((img) => (
               <CardMedia
@@ -131,7 +132,7 @@ const Hit = ({
 
         <Grid
           item
-          xs={showMap ? 7 : 12}
+          xs={!showMap || isMobile ? 12 : 7}
           className={classes.content}
         >
           <div className={classes.labelWrapper}>

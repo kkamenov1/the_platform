@@ -8,25 +8,16 @@ import { getCategoryName } from '../../../core/utils';
 
 const styles = {
   formControl: {
-    position: 'absolute',
-    top: '50%',
-    transform: 'translate(0, -50%)',
-    zIndex: 999,
+    width: 'calc(100% - 50px)',
+    maxWidth: 350,
   },
-
   input: {
-    width: 300,
+    width: 'calc(100% - 50px)',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     padding: '15px 30px 15px 14px',
-    transition: 'width 0.4s ease-in-out',
     backgroundColor: 'white',
-
-    '&:focus': {
-      width: 375,
-      transition: 'width 0.4s ease-in-out',
-    },
   },
 };
 

@@ -1,17 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { useTheme } from '@material-ui/core/styles';
-import { useMediaQuery } from '@material-ui/core';
 import BecomeAGuru from '../../components/become-a-guru';
 import { Modal } from '../../core/components';
+import { useIsMobile } from '../../core/hooks';
 import { toggleBecomeGuruModal, clearBecomeGuruModal } from './actions';
 import { withFirebase } from '../../core/lib/Firebase';
 
 const BecomeGuruModal = ({ firebase }) => {
   const dispatch = useDispatch();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useIsMobile('sm');
   const auth = useSelector((state) => state.app.auth);
   const {
     open,

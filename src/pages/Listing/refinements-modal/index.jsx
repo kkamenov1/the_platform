@@ -1,8 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useTheme, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import {
-  useMediaQuery,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -18,6 +17,7 @@ import {
   ResultsNumber,
 } from '../widgets';
 import { toggleRefinementsModal } from '../actions';
+import { useIsMobile } from '../../../core/hooks';
 
 const useStyles = makeStyles({
   title: {
@@ -31,9 +31,8 @@ const useStyles = makeStyles({
 
 const RefinementsModal = () => {
   const dispatch = useDispatch();
-  const theme = useTheme();
   const classes = useStyles();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useIsMobile('sm');
   const refinementsModalOpen = useSelector((state) => state.listing.refinementsModalOpen);
 
   const closeModal = () => {

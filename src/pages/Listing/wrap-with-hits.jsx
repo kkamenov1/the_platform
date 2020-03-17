@@ -8,6 +8,7 @@ import { setLocation } from '../../app/actions';
 import CustomHits from './hits';
 import CustomPagination from './custom-pagination';
 import { FALLBACK_LOCATION } from '../../core/config';
+import { useIsMobile } from '../../core/hooks';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -52,6 +53,7 @@ const WrapWithHits = ({
   const classes = useStyles();
   const dispatch = useDispatch();
   const showMap = useSelector((state) => state.listing.showMap);
+  const isMobile = useIsMobile('md');
 
   React.useEffect(() => {
     const geo = navigator.geolocation;
@@ -70,7 +72,10 @@ const WrapWithHits = ({
 
   return (
     <>
-      <div className={classnames(classes.hitsContainer, { [classes.hitsContainerExpanded]: !showMap })}>
+      <div className={classnames(classes.hitsContainer, {
+        [classes.hitsContainerExpanded]: !showMap || isMobile,
+      })}
+      >
         <CustomHits
           selectedHit={selectedHit}
           onHitOver={onHitOver}
@@ -82,7 +87,7 @@ const WrapWithHits = ({
         </Typography>
       </div>
       <div className={classnames(classes.map, {
-        [classes.hideMap]: !showMap,
+        [classes.hideMap]: !showMap || isMobile,
       })}
       >
         {children}

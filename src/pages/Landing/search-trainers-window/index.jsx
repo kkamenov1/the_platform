@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Typography, Button, FormControl } from '@material-ui/core';
+import {
+  Typography, Button, FormControl, TextField,
+} from '@material-ui/core';
 import places from 'places.js';
 import { Link } from 'react-router-dom';
-import { InputWithLabel, SimpleSelect } from '../../../core/components';
+import { SimpleSelect } from '../../../core/components';
 import sports from '../../../constants/sports';
 import { getCategorySlug } from '../../../core/utils';
 
@@ -21,7 +23,6 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   innerModalContainer: {
-    borderRadius: theme.shape.borderRadius,
     width: '100%',
     padding: 24,
     boxShadow: theme.shadows['16'],
@@ -30,14 +31,19 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('md')]: {
       width: 441,
       padding: '32px 32px 24px 32px',
+      borderRadius: theme.shape.borderRadius,
     },
   },
   modalHeader: {
     margin: 0,
     color: theme.palette.text.primary,
   },
-  form: {
-    marginTop: 15,
+  input: {
+    width: 'calc(100% - 50px)',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    backgroundColor: 'white',
   },
   searchBtnWrapper: {
     marginTop: 25,
@@ -89,32 +95,36 @@ const SearchTrainersWindow = () => {
           variant="inherit"
           component="h1"
         >
-          Search Trainers
+          Search Gurus
         </Typography>
 
         <div>
-          <form className={classes.form}>
-            <InputWithLabel id="place" placeholder="Anywhere" label="where" inputProps={{ ref }} />
-            <SimpleSelect
-              id="sport"
-              label="Sport"
-              name="sport"
-              options={sports}
-              onChange={onSportSelectChange}
-              selectedValue={sport}
-            />
-            <FormControl className={classes.searchBtnWrapper} fullWidth>
-              <Button
-                size="large"
-                variant="contained"
-                color="primary"
-                component={Link}
-                to={() => buildUrl()}
-              >
-                Search
-              </Button>
-            </FormControl>
-          </form>
+          <TextField
+            variant="outlined"
+            placeholder="Anywhere"
+            margin="dense"
+            inputProps={{ ref, className: classes.input }}
+            fullWidth
+          />
+          <SimpleSelect
+            id="sport"
+            label="Sport"
+            name="sport"
+            options={sports}
+            onChange={onSportSelectChange}
+            selectedValue={sport}
+          />
+          <FormControl className={classes.searchBtnWrapper} fullWidth>
+            <Button
+              size="large"
+              variant="contained"
+              color="primary"
+              component={Link}
+              to={() => buildUrl()}
+            >
+              Search
+            </Button>
+          </FormControl>
         </div>
       </div>
     </div>

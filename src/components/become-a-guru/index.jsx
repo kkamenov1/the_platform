@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
 import UIDGenerator from 'uid-generator';
 import {
@@ -12,7 +12,6 @@ import {
   Fab,
   MobileStepper,
   Button,
-  useMediaQuery,
 } from '@material-ui/core';
 import { PersonalDetailsStep, GuruDetailsStep, RatesStep } from './steps';
 import Finalization from './finalization';
@@ -29,6 +28,7 @@ import {
 import { setApplicationSubmitted } from '../../app/actions';
 import { withFirebase } from '../../core/lib/Firebase';
 import { getMinimalPrice } from '../../core/utils';
+import { useIsMobile } from '../../core/hooks';
 
 const useStyles = makeStyles((theme) => ({
   left: {
@@ -105,8 +105,7 @@ const checkMethodsForEmptyPrices = (methods) => (
 const BecomeAGuru = ({ firebase }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useIsMobile('sm');
   const steps = getSteps();
   const auth = useSelector((state) => state.app.auth);
   const becomeGuruModal = useSelector((state) => state.becomeGuruModal);
