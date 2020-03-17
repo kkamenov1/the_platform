@@ -10,6 +10,7 @@
     "no-continue": 0,
     "no-nested-ternary": 0,
     "no-restricted-globals": 0,
-    "react/jsx-no-target-blank": 0
+    "react/jsx-no-target-blank": 0,
+    "no-return-assign": 0
   }
 }

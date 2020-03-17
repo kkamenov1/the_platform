@@ -2,6 +2,7 @@ export const SET_GURU_PHOTOS = 'SET_GURU_PHOTOS';
 export const SET_ACTIVE_STEP = 'SET_ACTIVE_STEP';
 export const SET_APPLICATION_UID = 'SET_APPLICATION_UID';
 export const SET_GURU_LOCATION = 'SET_GURU_LOCATION';
+export const SET_GEO_LOCATION = 'SET_GEO_LOCATION';
 export const SET_PERSONAL_DETAILS_ERRORS = 'SET_PERSONAL_DETAILS_ERRORS';
 export const SET_FORM_VALUES = 'SET_FORM_VALUES';
 export const SET_GURU_DETAILS_COACHING_METHODS = 'SET_GURU_DETAILS_COACHING_METHODS';
@@ -58,4 +59,9 @@ export const clearBecomeGuruModal = () => ({
 export const toggleBecomeGuruModal = (open) => ({
   type: TOGGLE_BECOME_GURU_MODAL,
   open,
+});
+
+export const setGeoLocation = (geoloc) => ({
+  type: SET_GEO_LOCATION,
+  geoloc,
 });

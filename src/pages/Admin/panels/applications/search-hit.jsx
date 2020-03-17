@@ -17,7 +17,7 @@ import {
 import { red } from '@material-ui/core/colors';
 import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
-import CarouselArrow from './carousel-arrow';
+import { generateTileSliderConfig, FALLBACK_IMAGE } from '../../../../core/config';
 
 const useStyles = makeStyles((theme) => ({
   media: {
@@ -54,21 +54,7 @@ const SearchHit = ({
 }) => {
   const classes = useStyles();
   const sliderRef = React.useRef(null);
-
-  const sliderSettings = {
-    arrows: true,
-    infinite: true,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    lazyLoad: true,
-    nextArrow: <CarouselArrow
-      onClick={() => sliderRef.slickGoTo(hit.slideIndex + 1)}
-    />,
-    prevArrow: <CarouselArrow
-      prevArrow
-      onClick={() => sliderRef.slickGoTo(hit.slideIndex - 1)}
-    />,
-  };
+  const sliderSettings = generateTileSliderConfig(hit, sliderRef);
 
   const Content = (
     <>
@@ -108,8 +94,8 @@ const SearchHit = ({
         ) : (
           <CardMedia
             className={classes.media}
-            image="https://res.cloudinary.com/dl766ebzy/image/upload/v1578058214/no_image_camera_big_lspgbi.jpg"
-            title="No Image"
+            image={FALLBACK_IMAGE.src}
+            title={FALLBACK_IMAGE.alt}
           />
         )}
       </Slider>
@@ -126,7 +112,7 @@ const SearchHit = ({
         </Typography>
         <Typography component="div" paragraph>
           <Typography variant="button">
-          Location
+            Location
           </Typography>
           <Tooltip title={hit.location}>
             <Typography variant="body2" color="textSecondary" noWrap component="div">
@@ -139,7 +125,7 @@ const SearchHit = ({
           <>
             <Typography component="div" paragraph>
               <Typography variant="button">
-              Languages
+                Languages
               </Typography>
               <Typography variant="body2" color="textSecondary" noWrap component="div">
                 {hit.languages.join(', ')}
@@ -148,7 +134,7 @@ const SearchHit = ({
 
             <Typography component="div" paragraph>
               <Typography variant="button">
-              Birthday
+                Birthday
               </Typography>
               <Typography variant="body2" color="textSecondary" component="div">
                 {new Date(hit.birthday).toLocaleDateString()}
@@ -157,7 +143,7 @@ const SearchHit = ({
 
             <Typography component="div" paragraph>
               <Typography variant="button">
-              Sport
+                Sport
               </Typography>
               <Typography variant="body2" color="textSecondary" component="div">
                 {hit.sport}
@@ -166,7 +152,7 @@ const SearchHit = ({
 
             <Typography component="div" paragraph>
               <Typography variant="button">
-              Introduction
+                Introduction
               </Typography>
               <Tooltip title={hit.introduction ? hit.introduction : 'No introduction'}>
                 <Typography variant="body2" color="textSecondary" component="div" noWrap>
@@ -177,7 +163,7 @@ const SearchHit = ({
 
             <Typography component="div" paragraph>
               <Typography variant="button">
-              Certificate
+                Certificate
               </Typography>
               {hit.certificate ? (
                 <a
@@ -187,19 +173,19 @@ const SearchHit = ({
                   rel="noopener noreferrer"
                 >
                   <Typography variant="body2" color="textSecondary" component="div" noWrap>
-                  CLICK TO VIEW
+                    CLICK TO VIEW
                   </Typography>
                 </a>
               ) : (
                 <Typography variant="body2" color="textSecondary" component="div" noWrap>
-                No Certificate
+                  No Certificate
                 </Typography>
               )}
             </Typography>
 
             <Typography component="div" paragraph>
               <Typography variant="button">
-              Methods
+                Methods
               </Typography>
 
               {hit.methods.map((method, i) => (
@@ -216,7 +202,7 @@ const SearchHit = ({
 
             <Typography component="div" paragraph>
               <Typography variant="button">
-              Duration
+                Duration
               </Typography>
               <Typography variant="body2" color="textSecondary" component="div">
                 {`${hit.duration} days`}

@@ -2,27 +2,25 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
-import { ConnectedRouter } from 'connected-react-router';
 import { CssBaseline } from '@material-ui/core';
-import { history } from '../store';
 import * as routes from '../constants/routes';
 import { withFirebase } from '../core/lib/Firebase';
 import { setAuthUser } from './actions';
-
 import {
   Header,
   Landing,
   Admin,
+  Listing,
 } from '../pages';
 import BecomeGuruModal from '../modals/become-guru';
 import AuthModal from '../modals/auth';
 import UserSubmittedApplicationModal from '../modals/user-submitted-application';
 
+
 const App = ({ firebase }) => {
   const dispatch = useDispatch();
-  const pathname = useSelector((state) => state.router.location.pathname);
-  const isLandingPage = pathname === '/';
-
+  const location = useSelector((state) => state.router.location);
+  const isLandingPage = location.pathname === '/';
 
   useEffect(() => {
     firebase
@@ -34,12 +32,12 @@ const App = ({ firebase }) => {
         localStorage.removeItem('authUser');
         dispatch(setAuthUser(null));
       });
-  });
+  }, [dispatch, firebase]);
 
   return (
-    <ConnectedRouter history={history}>
+    <>
       <CssBaseline />
-      <Header isLandingPage={isLandingPage} />
+      <Header />
       <AuthModal />
       <BecomeGuruModal />
       <UserSubmittedApplicationModal />
@@ -48,9 +46,10 @@ const App = ({ firebase }) => {
         <Switch>
           <Route exact path={routes.LANDING} component={Landing} />
           <Route path={routes.ADMIN} component={Admin} />
+          <Route path={routes.LISTING} component={Listing} />
         </Switch>
       </main>
-    </ConnectedRouter>
+    </>
   );
 };
 

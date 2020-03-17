@@ -1,8 +1,9 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useTheme, makeStyles } from '@material-ui/core/styles';
-import { useMediaQuery, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { Typography } from '@material-ui/core';
 import { Modal } from '../../core/components';
+import { useIsMobile } from '../../core/hooks';
 import { toggleUserSubmittedApplicationModal } from './actions';
 import { ReactComponent as EmailIcon } from '../../svg/mail.svg';
 
@@ -27,9 +28,8 @@ const useStyles = makeStyles((theme) => ({
 
 const UserSubmittedApplicationModal = () => {
   const classes = useStyles();
-  const theme = useTheme();
   const dispatch = useDispatch();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useIsMobile('sm');
   const open = useSelector((state) => state.userSubmittedApplicationModal.open);
 
   const closeModal = () => {

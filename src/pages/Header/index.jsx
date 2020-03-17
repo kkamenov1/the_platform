@@ -1,8 +1,8 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { useTheme, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
+
 import { Link } from 'react-router-dom';
 import {
   AppBar,
@@ -10,12 +10,15 @@ import {
   Grid,
   Button,
   Hidden,
-  useMediaQuery,
 } from '@material-ui/core';
 import { KeyboardArrowDown } from '@material-ui/icons';
-
 import { ReactComponent as Logo } from '../../svg/logo.svg';
-import { NavigationRoutes, ADMIN, LANDING } from '../../constants/routes';
+import {
+  NavigationRoutes,
+  ADMIN,
+  LANDING,
+  LISTING_DEFAULT,
+} from '../../constants/routes';
 import MobileDrawerNavigation from '../../components/mobile-drawer-navigation';
 import AvatarNavButton from '../../components/avatar-nav-button';
 import { toggleMobileNavigation } from './actions';
@@ -26,14 +29,10 @@ import {
   SIGN_IN,
   SIGN_UP,
 } from '../../constants/authModalPages';
+import { useIsMobile } from '../../core/hooks';
+
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  grow: {
-    flexGrow: 1,
-  },
   menuButton: {
     marginLeft: -12,
     marginRight: 20,
@@ -93,7 +92,7 @@ const useStyles = makeStyles((theme) => ({
   },
   logoBtn: {
     display: 'inline-block',
-    height: 'inherit',
+    height: 45,
   },
   [theme.breakpoints.up('md')]: {
     arrowWrapper: {
@@ -117,16 +116,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Header = ({ isLandingPage }) => {
+const Header = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useIsMobile('sm');
 
   const isMobileNavigationOpen = useSelector((state) => state.header.isMobileNavigationOpen);
   const auth = useSelector((state) => state.app.auth);
   const router = useSelector((state) => state.router);
-  const isAdminPage = router.location.pathname.indexOf('/admin') !== -1;
+  const isAdminPage = router.location.pathname.indexOf(ADMIN) !== -1;
+  const isLandingPage = router.location.pathname === LANDING;
 
   const toggleDrawer = (open) => (event) => {
     if (!isMobile) return;
@@ -159,7 +158,7 @@ const Header = ({ isLandingPage }) => {
   };
 
   return (
-    <div className={classes.root}>
+    <>
       <MobileDrawerNavigation toggleDrawer={toggleDrawer} open={isMobileNavigationOpen} />
       <AppBar
         position="static"
@@ -173,34 +172,41 @@ const Header = ({ isLandingPage }) => {
       >
         <Toolbar className={classes.toolBar}>
 
-          <Grid container alignItems="center">
-            <Grid item xs={6}>
-              <Button
-                className={classes.logoBtn}
-                onClick={toggleDrawer(!isMobileNavigationOpen)}
-                disableRipple
-              >
-                <div className={classes.logoWrapper}>
-                  <Link to={LANDING}>
+          <Grid container alignItems="center" justify="space-between">
+            <Grid item>
+              {isMobile ? (
+                <Button
+                  className={classes.logoBtn}
+                  onClick={toggleDrawer(!isMobileNavigationOpen)}
+                  disableRipple
+                >
+                  <div className={classes.logoWrapper}>
                     <Logo className={classnames(
                       classes.logo, { [classes.orangeLogo]: isMobileNavigationOpen },
                     )}
                     />
-                  </Link>
-                </div>
-                <div className={classnames(classes.logoWrapper, classes.arrowWrapper)}>
-                  <KeyboardArrowDown className={classnames(
-                    classes.arrow, { [classes.rotateArrow]: isMobileNavigationOpen },
+                  </div>
+                  <div className={classes.logoWrapper}>
+                    <KeyboardArrowDown className={classnames(
+                      classes.arrow, { [classes.rotateArrow]: isMobileNavigationOpen },
+                    )}
+                    />
+                  </div>
+                </Button>
+              ) : (
+                <Link to={LANDING}>
+                  <Logo className={classnames(
+                    classes.logo, { [classes.orangeLogo]: isMobileNavigationOpen },
                   )}
                   />
-                </div>
-              </Button>
+                </Link>
+              )}
             </Grid>
+
 
             <Hidden smDown>
               <Grid
                 item
-                xs={6}
                 className={classes.navigationWrapper}
               >
                 <Grid
@@ -210,18 +216,18 @@ const Header = ({ isLandingPage }) => {
                   alignItems="center"
                   className={classes.nav}
                 >
-                  {!isLandingPage && (
-                    <Grid item className={classes.navBtnWrapper}>
-                      <Button
-                        className={classes.navBtn}
-                        disableRipple
-                        component={Link}
-                        to={LANDING}
-                      >
-                        Home
-                      </Button>
-                    </Grid>
-                  )}
+                  {/* GURUS */}
+                  <Grid item className={classes.navBtnWrapper}>
+                    <Button
+                      className={classes.navBtn}
+                      disableRipple
+                      component={Link}
+                      to={LISTING_DEFAULT}
+                    >
+                      Gurus
+                    </Button>
+                  </Grid>
+
                   {/* ADMIN */}
                   {auth && auth.isAdmin && (
                     <Grid
@@ -258,7 +264,7 @@ const Header = ({ isLandingPage }) => {
                     <Button
                       className={classes.navBtn}
                       disableRipple
-                      onClick={() => {}}
+                      onClick={() => { }}
                     >
                       {navRoutesWithoutHome[1].name}
                     </Button>
@@ -303,13 +309,8 @@ const Header = ({ isLandingPage }) => {
 
         </Toolbar>
       </AppBar>
-    </div>
+    </>
   );
 };
-
-Header.propTypes = {
-  isLandingPage: PropTypes.bool.isRequired,
-};
-
 
 export default Header;

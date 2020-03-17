@@ -4,6 +4,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { sanitizeString } = require('./utils');
+const {
+  addToIndex,
+  updateIndex,
+  deleteFromIndex,
+} = require('./algolia');
 
 admin.initializeApp();
 
@@ -47,7 +52,9 @@ app.get('/applications', (req, res) => {
 });
 
 exports.webApi = functions.https.onRequest(main);
-
+exports.addToIndex = addToIndex;
+exports.updateIndex = updateIndex;
+exports.deleteFromIndex = deleteFromIndex;
 // // TODO: improve this and configure AWS SES in the AWS console after
 // // you create an email server and get a real domain
 // exports.emailMessage = functions.https.onRequest((req, res) => {

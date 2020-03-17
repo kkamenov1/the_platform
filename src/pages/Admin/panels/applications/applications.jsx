@@ -2,8 +2,8 @@ import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { useSnackbar } from 'notistack';
-import { Typography, useMediaQuery } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { animateScroll as scroll } from 'react-scroll';
 import api from '../../../../api';
 import Hits from './hits';
@@ -12,6 +12,7 @@ import PageSizeSelector from './page-size-selector';
 import MockedHits from './mocked-hits';
 import SearchHit from './search-hit';
 import { Pagination, Modal } from '../../../../core/components';
+import { useIsMobile } from '../../../../core/hooks';
 import {
   setPage,
   setQuery,
@@ -64,8 +65,7 @@ const Applications = ({ firebase }) => {
   const query = useSelector((state) => state.admin.applications.query);
   const modalOpen = useSelector((state) => state.admin.applications.modalOpen);
   const selectedHit = useSelector((state) => state.admin.applications.selectedHit);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useIsMobile('sm');
 
   const executeQuery = useCallback(() => {
     dispatch(setApplicationsLoading(true));

@@ -29,6 +29,7 @@ const SocialLoginButtons = ({ firebase }) => {
             email: socialAuthUser.user.email,
             displayName: socialAuthUser.user.displayName,
             photoURL: socialAuthUser.user.photoURL,
+            isAdmin: false,
           }, { merge: true })))
       .then(() => {
         setErrorGoogle(null);
@@ -50,6 +51,7 @@ const SocialLoginButtons = ({ firebase }) => {
             displayName: socialAuthUser.additionalUserInfo.profile.name,
             photoURL: socialAuthUser.user.photoURL,
             emailVerified: true,
+            isAdmin: false,
           }, { merge: true })))
       .then(() => {
         setErrorFB(null);

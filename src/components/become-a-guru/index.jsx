@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
 import UIDGenerator from 'uid-generator';
 import {
@@ -12,7 +12,6 @@ import {
   Fab,
   MobileStepper,
   Button,
-  useMediaQuery,
 } from '@material-ui/core';
 import { PersonalDetailsStep, GuruDetailsStep, RatesStep } from './steps';
 import Finalization from './finalization';
@@ -28,6 +27,8 @@ import {
 } from '../../modals/become-guru/actions';
 import { setApplicationSubmitted } from '../../app/actions';
 import { withFirebase } from '../../core/lib/Firebase';
+import { getMinimalPrice } from '../../core/utils';
+import { useIsMobile } from '../../core/hooks';
 
 const useStyles = makeStyles((theme) => ({
   left: {
@@ -104,8 +105,7 @@ const checkMethodsForEmptyPrices = (methods) => (
 const BecomeAGuru = ({ firebase }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useIsMobile('sm');
   const steps = getSteps();
   const auth = useSelector((state) => state.app.auth);
   const becomeGuruModal = useSelector((state) => state.becomeGuruModal);
@@ -123,6 +123,7 @@ const BecomeAGuru = ({ firebase }) => {
     introduction,
     certificate,
     duration,
+    _geoloc,
   } = becomeGuruModal;
 
   const uidgen = new UIDGenerator();
@@ -166,6 +167,7 @@ const BecomeAGuru = ({ firebase }) => {
 
       firebase.application(newApplicationUID).set({
         location,
+        _geoloc,
         languages,
         birthday: birthDate.toDateString(),
         images: filteredImages,
@@ -176,6 +178,7 @@ const BecomeAGuru = ({ firebase }) => {
     } else {
       firebase.application(applicationUID).update({
         location,
+        _geoloc,
         languages,
         birthday: birthDate.toDateString(),
         images: filteredImages,
@@ -238,12 +241,18 @@ const BecomeAGuru = ({ firebase }) => {
       dispatch(setApplicationSubmitted(true));
     });
 
+    const mappedSelectedMethods = selectedMethods.map((item) => ({
+      name: item.name,
+      price: item.price,
+    }));
+
     firebase.application(applicationUID).update({
-      methods: selectedMethods,
+      methods: mappedSelectedMethods,
       duration,
       userID: auth.uid,
       photoURL: auth.photoURL,
       displayName: auth.displayName,
+      priceFrom: getMinimalPrice(selectedMethods),
     }).then(() => {
       dispatch(setRatesErrors({}));
     });
@@ -333,7 +342,7 @@ const BecomeAGuru = ({ firebase }) => {
                 )}
             backButton={(
               <Button size="small" onClick={handleBack} disabled={activeStep <= 0 || activeStep >= 3}>
-                    Back
+                Back
               </Button>
                 )}
           />
@@ -355,7 +364,7 @@ const BecomeAGuru = ({ firebase }) => {
                 onClick={handleBack}
                 className={classnames(classes.fab, classes.backBtn)}
               >
-                    Back
+                Back
               </Fab>
               )}
             </Grid>

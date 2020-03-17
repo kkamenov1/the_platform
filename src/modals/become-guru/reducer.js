@@ -3,6 +3,7 @@ import {
   SET_ACTIVE_STEP,
   SET_APPLICATION_UID,
   SET_GURU_LOCATION,
+  SET_GEO_LOCATION,
   SET_FORM_VALUES,
   SET_PERSONAL_DETAILS_ERRORS,
   SET_GURU_DETAILS_COACHING_METHODS,
@@ -17,6 +18,7 @@ export const defaultStore = {
   activeStep: 0,
   applicationUID: null,
   location: '',
+  _geoloc: null,
   languages: [],
   day: '',
   month: '',
@@ -104,6 +106,12 @@ export default (state = defaultStore, action) => {
       return {
         ...state,
         location: action.location,
+      };
+
+    case SET_GEO_LOCATION:
+      return {
+        ...state,
+        _geoloc: action.geoloc,
       };
 
     case SET_PERSONAL_DETAILS_ERRORS:

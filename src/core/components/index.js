@@ -10,6 +10,7 @@ import UploadAPhoto from './upload-a-photo';
 import ModalHeader from './modal-header';
 import ImageUploader from './image-uploader';
 import Pagination from './pagination';
+import CarouselArrow from './carousel-arrow';
 
 export {
   FormError,
@@ -24,4 +25,5 @@ export {
   ModalHeader,
   ImageUploader,
   Pagination,
+  CarouselArrow,
 };
