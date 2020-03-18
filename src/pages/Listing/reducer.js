@@ -22,6 +22,12 @@ export default (state = defaultStore, action) => {
         refinementsModalOpen: action.open,
       };
 
+    case '@@router/LOCATION_CHANGE':
+      return {
+        ...state,
+        refinementsModalOpen: false,
+      };
+
     default:
       return state;
   }

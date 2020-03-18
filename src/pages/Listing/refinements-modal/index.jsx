@@ -8,7 +8,9 @@ import {
   DialogContentText,
   DialogActions,
   Grid,
+  IconButton,
 } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 import {
   RefinementList,
   SaveFiltersBtn,
@@ -22,6 +24,10 @@ import { useIsMobile } from '../../../core/hooks';
 const useStyles = makeStyles({
   title: {
     padding: 24,
+  },
+
+  actions: {
+    padding: 16,
   },
 
   content: {
@@ -60,7 +66,15 @@ const RefinementsModal = () => {
           </Grid>
 
           <Grid item>
-            <ResultsNumber />
+            {!isMobile ? <ResultsNumber /> : (
+              <IconButton
+                className={classes.closeBtn}
+                disableRipple
+                onClick={closeModal}
+              >
+                <CloseIcon />
+              </IconButton>
+            )}
           </Grid>
         </Grid>
       </DialogTitle>
@@ -77,7 +91,7 @@ const RefinementsModal = () => {
           <RefinementList attribute="languages" header="Languages" />
         </DialogContentText>
       </DialogContent>
-      <DialogActions>
+      <DialogActions className={classes.actions}>
         <ClearFiltersBtn variant="outlined" />
         <SaveFiltersBtn
           variant="contained"
