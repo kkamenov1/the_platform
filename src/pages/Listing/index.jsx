@@ -22,6 +22,7 @@ const searchClient = algoliasearch(
 );
 
 const routeStateDefaultValues = {
+  q: '',
   page: '1',
   methods: undefined,
   priceFrom: '',
@@ -33,13 +34,9 @@ const routeStateDefaultValues = {
 };
 
 const urlToSearchState = async (location) => {
-  const pathnameMatches = location.pathname.match(/gurus\/(.*?)\/?$/);
-  const category = getCategoryName(
-    (pathnameMatches && pathnameMatches[1]) || '',
-  );
-
   const queryParameters = qs.parse(location.search.slice(1));
   const {
+    q = '',
     page = 1,
     sport = [],
     methods = [],
@@ -113,12 +110,13 @@ const urlToSearchState = async (location) => {
     };
   }
 
-  if (category) {
-    await geocodeByAddress(decodeURIComponent(category))
+  if (q) {
+    const parsedQuery = getCategoryName(q);
+    await geocodeByAddress(decodeURIComponent(parsedQuery))
       .then((results) => getLatLng(results[0]))
       .then((latLng) => {
         searchState.aroundLatLng = latLng;
-        searchState.category = category;
+        searchState.q = parsedQuery;
       })
       .catch((error) => {
         console.log(error);
@@ -128,7 +126,7 @@ const urlToSearchState = async (location) => {
   return searchState;
 };
 
-const Listing = ({ match, location }) => {
+const Listing = ({ location }) => {
   const [selectedHit, setSelectedHit] = React.useState(null);
   const [debouncedSetState, setDebouncedSetState] = React.useState(null);
   const [searchState, setSearchState] = React.useState({});
@@ -138,7 +136,7 @@ const Listing = ({ match, location }) => {
       const newSearchState = await urlToSearchState(location);
       setSearchState(newSearchState);
     })();
-  }, [location, match.params.location]);
+  }, [location]);
 
   const onHitOver = (hit) => {
     setSelectedHit(hit);
@@ -146,9 +144,6 @@ const Listing = ({ match, location }) => {
 
   const createURL = (updatedSearchState) => {
     const queryParameters = {};
-    const categoryPath = updatedSearchState.category
-      ? `${getCategorySlug(updatedSearchState.category)}`
-      : '';
 
     const routeState = {
       page: String(updatedSearchState.page),
@@ -168,7 +163,15 @@ const Listing = ({ match, location }) => {
       hitsPerPage:
         (updatedSearchState.hitsPerPage && String(updatedSearchState.hitsPerPage)) || undefined,
       boundingBox: updatedSearchState.boundingBox && updatedSearchState.boundingBox,
+      q: updatedSearchState.q && updatedSearchState.q,
     };
+
+    if (
+      routeState.q
+      && routeState.q !== routeStateDefaultValues.q
+    ) {
+      queryParameters.q = getCategorySlug(routeState.q);
+    }
 
     if (routeState.page && routeState.page !== routeStateDefaultValues.page) {
       queryParameters.page = routeState.page;
@@ -222,7 +225,7 @@ const Listing = ({ match, location }) => {
       arrayFormat: 'comma',
     });
 
-    return `/gurus${categoryPath && '/'}${categoryPath}${queryString}`;
+    return `/gurus${queryString}`;
   };
 
   const searchStateToUrl = (updatedSearchState) => (updatedSearchState ? createURL(updatedSearchState) : '');
@@ -247,11 +250,7 @@ const Listing = ({ match, location }) => {
       onSearchStateChange={onSearchStateChange}
       createURL={createURL}
     >
-      <WrapWithHits
-        selectedHit={selectedHit}
-        onHitOver={onHitOver}
-        location={match.params.location}
-      >
+      <WrapWithHits selectedHit={selectedHit} onHitOver={onHitOver}>
         <Configure hitsPerPage={HITS_PER_PAGE_LISTING} aroundRadius={5000} />
 
         <div style={{ height: 'calc(100vh - 160px)' }}>
@@ -281,11 +280,6 @@ const Listing = ({ match, location }) => {
 };
 
 Listing.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      location: PropTypes.string,
-    }).isRequired,
-  }).isRequired,
   location: PropTypes.shape({
     search: PropTypes.string,
     pathname: PropTypes.string,

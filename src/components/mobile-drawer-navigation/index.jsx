@@ -18,7 +18,7 @@ import {
   LANDING,
   PROFILE,
   DASHBOARD,
-  LISTING_DEFAULT,
+  LISTING,
 } from '../../constants/routes';
 import { toggleAuthModal } from '../../modals/auth/actions';
 import { toggleBecomeGuruModal } from '../../modals/become-guru/actions';
@@ -133,7 +133,7 @@ const MobileDrawerNavigation = ({
 
           <ListItem className={classes.listItem}>
             <Link
-              to={LISTING_DEFAULT}
+              to={LISTING}
               className={classes.navLink}
               onClick={toggleDrawer(false)}
             >

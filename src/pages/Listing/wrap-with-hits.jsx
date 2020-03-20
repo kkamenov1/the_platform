@@ -48,7 +48,6 @@ const WrapWithHits = ({
   children,
   selectedHit,
   onHitOver,
-  location,
 }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -80,7 +79,6 @@ const WrapWithHits = ({
           selectedHit={selectedHit}
           onHitOver={onHitOver}
           showMap={showMap}
-          location={location}
         />
         <Typography align="center" component="div" className={classes.paginationWrapper}>
           <CustomPagination />
@@ -98,7 +96,6 @@ const WrapWithHits = ({
 
 WrapWithHits.defaultProps = {
   children: null,
-  location: undefined,
   selectedHit: {},
 };
 
@@ -109,7 +106,6 @@ WrapWithHits.propTypes = {
   ]),
   selectedHit: PropTypes.object,
   onHitOver: PropTypes.func.isRequired,
-  location: PropTypes.string,
 };
 
 export default WrapWithHits;

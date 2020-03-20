@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Card,
@@ -21,6 +22,11 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 0,
     boxShadow: 'none',
     margin: '24px 0',
+  },
+
+  link: {
+    textDecoration: 'none',
+    display: 'block',
   },
 
   media: {
@@ -60,6 +66,7 @@ const useStyles = makeStyles((theme) => ({
 
   cardHeader: {
     padding: '5px 0',
+    color: theme.palette.text.primary,
   },
 
   cardContent: {
@@ -106,7 +113,6 @@ const Hit = ({
   const allImages = hit.certificate
     ? [...images, hit.certificate]
     : images;
-
   return (
     <Card
       className={classnames(classes.card, { [classes.mapCard]: isOnMap })}
@@ -114,67 +120,68 @@ const Hit = ({
       onMouseEnter={() => onHitOver(hit)}
       onMouseLeave={() => onHitOver(null)}
     >
-      <Grid container>
-        <Grid item xs={!showMap || isMobile ? 12 : 5}>
-          <Slider
-            ref={sliderRef}
-            {...plpSliderConfig(
-              selectedHit && selectedHit.objectID === hit.objectID,
-            )}
-          >
-            {allImages.map((img) => {
-              const imgSrc = cloudinaryCore.url(
-                img,
-                { width: 600, crop: 'fill' },
-              );
-              return (
-                <CardMedia
-                  key={imgSrc}
-                  className={classes.media}
-                  image={imgSrc}
-                  title={hit.displayName}
-                />
-              );
-            })}
-          </Slider>
-        </Grid>
-
-        <Grid
-          item
-          xs={!showMap || isMobile ? 12 : 7}
-          className={classes.content}
-        >
-          <div className={classes.labelWrapper}>
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              component="span"
-              className={classes.label}
+      <Link to={`/gurus/${hit.objectID}`} className={classes.link}>
+        <Grid container>
+          <Grid item xs={!showMap || isMobile ? 12 : 5}>
+            <Slider
+              ref={sliderRef}
+              {...plpSliderConfig(
+                selectedHit && selectedHit.objectID === hit.objectID,
+              )}
             >
-              {hit.sport}
-            </Typography>
-          </div>
-          <CardHeader
-            avatar={(
-              <Avatar src={hit.photoURL} className={classes.avatar} />
-                    )}
-            title={hit.displayName}
-            className={classes.cardHeader}
-          />
+              {allImages.map((img) => {
+                const imgSrc = cloudinaryCore.url(
+                  img,
+                  { width: 600, crop: 'fill' },
+                );
+                return (
+                  <CardMedia
+                    key={imgSrc}
+                    className={classes.media}
+                    image={imgSrc}
+                    title={hit.displayName}
+                  />
+                );
+              })}
+            </Slider>
+          </Grid>
 
-          <CardContent className={classes.cardContent}>
-            <Typography component="div" paragraph>
-              {attributes.map((attribute, i) => (
-                <Typography component="span" key={`${attribute}${i}`}>
-                  <Typography
-                    variant="body2"
-                    color="textSecondary"
-                    component="span"
-                    className={classes.attribute}
-                  >
-                    {attribute}
-                  </Typography>
-                  {i + 1 !== attributes.length && (
+          <Grid
+            item
+            xs={!showMap || isMobile ? 12 : 7}
+            className={classes.content}
+          >
+            <div className={classes.labelWrapper}>
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                component="span"
+                className={classes.label}
+              >
+                {hit.sport}
+              </Typography>
+            </div>
+            <CardHeader
+              avatar={(
+                <Avatar src={hit.photoURL} className={classes.avatar} />
+                    )}
+              title={hit.displayName}
+              className={classes.cardHeader}
+            />
+
+            <CardContent className={classes.cardContent}>
+              <Typography component="div" paragraph>
+                {attributes.map((attribute, i) => (
+                  <Typography component="span" key={`${attribute}${i}`}>
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      component="span"
+                      className={classes.attribute}
+                    >
+                      {attribute}
+                    </Typography>
+                    {i + 1 !== attributes.length && (
                     <Typography
                       variant="body2"
                       color="textSecondary"
@@ -183,12 +190,12 @@ const Hit = ({
                     >
                       ·
                     </Typography>
-                  )}
-                </Typography>
-              ))}
-            </Typography>
+                    )}
+                  </Typography>
+                ))}
+              </Typography>
 
-            {hit.introduction && (
+              {hit.introduction && (
               <Typography
                 variant="body2"
                 color="textSecondary"
@@ -197,10 +204,11 @@ const Hit = ({
               >
                 {hit.introduction}
               </Typography>
-            )}
-          </CardContent>
+              )}
+            </CardContent>
+          </Grid>
         </Grid>
-      </Grid>
+      </Link>
     </Card>
   );
 };

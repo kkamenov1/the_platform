@@ -30,7 +30,7 @@ class Places extends Component {
   }
 
   componentDidMount() {
-    const { refine, defaultRefinement, location } = this.props;
+    const { refine, defaultRefinement, query } = this.props;
     const autocomplete = places({
       container: this.element,
       type: 'city',
@@ -50,7 +50,7 @@ class Places extends Component {
       refine(defaultRefinement);
     });
 
-    autocomplete.setVal((location && getCategoryName(location)) || '');
+    autocomplete.setVal((query && getCategoryName(query)) || '');
     window.addEventListener('popstate', this.handlePopState);
   }
 
@@ -59,9 +59,9 @@ class Places extends Component {
   }
 
   handlePopState = () => {
-    const { location } = this.props;
+    const { query } = this.props;
     const { autocompleteInstance } = this.state;
-    autocompleteInstance.setVal((location && getCategoryName(location)) || '');
+    autocompleteInstance.setVal((query && getCategoryName(query)) || '');
     autocompleteInstance.close();
   };
 
@@ -87,14 +87,14 @@ class Places extends Component {
 }
 
 Places.defaultProps = {
-  location: undefined,
+  query: undefined,
 };
 
 Places.propTypes = {
   refine: PropTypes.func.isRequired,
   defaultRefinement: PropTypes.object.isRequired,
   classes: PropTypes.object.isRequired,
-  location: PropTypes.string,
+  query: PropTypes.string,
 };
 
 export default withStyles(styles)(connect(Places));

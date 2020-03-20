@@ -1,0 +1,37 @@
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import PropTypes from 'prop-types';
+import { setGuru } from './actions';
+import { withFirebase } from '../../core/lib/Firebase';
+import HeroStack from './hero-stack';
+
+const GDP = ({ match, firebase }) => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    (async () => {
+      const { id } = match.params;
+      const guruDoc = await firebase.user(id).get();
+      dispatch(setGuru(guruDoc.data()));
+    })();
+  });
+
+  return (
+    <div>
+      <HeroStack />
+    </div>
+  );
+};
+
+GDP.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string.isRequired,
+    }).isRequired,
+  }).isRequired,
+  firebase: PropTypes.shape({
+    user: PropTypes.func.isRequired,
+  }).isRequired,
+};
+
+export default withFirebase(GDP);

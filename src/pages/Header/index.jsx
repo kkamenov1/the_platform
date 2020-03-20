@@ -17,7 +17,7 @@ import {
   NavigationRoutes,
   ADMIN,
   LANDING,
-  LISTING_DEFAULT,
+  LISTING,
 } from '../../constants/routes';
 import MobileDrawerNavigation from '../../components/mobile-drawer-navigation';
 import AvatarNavButton from '../../components/avatar-nav-button';
@@ -222,7 +222,7 @@ const Header = () => {
                       className={classes.navBtn}
                       disableRipple
                       component={Link}
-                      to={LISTING_DEFAULT}
+                      to={LISTING}
                     >
                       Gurus
                     </Button>
