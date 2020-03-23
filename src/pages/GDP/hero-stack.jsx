@@ -1,9 +1,13 @@
-import React, { useRef } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
-import { Grid, CardMedia } from '@material-ui/core';
-import { useSelector } from 'react-redux';
-import Slider from 'react-slick';
-import { GDPVerticalSliderConfig } from '../../core/config';
+import {
+  Grid, Button,
+} from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
+import { useSelector, useDispatch } from 'react-redux';
+import Img from 'react-image';
+import { setActiveImageIndex } from './actions';
 
 const useStyles = makeStyles((theme) => ({
   imageViewer: {
@@ -16,64 +20,75 @@ const useStyles = makeStyles((theme) => ({
     width: 100,
   },
   mediaHorizontal: {
+    width: '100%',
+    height: 600,
+    objectFit: 'cover',
+  },
+  mediaVertical: {
+    width: '100%',
+    height: 100,
+    objectFit: 'cover',
+  },
+  imgBtn: {
+    padding: 0,
+    border: `1px solid ${theme.palette.common.black}`,
+    borderRadius: 0,
+
+    '&:not(:last-child)': {
+      marginBottom: 10,
+    },
+  },
+  heroImage: {
+    width: '100%',
     height: 0,
     paddingTop: '70%',
   },
-  mediaVertical: {
-    height: 0,
-    paddingTop: '85%',
-    border: `1px solid ${theme.palette.common.black}`,
-  },
 }));
 
-const HeroStack = () => {
-  const guru = useSelector((state) => state.gdp.guru);
+const HeroStack = ({ images }) => {
+  const dispatch = useDispatch();
+  const activeImageIndex = useSelector((state) => state.gdp.activeImageIndex);
   const classes = useStyles();
-  const horizontalSliderSettings = {
-    dots: true,
-    arrows: false,
-    infinite: true,
-    speed: 500,
-    slidesToScroll: 1,
-    slidesToShow: 1,
-  };
 
-  const veritcalSliderSettings = {
-    arrows: true,
-    infinite: true,
-    slidesToShow: 2,
-    slidesToScroll: 1,
-    vertical: true,
-    verticalSwiping: true,
+  const handleImageChange = (index) => {
+    dispatch(setActiveImageIndex(index));
   };
 
   return (
     <Grid container>
       <Grid item xs={8} className={classes.imageViewer}>
         <div>
-          <Slider {...horizontalSliderSettings}>
-            {guru && guru.images.length && guru.images.map((img, index) => (
-              <CardMedia
-                key={img}
-                className={classes.mediaHorizontal}
-                image={img} // TODO: Load smaller image for mobile devices and smaller for DT via CDN
-                title={`guru-image-horizontal-${index + 1}`}
-              />
-            ))}
-          </Slider>
+          {images.length ? (
+            <Img
+              key={activeImageIndex}
+              className={classes.mediaHorizontal}
+              src={images[activeImageIndex]} // TODO: Load smaller image for mobile devices and smaller for DT via CDN
+              alt={`guru-horizontal-${activeImageIndex}`}
+            />
+          ) : (
+            <Skeleton
+              variant="rect"
+              className={classes.heroImage}
+              animation="wave"
+            />
+          )}
         </div>
 
         <div className={classes.verticalSliderWrapper}>
-          <Slider {...veritcalSliderSettings}>
-            {guru && guru.images.length && guru.images.map((img, index) => (
-              <CardMedia
-                key={img}
+          {images.map((img, index) => (
+            <Button
+              key={img}
+              fullWidth
+              className={classes.imgBtn}
+              onClick={() => handleImageChange(index)}
+            >
+              <Img
                 className={classes.mediaVertical}
-                image={img} // TODO: Load smaller image for mobile devices and smaller for DT via CDN
-                title={`guru-image-vertical-${index + 1}`}
+                src={img} // TODO: Load smaller image for mobile devices and smaller for DT via CDN
+                alt={`guru-vertical-${index}`}
               />
-            ))}
-          </Slider>
+            </Button>
+          ))}
         </div>
       </Grid>
       <Grid item xs={4}>
@@ -81,6 +96,14 @@ const HeroStack = () => {
       </Grid>
     </Grid>
   );
+};
+
+HeroStack.defaultProps = {
+  images: [],
+};
+
+HeroStack.propTypes = {
+  images: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default HeroStack;
