@@ -8,7 +8,6 @@ import * as serviceWorker from './serviceWorker';
 import configureStore, { history } from './store';
 import Firebase, { FirebaseContext } from './core/lib/Firebase';
 
-
 const store = configureStore();
 
 ReactDOM.render(
