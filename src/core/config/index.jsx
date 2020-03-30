@@ -1,4 +1,6 @@
-import generateTileSliderConfig from './tile-slider-config';
+import React from 'react';
+import { CarouselArrow } from '../components';
+import plpSliderConfig from './plp-slider-config';
 
 const FALLBACK_LOCATION = {
   lat: 37.7793,
@@ -14,8 +16,19 @@ const MAP_ZOOM_LEVEL = 12;
 const DEBOUNCE_TIME = 700;
 const HITS_PER_PAGE_LISTING = 10;
 
+const ADMIN_PANEL_SLIDER_CONFIG = {
+  arrows: true,
+  infinite: true,
+  slidesToShow: 1,
+  slidesToScroll: 1,
+  lazyLoad: true,
+  nextArrow: <CarouselArrow alwaysShow />,
+  prevArrow: <CarouselArrow prevArrow alwaysShow />,
+};
+
 export {
-  generateTileSliderConfig,
+  ADMIN_PANEL_SLIDER_CONFIG,
+  plpSliderConfig,
   FALLBACK_LOCATION,
   FALLBACK_IMAGE,
   MAP_ZOOM_LEVEL,

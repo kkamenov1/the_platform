@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     minHeight: 0,
     background: theme.palette.common.white,
     paddingLeft: 2,
-    trasform: 'scale(1)',
+    transform: 'scale(1)',
     boxShadow: theme.shadows[3],
     transition: 'all .2s ease-in-out',
 
@@ -48,13 +48,20 @@ const useStyles = makeStyles((theme) => ({
       fontSize: 12,
     },
   },
+  alwaysShow: {
+    display: 'block',
+  },
 }));
 
-const CarouselArrow = ({ prevArrow, onClick }) => {
+const CarouselArrow = ({ prevArrow, onClick, alwaysShow }) => {
   const classes = useStyles();
 
   return (
-    <div className={classnames(classes.arrowWrapper, { [classes.prevArrow]: prevArrow })}>
+    <div className={classnames(classes.arrowWrapper, {
+      [classes.prevArrow]: prevArrow,
+      [classes.alwaysShow]: alwaysShow,
+    })}
+    >
       <Fab className={classes.fab} disableRipple onClick={onClick}>
         <ArrowForwardIosIcon fontSize="small" />
       </Fab>
@@ -64,11 +71,14 @@ const CarouselArrow = ({ prevArrow, onClick }) => {
 
 CarouselArrow.defaultProps = {
   prevArrow: false,
+  alwaysShow: false,
+  onClick: () => {},
 };
 
 CarouselArrow.propTypes = {
   prevArrow: PropTypes.bool,
-  onClick: PropTypes.func.isRequired,
+  onClick: PropTypes.func,
+  alwaysShow: PropTypes.bool,
 };
 
 export default CarouselArrow;

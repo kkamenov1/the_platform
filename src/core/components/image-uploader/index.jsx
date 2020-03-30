@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
+import { Image, Transformation } from 'cloudinary-react';
 import {
   Fab,
   Button,
@@ -105,9 +106,6 @@ const useStyles = makeStyles((theme) => ({
       height: 100,
     },
   },
-  fullWidthProgressWrapper: {
-    width: '100%',
-  },
   progress: {
     width: '20px !important',
     height: '20px !important',
@@ -135,18 +133,23 @@ const ImageUploader = ({
     <List className={classes.photoList}>
       {images.map((image, index) => (
         <ListItem className={classes.photoListItem} key={index}>
-          <div className={classes.imageWrapper}>
-            {image.src ? (
+          <div className={classnames(classes.imageWrapper, {
+            [classes.fullWidth]: fullWidth,
+          })}
+          >
+            {image.publicId ? (
               <div className={classes.imageWrapperInner}>
                 <Fab
                   color="primary"
                   aria-label="add"
                   className={classes.deleteImageBtn}
-                  onClick={() => image.publicId && onImageRemove(image.publicId, index)}
+                  onClick={() => onImageRemove(image.publicId)}
                 >
                   <ClearIcon className={classes.deleteIcon} />
                 </Fab>
-                <img src={image.src} alt={image.name} className={classes.image} />
+                <Image publicId={image.publicId} className={classes.image}>
+                  <Transformation width="150" height="150" gravity="auto" crop="thumb" />
+                </Image>
               </div>
             ) : image.loading ? (
               <Grid

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -21,7 +20,6 @@ import {
   ImageUploader,
 } from '../../../core/components';
 import allLanguages from '../../../constants/languages';
-import { withFirebase } from '../../../core/lib/Firebase';
 import {
   setGuruLocation,
   setFormValues,
@@ -31,6 +29,7 @@ import {
 } from '../../../modals/become-guru/actions';
 import api from '../../../api';
 import { addOnPosition } from '../../../core/utils';
+import { MAX_IMAGE_SIZE } from '../../../constants/files';
 
 const useStyles = makeStyles({
   chips: {
@@ -64,7 +63,7 @@ const MenuProps = {
 };
 
 
-const PersonalDetailsStep = ({ firebase }) => {
+const PersonalDetailsStep = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const inputLabel = React.useRef(null);
@@ -116,7 +115,8 @@ const PersonalDetailsStep = ({ firebase }) => {
     dispatch(setPersonalDetailsErrors({ ...errors, [e.target.name]: null }));
   };
 
-  const handleImageRemove = async (publicId, pos) => {
+  const handleImageRemove = async (publicId) => {
+    const pos = images.findIndex((image) => image.publicId === publicId);
     const {
       src,
       name,
@@ -182,21 +182,20 @@ const PersonalDetailsStep = ({ firebase }) => {
   const checkUploadResult = (resultEvent) => {
     if (resultEvent.event === 'success') {
       const { info } = resultEvent;
-      console.log(info);
       dispatch(setImageUploadOnSuccess(info));
     }
   };
 
-  const maxFiles = images.filter((image) => !(image.src)).length;
+  const maxFiles = images.filter((image) => !(image.publicId)).length;
 
   const widget = window.cloudinary.createUploadWidget({
-    cloudName: 'dl766ebzy', // TODO: change to env variables
-    uploadPreset: 'azos0jgv', // TODO: change to env variables
+    cloudName: process.env.REACT_APP_CLOUDINARY_CLOUD_NAME,
+    uploadPreset: process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET,
     folder: `gurus/${auth.uid}`,
     maxFiles,
     resourceType: 'image',
-    clientAllowedFormats: ['png', 'gif', 'jpeg'],
-    maxFileSize: 5000000,
+    clientAllowedFormats: ['png', 'jpeg'],
+    maxFileSize: MAX_IMAGE_SIZE,
   }, (error, result) => {
     checkUploadResult(result);
   });
@@ -338,12 +337,4 @@ const PersonalDetailsStep = ({ firebase }) => {
   );
 };
 
-PersonalDetailsStep.propTypes = {
-  firebase: PropTypes.shape({
-    doUploadGuruImages: PropTypes.func.isRequired,
-    getGuruImageUrl: PropTypes.func.isRequired,
-    doDeleteGuruImage: PropTypes.func.isRequired,
-  }).isRequired,
-};
-
-export default withFirebase(PersonalDetailsStep);
+export default PersonalDetailsStep;

@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -8,7 +7,6 @@ import {
   FormControl,
   Slide,
 } from '@material-ui/core';
-import { withFirebase } from '../../../core/lib/Firebase';
 import {
   ModalHeader,
   SimpleSelect,
@@ -20,7 +18,8 @@ import {
   setGuruDetailsErrors,
 } from '../../../modals/become-guru/actions';
 import sports from '../../../constants/sports';
-import { KILOBYTE, FILE_MEGABYTES } from '../../../constants/files';
+import { MAX_IMAGE_SIZE } from '../../../constants/files';
+import api from '../../../api';
 
 const useStyles = makeStyles((theme) => ({
   vspace: {
@@ -35,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const GuruDetailsStep = ({ firebase }) => {
+const GuruDetailsStep = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const becomeGuruModal = useSelector((state) => state.becomeGuruModal);
@@ -55,50 +54,84 @@ const GuruDetailsStep = ({ firebase }) => {
     }
   };
 
-  const handlePhotoChange = async (e) => {
-    const file = e.target.files[0];
+  const handleImageRemove = async (publicId) => {
+    const {
+      src,
+      name,
+      publicId: id,
+    } = certificate;
 
-    if (file) {
-      if (!file.type.match('image')) {
-        dispatch(setGuruDetailsErrors({
-          ...errors,
-          images: 'Selected file should be an image',
-        }));
-        return;
-      }
+    const withLoadingImage = {
+      src: null,
+      name: null,
+      publicId: null,
+      loading: true,
+    };
 
-      const selectedFileMegabytes = file.size / KILOBYTE / KILOBYTE;
-      if (selectedFileMegabytes > FILE_MEGABYTES) {
-        dispatch(setGuruDetailsErrors({
-          ...errors,
-          images: 'Selected file size should not be more than 5MB',
-        }));
-        return;
-      }
+    dispatch(setGuruDetailsErrors({ ...errors, certificate: null }));
+    dispatch(setFormValues(
+      'certificate',
+      withLoadingImage,
+    ));
 
+    const response = await api.images.deleteImage({ publicId });
+
+    if (response.data.result === 'ok') {
+      const withDeletedImage = {
+        src: null,
+        name: null,
+        publicId: null,
+        loading: false,
+      };
       dispatch(setFormValues(
         'certificate',
-        { loading: true, src: null, name: null },
+        withDeletedImage,
       ));
-      await firebase.doUploadGuruImages(file, auth.uid);
-      const url = await firebase.getGuruImageUrl(file.name, auth.uid);
-
+    } else {
+      const withOldImage = {
+        src,
+        name,
+        publicId: id,
+        loading: false,
+      };
       dispatch(setFormValues(
         'certificate',
-        { loading: false, src: url, name: file.name },
+        withOldImage,
       ));
-      dispatch(setGuruDetailsErrors({ ...errors, images: null }));
+      dispatch(setGuruDetailsErrors({
+        ...errors,
+        certificate: 'There was an error deleting the image. Please try again!',
+      }));
     }
   };
 
-  const handleImageRemove = async (image) => {
-    const imageName = image.name;
-    await firebase.doDeleteGuruImage(imageName, auth.uid);
-    dispatch(setFormValues(
-      'certificate',
-      { loading: false, src: null, name: null },
-    ));
+  const checkUploadResult = (resultEvent) => {
+    if (resultEvent.event === 'success') {
+      const { info } = resultEvent;
+      dispatch(setFormValues(
+        'certificate',
+        {
+          loading: false,
+          src: info.secure_url,
+          name: info.original_filename,
+          publicId: info.public_id,
+        },
+      ));
+    }
   };
+
+  const widget = window.cloudinary.createUploadWidget({
+    cloudName: process.env.REACT_APP_CLOUDINARY_CLOUD_NAME,
+    uploadPreset: process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET,
+    folder: `gurus/${auth.uid}`,
+    maxFiles: 1,
+    resourceType: 'image',
+    clientAllowedFormats: ['png', 'jpeg'],
+    maxFileSize: MAX_IMAGE_SIZE,
+    multiple: false,
+  }, (error, result) => {
+    checkUploadResult(result);
+  });
 
   return (
     <Slide
@@ -149,17 +182,16 @@ const GuruDetailsStep = ({ firebase }) => {
             </Typography>
             <FormControl fullWidth className={classes.formControl}>
               <ImageUploader
-                image={certificate}
-                onImageChange={handlePhotoChange}
-                onImageRemove={() => handleImageRemove(certificate)}
-                inputId="guru-certificate"
+                images={[certificate]}
+                widget={widget}
+                onImageRemove={handleImageRemove}
                 fullWidth
               />
             </FormControl>
 
-            {errors && errors.images ? (
+            {errors && errors.certificate ? (
               <FormError>
-                {errors && errors.images}
+                {errors.certificate}
               </FormError>
             ) : (
               <Typography variant="caption" className={classes.note}>
@@ -175,12 +207,4 @@ const GuruDetailsStep = ({ firebase }) => {
   );
 };
 
-GuruDetailsStep.propTypes = {
-  firebase: PropTypes.shape({
-    doUploadGuruImages: PropTypes.func.isRequired,
-    getGuruImageUrl: PropTypes.func.isRequired,
-    doDeleteGuruImage: PropTypes.func.isRequired,
-  }).isRequired,
-};
-
-export default withFirebase(GuruDetailsStep);
+export default GuruDetailsStep;

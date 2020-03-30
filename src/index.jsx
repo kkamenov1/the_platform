@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { SnackbarProvider } from 'notistack';
 import { ConnectedRouter } from 'connected-react-router';
+import { CloudinaryContext } from 'cloudinary-react';
 import App from './app/App';
 import * as serviceWorker from './serviceWorker';
 import configureStore, { history } from './store';
@@ -15,7 +16,9 @@ ReactDOM.render(
     <ConnectedRouter history={history}>
       <FirebaseContext.Provider value={new Firebase()}>
         <SnackbarProvider maxSnack={3}>
-          <App />
+          <CloudinaryContext cloudName={process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}>
+            <App />
+          </CloudinaryContext>
         </SnackbarProvider>
       </FirebaseContext.Provider>
     </ConnectedRouter>
