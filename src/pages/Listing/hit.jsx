@@ -12,7 +12,8 @@ import {
   Avatar,
 } from '@material-ui/core';
 import Slider from 'react-slick';
-import { generateTileSliderConfig, FALLBACK_IMAGE } from '../../core/config';
+import cloudinary from 'cloudinary-core';
+import { plpSliderConfig, FALLBACK_IMAGE } from '../../core/config';
 import { useIsMobile } from '../../core/hooks';
 
 const useStyles = makeStyles((theme) => ({
@@ -73,12 +74,6 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: 10,
   },
 
-  hover: {
-    '&:hover div[class*="arrowWrapper"]': {
-      display: 'block',
-    },
-  },
-
   mapCard: {
     margin: 0,
     borderRadius: 15,
@@ -90,6 +85,7 @@ const Hit = ({
   onHitOver,
   showMap,
   isOnMap,
+  selectedHit,
 }) => {
   const classes = useStyles();
   const sliderRef = React.useRef(null);
@@ -101,9 +97,11 @@ const Hit = ({
     minPriceAttribute,
     durationAttribute,
   ];
+  const cloudinaryCore = new cloudinary.Cloudinary({
+    cloud_name: process.env.REACT_APP_CLOUDINARY_CLOUD_NAME,
+  });
   const attributesForMapContent = [minPriceAttribute, durationAttribute];
   const attributes = isOnMap ? attributesForMapContent : attributesForRegularContent;
-  const sliderSettings = generateTileSliderConfig(hit, sliderRef);
   const images = hit.images || [FALLBACK_IMAGE.src];
   const allImages = hit.certificate
     ? [...images, hit.certificate]
@@ -117,16 +115,27 @@ const Hit = ({
       onMouseLeave={() => onHitOver(null)}
     >
       <Grid container>
-        <Grid item xs={!showMap || isMobile ? 12 : 5} className={classes.hover}>
-          <Slider ref={sliderRef} {...sliderSettings}>
-            {allImages.map((img) => (
-              <CardMedia
-                key={img}
-                className={classes.media}
-                image={img}
-                title={hit.displayName}
-              />
-            ))}
+        <Grid item xs={!showMap || isMobile ? 12 : 5}>
+          <Slider
+            ref={sliderRef}
+            {...plpSliderConfig(
+              selectedHit && selectedHit.objectID === hit.objectID,
+            )}
+          >
+            {allImages.map((img) => {
+              const imgSrc = cloudinaryCore.url(
+                img,
+                { width: 600, crop: 'fill' },
+              );
+              return (
+                <CardMedia
+                  key={imgSrc}
+                  className={classes.media}
+                  image={imgSrc}
+                  title={hit.displayName}
+                />
+              );
+            })}
           </Slider>
         </Grid>
 
@@ -180,14 +189,14 @@ const Hit = ({
             </Typography>
 
             {hit.introduction && (
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              component="div"
-              className={classes.introduction}
-            >
-              {hit.introduction}
-            </Typography>
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                component="div"
+                className={classes.introduction}
+              >
+                {hit.introduction}
+              </Typography>
             )}
           </CardContent>
         </Grid>
@@ -198,6 +207,7 @@ const Hit = ({
 
 Hit.defaultProps = {
   isOnMap: false,
+  selectedHit: null,
 };
 
 Hit.propTypes = {
@@ -218,6 +228,7 @@ Hit.propTypes = {
   onHitOver: PropTypes.func.isRequired,
   showMap: PropTypes.bool.isRequired,
   isOnMap: PropTypes.bool,
+  selectedHit: PropTypes.object,
 };
 
 export default Hit;

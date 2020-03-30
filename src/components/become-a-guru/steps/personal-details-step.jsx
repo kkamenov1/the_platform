@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -11,8 +10,6 @@ import {
   Typography,
   TextField,
   Grid,
-  List,
-  ListItem,
   Slide,
 } from '@material-ui/core';
 import { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
@@ -22,19 +19,17 @@ import {
   ModalHeader,
   ImageUploader,
 } from '../../../core/components';
-import {
-  addFirstPossible,
-  addOnPosition,
-} from '../../../core/utils';
 import allLanguages from '../../../constants/languages';
-import { withFirebase } from '../../../core/lib/Firebase';
 import {
   setGuruLocation,
   setFormValues,
   setPersonalDetailsErrors,
   setGeoLocation,
+  setImageUploadOnSuccess,
 } from '../../../modals/become-guru/actions';
-import { FILE_MEGABYTES, KILOBYTE } from '../../../constants/files';
+import api from '../../../api';
+import { addOnPosition } from '../../../core/utils';
+import { MAX_IMAGE_SIZE } from '../../../constants/files';
 
 const useStyles = makeStyles({
   chips: {
@@ -54,14 +49,6 @@ const useStyles = makeStyles({
   label: {
     transform: 'translate(14px, 12px) scale(1)',
   },
-  photoList: {
-    display: 'inline-flex',
-    paddingTop: 0,
-    paddingBottom: 0,
-  },
-  photoListItem: {
-    paddingLeft: 0,
-  },
 });
 
 const ITEM_HEIGHT = 48;
@@ -76,7 +63,7 @@ const MenuProps = {
 };
 
 
-const PersonalDetailsStep = ({ firebase }) => {
+const PersonalDetailsStep = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const inputLabel = React.useRef(null);
@@ -128,55 +115,90 @@ const PersonalDetailsStep = ({ firebase }) => {
     dispatch(setPersonalDetailsErrors({ ...errors, [e.target.name]: null }));
   };
 
-  const handleImageChange = async (e) => {
-    const file = e.target.files[0];
+  const handleImageRemove = async (publicId) => {
+    const pos = images.findIndex((image) => image.publicId === publicId);
+    const {
+      src,
+      name,
+      publicId: id,
+    } = images[pos];
 
-    if (file) {
-      if (!file.type.match('image')) {
-        dispatch(setPersonalDetailsErrors({
-          ...errors,
-          images: 'Selected file should be an image',
-        }));
-        return;
-      }
+    const arrayWithLoadingImage = [...addOnPosition(
+      pos,
+      {
+        src: null,
+        name: null,
+        publicId: null,
+        loading: true,
+      },
+      images,
+    )];
 
-      const selectedFileMegabytes = file.size / KILOBYTE / KILOBYTE;
-      if (selectedFileMegabytes > FILE_MEGABYTES) {
-        dispatch(setPersonalDetailsErrors({
-          ...errors,
-          images: 'Selected file size should not be more than 5MB',
-        }));
-        return;
-      }
+    dispatch(setPersonalDetailsErrors({ ...errors, images: null }));
+    dispatch(setFormValues(
+      'images',
+      arrayWithLoadingImage,
+    ));
 
+    const response = await api.images.deleteImage({ publicId });
+
+    if (response.data.result === 'ok') {
+      const arrayWithDeletedImage = [...addOnPosition(
+        pos,
+        {
+          src: null,
+          name: null,
+          publicId: null,
+          loading: false,
+        },
+        images,
+      )];
       dispatch(setFormValues(
         'images',
-        [...addFirstPossible({ loading: true, src: null }, images)],
+        arrayWithDeletedImage,
       ));
-      await firebase.doUploadGuruImages(file, auth.uid);
-      const url = await firebase.getGuruImageUrl(file.name, auth.uid);
-
+    } else {
+      const arrayWithOldImage = [...addOnPosition(
+        pos,
+        {
+          src,
+          name,
+          publicId: id,
+          loading: false,
+        },
+        images,
+      )];
       dispatch(setFormValues(
         'images',
-        [...addFirstPossible({ loading: false, src: url, name: file.name }, images)],
+        arrayWithOldImage,
       ));
-      dispatch(setPersonalDetailsErrors({ ...errors, images: null }));
+      dispatch(setPersonalDetailsErrors({
+        ...errors,
+        images: 'There was an error deleting the image. Please try again!',
+      }));
     }
   };
 
-  const handleImageRemove = async (pos) => {
-    const imageName = images[pos].name;
-    await firebase.doDeleteGuruImage(imageName, auth.uid);
-    const arrayWithDeletedImage = [...addOnPosition(
-      pos,
-      { src: null, loading: false, name: null },
-      images,
-    )];
-    dispatch(setFormValues(
-      'images',
-      arrayWithDeletedImage,
-    ));
+  const checkUploadResult = (resultEvent) => {
+    if (resultEvent.event === 'success') {
+      const { info } = resultEvent;
+      dispatch(setImageUploadOnSuccess(info));
+    }
   };
+
+  const maxFiles = images.filter((image) => !(image.publicId)).length;
+
+  const widget = window.cloudinary.createUploadWidget({
+    cloudName: process.env.REACT_APP_CLOUDINARY_CLOUD_NAME,
+    uploadPreset: process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET,
+    folder: `gurus/${auth.uid}`,
+    maxFiles,
+    resourceType: 'image',
+    clientAllowedFormats: ['png', 'jpeg'],
+    maxFileSize: MAX_IMAGE_SIZE,
+  }, (error, result) => {
+    checkUploadResult(result);
+  });
 
   return (
     <Slide
@@ -300,18 +322,11 @@ const PersonalDetailsStep = ({ firebase }) => {
               Photos
             </Typography>
 
-            <List className={classes.photoList}>
-              {images.map((image, index) => (
-                <ListItem className={classes.photoListItem} key={index}>
-                  <ImageUploader
-                    image={image}
-                    onImageChange={handleImageChange}
-                    onImageRemove={() => handleImageRemove(index)}
-                    inputId={`guru-photo-${index}`}
-                  />
-                </ListItem>
-              ))}
-            </List>
+            <ImageUploader
+              images={images}
+              widget={widget}
+              onImageRemove={handleImageRemove}
+            />
             <FormError>
               {errors && errors.images}
             </FormError>
@@ -322,12 +337,4 @@ const PersonalDetailsStep = ({ firebase }) => {
   );
 };
 
-PersonalDetailsStep.propTypes = {
-  firebase: PropTypes.shape({
-    doUploadGuruImages: PropTypes.func.isRequired,
-    getGuruImageUrl: PropTypes.func.isRequired,
-    doDeleteGuruImage: PropTypes.func.isRequired,
-  }).isRequired,
-};
-
-export default withFirebase(PersonalDetailsStep);
+export default PersonalDetailsStep;

@@ -1,2 +1,2 @@
-export const FILE_MEGABYTES = 5;
+export const MAX_IMAGE_SIZE = 5000000;
 export const KILOBYTE = 1024;

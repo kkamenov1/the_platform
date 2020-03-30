@@ -110,10 +110,24 @@ const Applications = ({ firebase }) => {
     dispatch(toggleApplicationsModal(open, hit));
   };
 
-  const handleRejectApplication = async (userID, applicationUID) => {
+  const handleRejectApplication = async ({
+    userID, applicationUID, images, certificate,
+  }) => {
     await firebase.application(applicationUID).delete();
     executeQuery();
     triggerSnackbar('error', 'Application deleted');
+
+    /* DELETE UPLOADED IMAGES IN THE STORAGE */
+    if (images && images.length) {
+      images.forEach(async (image) => {
+        await api.images.deleteImage({ publicId: image });
+      });
+    }
+
+    if (certificate) {
+      await api.images.deleteImage({ publicId: certificate });
+    }
+
     if (modalOpen) {
       toggleModal(false, null);
     }
@@ -124,7 +138,7 @@ const Applications = ({ firebase }) => {
   };
 
 
-  const handleApproveApplication = async (userID, applicationUID) => {
+  const handleApproveApplication = async ({ userID, applicationUID }) => {
     const applicationDoc = await firebase.application(applicationUID).get();
     const userDoc = await firebase.user(userID).get();
     await firebase.user(userID).update({

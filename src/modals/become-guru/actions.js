@@ -10,6 +10,7 @@ export const SET_GURU_DETAILS_ERRORS = 'SET_GURU_DETAILS_ERRORS';
 export const SET_RATES_ERRORS = 'SET_RATES_ERRORS';
 export const CLEAR_BECOMEGURU_MODAL = 'CLEAR_BECOMEGURU_MODAL';
 export const TOGGLE_BECOME_GURU_MODAL = 'TOGGLE_BECOME_GURU_MODAL';
+export const IMAGE_UPLOAD_SUCCESS = 'IMAGE_UPLOAD_SUCCESS';
 
 export const setActiveStep = (activeStep) => ({
   type: SET_ACTIVE_STEP,
@@ -64,4 +65,9 @@ export const toggleBecomeGuruModal = (open) => ({
 export const setGeoLocation = (geoloc) => ({
   type: SET_GEO_LOCATION,
   geoloc,
+});
+
+export const setImageUploadOnSuccess = (resultInfo) => ({
+  type: IMAGE_UPLOAD_SUCCESS,
+  info: resultInfo,
 });

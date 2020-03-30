@@ -66,6 +66,7 @@ const Hits = ({
   onHitOver,
   showMap,
   location,
+  selectedHit,
 }) => {
   const dispatch = useDispatch();
   const currentLocation = useSelector((state) => state.app.location);
@@ -130,7 +131,7 @@ const Hits = ({
               md={!showMap || isMobile ? 4 : 12}
               lg={!showMap ? 3 : 12}
             >
-              <Hit hit={hit} onHitOver={onHitOver} showMap={showMap} />
+              <Hit hit={hit} onHitOver={onHitOver} showMap={showMap} selectedHit={selectedHit} />
               {showMap && !isMobile && <Divider />}
             </Grid>
           ))}
@@ -163,6 +164,7 @@ const Hits = ({
 Hits.defaultProps = {
   showMap: true,
   location: undefined,
+  selectedHit: null,
 };
 
 Hits.propTypes = {
@@ -170,6 +172,7 @@ Hits.propTypes = {
   showMap: PropTypes.bool,
   onHitOver: PropTypes.func.isRequired,
   location: PropTypes.string,
+  selectedHit: PropTypes.object,
 };
 
 export default connectHits(Hits);

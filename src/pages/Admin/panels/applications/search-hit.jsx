@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import Slider from 'react-slick';
@@ -17,7 +17,12 @@ import {
 import { red } from '@material-ui/core/colors';
 import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
-import { generateTileSliderConfig, FALLBACK_IMAGE } from '../../../../core/config';
+import cloudinary from 'cloudinary-core';
+import {
+  ADMIN_PANEL_SLIDER_CONFIG,
+  FALLBACK_IMAGE,
+} from '../../../../core/config';
+
 
 const useStyles = makeStyles((theme) => ({
   media: {
@@ -52,10 +57,11 @@ const SearchHit = ({
   toggleModal,
   showDetails,
 }) => {
+  const cloudinaryCore = new cloudinary.Cloudinary({
+    cloud_name: process.env.REACT_APP_CLOUDINARY_CLOUD_NAME,
+  });
   const classes = useStyles();
-  const sliderRef = React.useRef(null);
-  const sliderSettings = generateTileSliderConfig(hit, sliderRef);
-
+  const sliderRef = useRef(null);
   const Content = (
     <>
       <CardHeader
@@ -77,18 +83,27 @@ const SearchHit = ({
           </Tooltip>
         )}
       />
-      <Slider ref={sliderRef} {...sliderSettings}>
-        {showDetails && hit.images && hit.images.length ? hit.images.map((img, i) => (
+      <Slider ref={sliderRef} {...ADMIN_PANEL_SLIDER_CONFIG}>
+        {showDetails && hit.images && hit.images.length ? hit.images.map((img, i) => {
+          const imgSrc = cloudinaryCore.url(
+            img,
+            { width: 600, crop: 'fill' },
+          );
+          return (
+            <CardMedia
+              key={i}
+              className={classes.media}
+              image={imgSrc}
+              title={hit.displayName}
+            />
+          );
+        }) : !showDetails && hit.images && hit.images[0] ? (
           <CardMedia
-            key={i}
             className={classes.media}
-            image={img}
-            title={hit.displayName}
-          />
-        )) : !showDetails && hit.images && hit.images[0] ? (
-          <CardMedia
-            className={classes.media}
-            image={hit.images[0]}
+            image={cloudinaryCore.url(
+              hit.images[0],
+              { width: 600, crop: 'fill' },
+            )}
             title={hit.displayName}
           />
         ) : (
@@ -167,7 +182,7 @@ const SearchHit = ({
               </Typography>
               {hit.certificate ? (
                 <a
-                  href={hit.certificate}
+                  href={cloudinaryCore.url(hit.certificate)}
                   title="Certificate"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -226,13 +241,13 @@ const SearchHit = ({
 
       <CardActions disableSpacing className={classes.cardActions}>
         <Tooltip title="Approve">
-          <IconButton onClick={() => handleApproveApplication(hit.userID, hit.applicationUID)}>
+          <IconButton onClick={() => handleApproveApplication(hit)}>
             <CheckIcon />
           </IconButton>
         </Tooltip>
 
         <Tooltip title="Reject">
-          <IconButton onClick={() => handleRejectApplication(hit.userID, hit.applicationUID)}>
+          <IconButton onClick={() => handleRejectApplication(hit)}>
             <ClearIcon />
           </IconButton>
         </Tooltip>
@@ -262,7 +277,7 @@ SearchHit.propTypes = {
     displayName: PropTypes.string.isRequired,
     userID: PropTypes.string.isRequired,
     certificate: PropTypes.string,
-    photoURL: PropTypes.string.isRequired,
+    photoURL: PropTypes.string,
     images: PropTypes.arrayOf(PropTypes.string).isRequired,
     slideIndex: PropTypes.number,
   }).isRequired,

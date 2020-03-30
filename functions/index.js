@@ -3,6 +3,7 @@ const admin = require('firebase-admin');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const cloudinary = require('cloudinary').v2;
 const { sanitizeString } = require('./utils');
 const {
   addToIndex,
@@ -21,6 +22,13 @@ main.use(cors({ origin: true }));
 main.use('/api/v1', app);
 main.use(bodyParser.json());
 main.use(bodyParser.urlencoded({ extended: false }));
+
+
+cloudinary.config({ 
+  cloud_name: functions.config().cloudinary.cloud_name, 
+  api_key: functions.config().cloudinary.api_key, 
+  api_secret: functions.config().cloudinary.api_secret
+});
 
 app.get('/applications', (req, res) => {
   const query = req.query.q || '';
@@ -48,6 +56,18 @@ app.get('/applications', (req, res) => {
     res.status(200).json({ nbHits: result.length, hits: pagedResult });
   }).catch((err) => {
     res.status(404).json(err);
+  });
+});
+
+app.post('/delete_image', (req, res) => {
+  const { publicId } = req.body;
+  cloudinary.uploader.destroy(publicId, (error, result) => {
+    if (error) {
+      res.status(400).send(error);
+      return;
+    }
+
+    res.status(200).json(result);
   });
 });
 

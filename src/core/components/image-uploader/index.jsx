@@ -2,11 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
+import { Image, Transformation } from 'cloudinary-react';
 import {
   Fab,
-  Grid,
   Button,
+  List,
+  ListItem,
   CircularProgress,
+  Grid,
 } from '@material-ui/core';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -103,77 +106,78 @@ const useStyles = makeStyles((theme) => ({
       height: 100,
     },
   },
-  fullWidthProgressWrapper: {
-    width: '100%',
-  },
   progress: {
     width: '20px !important',
     height: '20px !important',
   },
+  photoList: {
+    display: 'inline-flex',
+    paddingTop: 0,
+    paddingBottom: 0,
+  },
 }));
 
 const ImageUploader = ({
-  image,
-  onImageRemove,
-  onImageChange,
-  inputId,
+  images,
+  widget,
   fullWidth,
+  onImageRemove,
 }) => {
   const classes = useStyles();
 
-  return (
-    <div className={classes.imageWrapper}>
-      {image.src ? (
-        <div className={classes.imageWrapperInner}>
-          <Fab
-            color="primary"
-            aria-label="add"
-            className={classes.deleteImageBtn}
-            onClick={onImageRemove}
-          >
-            <ClearIcon className={classes.deleteIcon} />
-          </Fab>
-          <img src={image.src} alt={image.name} className={classes.image} />
-        </div>
-      ) : image.loading ? (
-        <div className={classes.photoListItem}>
-          <Grid
-            container
-            alignItems="center"
-            justify="center"
-            className={classnames(classes.progressWrapper, {
-              [classes.fullWidth]: fullWidth,
-            })}
-          >
-            <CircularProgress className={classes.progress} color="primary" />
-          </Grid>
-        </div>
-      ) : (
-        <>
-          <input
-            accept="image/*"
-            style={{ display: 'none' }}
-            id={inputId}
-            type="file"
-            onChange={onImageChange}
-          />
+  const showWidget = () => {
+    widget.open();
+  };
 
-          <label htmlFor={inputId}>
-            <div className={classes.photoListItem}>
+  return (
+    <List className={classes.photoList}>
+      {images.map((image, index) => (
+        <ListItem className={classes.photoListItem} key={index}>
+          <div className={classnames(classes.imageWrapper, {
+            [classes.fullWidth]: fullWidth,
+          })}
+          >
+            {image.publicId ? (
+              <div className={classes.imageWrapperInner}>
+                <Fab
+                  color="primary"
+                  aria-label="add"
+                  className={classes.deleteImageBtn}
+                  onClick={() => onImageRemove(image.publicId)}
+                >
+                  <ClearIcon className={classes.deleteIcon} />
+                </Fab>
+                <Image publicId={image.publicId} className={classes.image}>
+                  <Transformation width="150" height="150" gravity="auto" crop="thumb" />
+                </Image>
+              </div>
+            ) : image.loading ? (
+              <Grid
+                container
+                alignItems="center"
+                justify="center"
+                className={classnames(classes.progressWrapper, {
+                  [classes.fullWidth]: fullWidth,
+                })}
+              >
+                <CircularProgress className={classes.progress} color="primary" />
+              </Grid>
+            ) : (
               <Button
                 className={classnames(classes.addPhotoBtn, {
                   [classes.fullWidth]: fullWidth,
                 })}
                 component="span"
                 disableRipple
+                onClick={() => showWidget(widget)}
               >
                 <PhotoCamera className={classes.addPhotoIcon} />
               </Button>
-            </div>
-          </label>
-        </>
-      )}
-    </div>
+            )}
+          </div>
+        </ListItem>
+      ))}
+    </List>
   );
 };
 
@@ -182,15 +186,13 @@ ImageUploader.defaultProps = {
 };
 
 ImageUploader.propTypes = {
-  image: PropTypes.shape({
+  images: PropTypes.arrayOf(PropTypes.shape({
     src: PropTypes.string,
-    loading: PropTypes.bool,
     name: PropTypes.string,
-  }).isRequired,
-  onImageRemove: PropTypes.func.isRequired,
-  onImageChange: PropTypes.func.isRequired,
-  inputId: PropTypes.string.isRequired,
+  })).isRequired,
   fullWidth: PropTypes.bool,
+  widget: PropTypes.object.isRequired,
+  onImageRemove: PropTypes.func.isRequired,
 };
 
 export default ImageUploader;

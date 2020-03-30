@@ -6,33 +6,36 @@ import { Modal } from '../../core/components';
 import { useIsMobile } from '../../core/hooks';
 import { toggleBecomeGuruModal, clearBecomeGuruModal } from './actions';
 import { withFirebase } from '../../core/lib/Firebase';
+import api from '../../api';
 
 const BecomeGuruModal = ({ firebase }) => {
   const dispatch = useDispatch();
   const isMobile = useIsMobile('sm');
-  const auth = useSelector((state) => state.app.auth);
   const {
     open,
     applicationUID,
     isFormFinalized,
     images,
+    certificate,
   } = useSelector((state) => state.becomeGuruModal);
 
-  const closeModal = () => {
+  const closeModal = async () => {
+    dispatch(toggleBecomeGuruModal(false));
     if (!isFormFinalized) {
       /* DELETE UPLOADED IMAGES IN THE STORAGE */
-      const selectedImages = (images || []).filter((image) => image.src);
+      const selectedImages = (images || []).filter((image) => image.publicId);
       selectedImages.forEach(async (image) => {
-        await firebase.doDeleteGuruImage(image.name, auth.uid);
+        await api.images.deleteImage({ publicId: image.publicId });
       });
+      if (certificate.publicId) {
+        await api.images.deleteImage({ publicId: certificate.publicId });
+      }
 
       /* DELETE RECORD IN DB */
       if (applicationUID) {
-        firebase.application(applicationUID).delete();
+        await firebase.application(applicationUID).delete();
       }
     }
-
-    dispatch(toggleBecomeGuruModal(false));
     dispatch(clearBecomeGuruModal());
   };
 

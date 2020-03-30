@@ -15,6 +15,13 @@ const applications = {
   },
 };
 
+const images = {
+  deleteImage: ({ publicId }) => client.post(`${base}/delete_image`, {
+    publicId,
+  }),
+};
+
 export default {
   applications,
+  images,
 };

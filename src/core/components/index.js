@@ -6,7 +6,6 @@ import Modal from './modal';
 import LoadingButton from './loading-button';
 import SimpleSelect from './simple-select';
 import PlacesAutoComplete from './places-autocomplete';
-import UploadAPhoto from './upload-a-photo';
 import ModalHeader from './modal-header';
 import ImageUploader from './image-uploader';
 import Pagination from './pagination';
@@ -21,7 +20,6 @@ export {
   LoadingButton,
   SimpleSelect,
   PlacesAutoComplete,
-  UploadAPhoto,
   ModalHeader,
   ImageUploader,
   Pagination,

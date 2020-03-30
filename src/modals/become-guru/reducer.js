@@ -11,7 +11,9 @@ import {
   SET_RATES_ERRORS,
   CLEAR_BECOMEGURU_MODAL,
   TOGGLE_BECOME_GURU_MODAL,
+  IMAGE_UPLOAD_SUCCESS,
 } from './actions';
+import { addFirstPossible } from '../../core/utils';
 
 export const defaultStore = {
   open: false,
@@ -24,10 +26,30 @@ export const defaultStore = {
   month: '',
   year: '',
   images: [
-    { src: null, loading: false, name: null },
-    { src: null, loading: false, name: null },
-    { src: null, loading: false, name: null },
-    { src: null, loading: false, name: null },
+    {
+      src: null,
+      name: null,
+      publicId: null,
+      loading: false,
+    },
+    {
+      src: null,
+      name: null,
+      publicId: null,
+      loading: false,
+    },
+    {
+      src: null,
+      name: null,
+      publicId: null,
+      loading: false,
+    },
+    {
+      src: null,
+      name: null,
+      publicId: null,
+      loading: false,
+    },
   ],
   sport: '',
   methods: [
@@ -68,6 +90,7 @@ export const defaultStore = {
     src: null,
     loading: false,
     name: null,
+    publicId: null,
   },
   personalDetailsStepFormErrors: {},
   guruDetailsStepFormErrors: {},
@@ -152,6 +175,17 @@ export default (state = defaultStore, action) => {
 
     case CLEAR_BECOMEGURU_MODAL:
       return defaultStore;
+
+    case IMAGE_UPLOAD_SUCCESS:
+      return {
+        ...state,
+        images: addFirstPossible({
+          src: action.info.secure_url,
+          name: action.info.original_filename,
+          publicId: action.info.public_id,
+          loading: false,
+        }, state.images),
+      };
 
     default:
       return state;

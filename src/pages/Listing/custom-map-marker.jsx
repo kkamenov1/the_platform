@@ -65,7 +65,7 @@ const CustomMapMarker = ({ hit, onHitOver, selectedHit }) => {
     <CustomMarker
       key={hit.objectID}
       hit={hit}
-      anchor={{ x: 0, y: 5 }}
+      anchor={{ x: 1, y: 5 }}
       onMouseEnter={() => onHitOver(hit)}
       onMouseLeave={() => onHitOver(null)}
       style={{ position: 'relative' }}
@@ -98,6 +98,7 @@ const CustomMapMarker = ({ hit, onHitOver, selectedHit }) => {
                   onHitOver={onHitOver}
                   showMap={false}
                   isOnMap
+                  selectedHit={selectedHit}
                 />
               </Typography>
             </Grow>
@@ -123,6 +124,7 @@ CustomMapMarker.propTypes = {
     languages: PropTypes.arrayOf(PropTypes.string),
     location: PropTypes.string,
     sport: PropTypes.string,
+    priceFrom: PropTypes.string,
   }).isRequired,
   onHitOver: PropTypes.func.isRequired,
   selectedHit: PropTypes.shape({

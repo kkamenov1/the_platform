@@ -131,8 +131,8 @@ const BecomeAGuru = ({ firebase }) => {
   const submitPersonalDetailsStep = () => {
     const formErrors = {};
     const filteredImages = (images || [])
-      .filter((img) => img.src)
-      .map((img) => img.src);
+      .filter((img) => img.publicId)
+      .map((img) => img.publicId);
     const dayParsed = parseInt(day, 10);
     const monthParsed = parseInt(month, 10);
     const yearParsed = parseInt(year, 10);
@@ -205,7 +205,7 @@ const BecomeAGuru = ({ firebase }) => {
     firebase.application(applicationUID).update({
       sport,
       introduction,
-      certificate: certificate && certificate.src,
+      certificate: certificate && certificate.publicId,
     }).then(() => {
       dispatch(setGuruDetailsErrors({}));
     });
