@@ -93,9 +93,9 @@ const Hit = ({
   const minPriceAttribute = `From $${hit.priceFrom}`;
   const durationAttribute = `For ${hit.duration} days`;
   const attributesForRegularContent = [
-    hit.languages.join(', '),
     minPriceAttribute,
     durationAttribute,
+    hit.languages.join(', '),
   ];
   const cloudinaryCore = new cloudinary.Cloudinary({
     cloud_name: process.env.REACT_APP_CLOUDINARY_CLOUD_NAME,

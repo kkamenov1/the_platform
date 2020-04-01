@@ -52,6 +52,10 @@ const useStyles = makeStyles((theme) => ({
   infoWrapper: {
     width: 270,
     cursor: 'pointer',
+
+    '&:hover div[class*="arrowWrapper"]': {
+      display: 'block',
+    },
   },
 }));
 
@@ -136,7 +140,7 @@ CustomMapMarker.propTypes = {
     languages: PropTypes.arrayOf(PropTypes.string),
     location: PropTypes.string,
     sport: PropTypes.string,
-    priceFrom: PropTypes.number,
+    priceFrom: PropTypes.string,
   }),
 };
 
