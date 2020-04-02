@@ -56,10 +56,11 @@ const PlacesAutoComplete = ({ value, onChange, ...rest }) => {
         <div className={classes.locationWrapper}>
           <TextField
             {...getInputProps({
-              placeholder: 'Enter your location',
+              label: 'Location',
               variant: 'outlined',
               margin: 'dense',
               fullWidth: true,
+              required: true,
             })}
           />
           <Paper className={classes.autoCompleteDropdown}>

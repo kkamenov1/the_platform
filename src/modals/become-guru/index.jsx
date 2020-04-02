@@ -55,7 +55,6 @@ const BecomeGuruModal = ({ firebase }) => {
 BecomeGuruModal.propTypes = {
   firebase: PropTypes.shape({
     application: PropTypes.func.isRequired,
-    doDeleteGuruImage: PropTypes.func.isRequired,
   }).isRequired,
 };
 

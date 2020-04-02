@@ -86,23 +86,6 @@ class Firebase {
 
   application = (uid) => this.db.collection('applications').doc(uid);
 
-  // *** Application Counters API ***
-
-  applicationCounter = () => this.db.doc('counters/application');
-
-  // *** Storage API ***
-
-  // *** guru images handling ***
-  // all the images uploaded for gurus are here
-  doUploadGuruImages = (image, userID) => {
-    const imagesPath = this.storage.ref(`users/${userID}/images/guru/${image.name}`);
-
-    return imagesPath.put(image);
-  }
-
-  getGuruImageUrl = (imageName, userID) => this.storage.ref(`users/${userID}/images/guru/${imageName}`).getDownloadURL();
-
-  doDeleteGuruImage = (imageName, userID) => this.storage.ref(`users/${userID}/images/guru/${imageName}`).delete();
 }
 
 export default Firebase;

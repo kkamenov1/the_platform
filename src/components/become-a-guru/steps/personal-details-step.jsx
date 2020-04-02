@@ -229,7 +229,7 @@ const PersonalDetailsStep = () => {
               ref={inputLabel}
               className={classes.label}
             >
-              Languages
+              Languages *
             </InputLabel>
             <Select
               multiple
@@ -280,7 +280,8 @@ const PersonalDetailsStep = () => {
                   value={day}
                   onChange={handleInputChange}
                   type="text"
-                  placeholder="DD"
+                  label="DD"
+                  required
                   margin="dense"
                   inputProps={{ maxLength: 2 }}
                 />
@@ -293,7 +294,8 @@ const PersonalDetailsStep = () => {
                   value={month}
                   onChange={handleInputChange}
                   type="text"
-                  placeholder="MM"
+                  label="MM"
+                  required
                   margin="dense"
                   inputProps={{ maxLength: 2 }}
                 />
@@ -306,7 +308,8 @@ const PersonalDetailsStep = () => {
                   value={year}
                   onChange={handleInputChange}
                   type="text"
-                  placeholder="YYYY"
+                  label="YYYY"
+                  required
                   margin="dense"
                   inputProps={{ maxLength: 4 }}
                 />
@@ -319,7 +322,7 @@ const PersonalDetailsStep = () => {
 
           <div className={classes.vspace}>
             <Typography component="h6" variant="button">
-              Photos
+              Photos *
             </Typography>
 
             <ImageUploader

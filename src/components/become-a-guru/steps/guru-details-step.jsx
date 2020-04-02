@@ -149,11 +149,12 @@ const GuruDetailsStep = () => {
         <form>
           <SimpleSelect
             id="guru-sport"
-            label="Sport"
+            label="Sport *"
             name="sport"
             options={sports}
             onChange={handleChange}
             selectedValue={sport}
+            required
           />
 
           <FormError>

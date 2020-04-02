@@ -33,10 +33,6 @@ import { useIsMobile } from '../../core/hooks';
 const useStyles = makeStyles((theme) => ({
   left: {
     display: 'none',
-    background: 'linear-gradient(to bottom, #4b79a1, #283e51);',
-    backgroundSize: 'cover',
-    backgroundRepeat: 'no-repeat',
-
     [theme.breakpoints.up('md')]: {
       display: 'flex',
     },
@@ -45,21 +41,20 @@ const useStyles = makeStyles((theme) => ({
     position: 'relative',
     overflow: 'hidden',
   },
-  stepLabel: {
-    color: `${theme.palette.common.white} !important`,
-  },
-  stepper: {
-    backgroundColor: 'transparent',
-
-    '& div:nth-child(2n) > span': {
-      minHeight: 50,
-    },
-  },
   rightPanelInner: {
     padding: '42px 16px 32px 16px',
     [theme.breakpoints.up('md')]: {
       padding: 32,
-      height: 600,
+      height: 730,
+    },
+  },
+  stepper: {
+    display: 'none',
+
+    [theme.breakpoints.up('md')]: {
+      display: 'flex',
+      padding: '24px 0',
+      marginBottom: 15,
     },
   },
   fab: {
@@ -79,9 +74,14 @@ const useStyles = makeStyles((theme) => ({
       display: 'flex',
     },
   },
+  img: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+  },
 }));
 
-const getSteps = () => ['Personal information', 'GURU information', 'Rates'];
+const getSteps = () => ['Personal Information', 'GURU Information', 'Rates'];
 
 const renderStepContent = (activeStep) => {
   switch (activeStep) {
@@ -300,29 +300,34 @@ const BecomeAGuru = ({ firebase }) => {
     <Grid container>
 
       <Grid item className={classes.left} xs={4} container justify="center" alignItems="center">
-        <Stepper
-          activeStep={activeStep}
-          orientation="vertical"
-          className={classes.stepper}
-        >
-          {steps.map((label) => (
-            <Step key={label}>
-              <StepLabel classes={{
-                label: classes.stepLabel,
-                active: classes.stepLabel,
-                completed: classes.stepLabel,
-              }}
-              >
-                {label}
-              </StepLabel>
-            </Step>
-          ))}
-        </Stepper>
+        <img
+          className={classes.img}
+          src="https://res.cloudinary.com/dl766ebzy/image/upload/v1585642658/guru-page_vsac8h.jpg"
+          alt="Become guru"
+        />
       </Grid>
 
       <Grid item className={classes.right} xs={12} md={8}>
         <div>
           <div className={classes.rightPanelInner}>
+            <Stepper
+              activeStep={activeStep}
+              className={classes.stepper}
+              alternativeLabel
+            >
+              {steps.map((label) => (
+                <Step key={label}>
+                  <StepLabel classes={{
+                    label: classes.stepLabel,
+                    active: classes.stepLabel,
+                    completed: classes.stepLabel,
+                  }}
+                  >
+                    {label}
+                  </StepLabel>
+                </Step>
+              ))}
+            </Stepper>
             <div className={classes.stepContent}>
               {renderStepContent(activeStep)}
               <Finalization />
@@ -339,12 +344,12 @@ const BecomeAGuru = ({ firebase }) => {
               <Button size="small" onClick={handleNext}>
                 {generateButtonLabel()}
               </Button>
-                )}
+            )}
             backButton={(
               <Button size="small" onClick={handleBack} disabled={activeStep <= 0 || activeStep >= 3}>
                 Back
               </Button>
-                )}
+            )}
           />
           )}
 

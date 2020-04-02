@@ -119,10 +119,10 @@ const RatesStep = () => {
               className={classes.tableHeader}
             >
               <Grid item xs={6} className={classes.left}>
-                <Typography className={classes.thItem}>Coaching Method</Typography>
+                <Typography className={classes.thItem}>Coaching Method *</Typography>
               </Grid>
               <Grid item xs={6} className={classes.right}>
-                <Typography className={classes.thItem}>Rates</Typography>
+                <Typography className={classes.thItem}>Rates *</Typography>
               </Grid>
             </Grid>
 
@@ -175,7 +175,7 @@ const RatesStep = () => {
 
             <div className={classes.vspace}>
               <Typography component="h6" variant="button">
-                Duration of the coaching programs
+                Duration of the coaching programs *
               </Typography>
               <OutlinedInput
                 name="duration"

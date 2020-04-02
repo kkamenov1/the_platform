@@ -25,6 +25,7 @@ const SimpleSelect = ({
   options,
   onChange,
   selectedValue,
+  ...other
 }) => {
   const classes = useStyles();
   const inputLabel = React.useRef(null);
@@ -49,6 +50,7 @@ const SimpleSelect = ({
             id,
             name,
           }}
+          {...other}
         >
           <MenuItem value="">
             <em>None</em>
