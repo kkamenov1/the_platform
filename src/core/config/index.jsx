@@ -26,6 +26,13 @@ const ADMIN_PANEL_SLIDER_CONFIG = {
   prevArrow: <CarouselArrow prevArrow alwaysShow />,
 };
 
+const GDP_MAP_OPTIONS = {
+  draggable: false,
+  clickableIcons: false,
+  mapTypeControl: false,
+  streetViewControl: false,
+};
+
 export {
   ADMIN_PANEL_SLIDER_CONFIG,
   plpSliderConfig,
@@ -34,4 +41,5 @@ export {
   MAP_ZOOM_LEVEL,
   DEBOUNCE_TIME,
   HITS_PER_PAGE_LISTING,
+  GDP_MAP_OPTIONS,
 };

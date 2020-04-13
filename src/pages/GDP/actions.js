@@ -1,12 +1,12 @@
 export const SET_GURU = 'SET_GURU';
-export const SET_ACTIVE_IMAGE_INDEX = 'SET_ACTIVE_IMAGE_INDEX';
+export const SET_GURU_LOADING = 'SET_GURU_LOADING';
 
 export const setGuru = (guru) => ({
   type: SET_GURU,
   guru,
 });
 
-export const setActiveImageIndex = (index) => ({
-  type: SET_ACTIVE_IMAGE_INDEX,
-  index,
+export const setGuruLoading = (loading) => ({
+  type: SET_GURU_LOADING,
+  loading,
 });

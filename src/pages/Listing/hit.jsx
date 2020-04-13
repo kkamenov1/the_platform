@@ -16,6 +16,7 @@ import Slider from 'react-slick';
 import cloudinary from 'cloudinary-core';
 import { plpSliderConfig, FALLBACK_IMAGE } from '../../core/config';
 import { useIsMobile } from '../../core/hooks';
+import { SportBadge } from '../../core/components';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -36,18 +37,6 @@ const useStyles = makeStyles((theme) => ({
 
   attribute: {
     textTransform: 'capitalize',
-  },
-
-  labelWrapper: {
-    padding: '3px 0',
-  },
-
-  label: {
-    textTransform: 'uppercase',
-    border: `1px solid ${theme.palette.common.black}`,
-    fontWeight: theme.typography.fontWeightMedium,
-    borderRadius: 5,
-    padding: '2px 5px',
   },
 
   dot: {
@@ -151,16 +140,7 @@ const Hit = ({
             xs={!showMap || isMobile ? 12 : 7}
             className={classes.content}
           >
-            <div className={classes.labelWrapper}>
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                component="span"
-                className={classes.label}
-              >
-                {hit.sport}
-              </Typography>
-            </div>
+            <SportBadge sport={hit.sport} />
             <CardHeader
               avatar={(
                 <Avatar src={hit.photoURL} className={classes.avatar} />
