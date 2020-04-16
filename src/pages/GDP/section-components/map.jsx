@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { GoogleMap, Marker, withGoogleMap } from 'react-google-maps';
-import { MAP_ZOOM_LEVEL, GDP_MAP_OPTIONS } from '../../core/config';
+import { MAP_ZOOM_LEVEL, GDP_MAP_OPTIONS } from '../../../core/config';
 
 const Map = ({ location }) => (
   <GoogleMap

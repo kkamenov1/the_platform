@@ -1,71 +1,65 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   Grid,
   Typography,
   Avatar,
-  Link,
   Divider,
+  Slide,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Skeleton } from '@material-ui/lab';
-import LanguageIcon from '@material-ui/icons/Language';
-import CreditCardIcon from '@material-ui/icons/CreditCard';
-import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
-import { Link as ScrollLink } from 'react-scroll';
 import { StickyContainer } from 'react-sticky';
 import { withFirebase } from '../../core/lib/Firebase';
-import { setGuru, setGuruLoading } from './actions';
-import ImageViewer from './image-viewer';
-import QuickInfoContainer from './quick-info-container';
-import PriceTable from './price-table';
-import { SportBadge } from '../../core/components';
+import { setGuru } from './actions';
+import PriceTable from './section-components/price-table';
+import Map from './section-components/map';
 import { useIsMobile } from '../../core/hooks';
-import Map from './map';
+import {
+  Badge,
+  ScrollingButton,
+  ScrollingLink,
+} from '../../core/components';
+import {
+  MainInfoContainer,
+  ImageViewer,
+  QuickInfoContainer,
+  Section,
+} from './components';
 
 
 const useStyles = makeStyles((theme) => ({
-  imageViewer: {
-    position: 'relative',
-  },
   wrapper: {
     [theme.breakpoints.up('md')]: {
       maxWidth: 960,
       margin: '20px auto 0 auto',
     },
   },
-
   details: {
     padding: 15,
   },
-
   avatar: {
     width: 70,
     height: 70,
   },
-  secondaryInfo: {
-    marginTop: 16,
-  },
-  bottomOffsetXl: {
-    marginBottom: 24,
-  },
-
-  bottomOffsetS: {
-    marginBottom: 16,
-  },
-  sectionIcon: {
-    fontSize: 14,
-    marginRight: 10,
-  },
-  sectionText: {
-    display: 'inline-block',
-  },
   caption: {
     fontWeight: 500,
   },
-  pointer: {
-    cursor: 'pointer',
+  firstBadge: {
+    display: 'inline-block',
+    marginRight: 10,
+  },
+  mobileSubscribe: {
+    backgroundColor: theme.palette.common.white,
+    padding: 20,
+    position: 'fixed',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  bottomOffsetXl: {
+    marginBottom: 24,
   },
 }));
 
@@ -74,16 +68,39 @@ const GDP = ({ match, firebase }) => {
   const classes = useStyles();
   const guru = useSelector((state) => state.gdp.guru);
   const isMobile = useIsMobile('sm');
+  const [stickyMobileSubscribeBtn, setStickyMobileSubscribeBtn] = useState(false);
+  const [expandedInfoContainer, setExpandedInfoContainer] = useState(false);
+
+  const handleScroll = () => {
+    const pricesElement = document.getElementById('prices');
+    const secondaryInfoElement = document.getElementById('secondary-info');
+    if (window.scrollY > pricesElement.offsetTop + pricesElement.offsetHeight) {
+      setStickyMobileSubscribeBtn(true);
+    } else {
+      setStickyMobileSubscribeBtn(false);
+    }
+
+    if (window.scrollY > secondaryInfoElement.offsetTop + secondaryInfoElement.offsetHeight) {
+      setExpandedInfoContainer(true);
+    } else {
+      setExpandedInfoContainer(false);
+    }
+  };
 
   useEffect(() => {
     (async () => {
-      dispatch(setGuruLoading(true));
       const { id } = match.params;
       const guruDoc = await firebase.user(id).get();
       dispatch(setGuru(guruDoc.data()));
-      dispatch(setGuruLoading(false));
     })();
   }, [dispatch, firebase, match.params]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const {
     languages,
@@ -98,8 +115,21 @@ const GDP = ({ match, firebase }) => {
     methods,
     location,
     _geoloc,
+    available,
+    occupation,
+    subscribers,
   } = guru;
   const formattedLanguages = languages.join(', ');
+  const getStatus = () => {
+    if (available === undefined) {
+      return '';
+    }
+    if (available === true) {
+      return 'AVAILABLE';
+    }
+
+    return 'UNAVAILABLE';
+  };
 
   const renderIntroduction = () => {
     if (introduction === null) {
@@ -136,8 +166,10 @@ const GDP = ({ match, firebase }) => {
           <Grid item xs={12} md={8}>
             <ImageViewer images={images} certificate={certificate} />
             <Typography component="div" className={classes.details}>
-              <SportBadge sport={sport} />
-
+              <div className={classes.firstBadge}>
+                <Badge label={sport} />
+              </div>
+              <Badge label={getStatus()} color={available ? 'green' : 'red'} />
               <Grid container justify="space-between" alignItems="center">
                 <Grid item>
                   {!displayName ? (
@@ -148,18 +180,13 @@ const GDP = ({ match, firebase }) => {
                     </Typography>
                   )}
                   {location ? (
-                    <Link
-                      className={classes.pointer}
+                    <ScrollingLink
+                      containerId="map"
+                      offset={-80}
+                      label={location}
                       variant="body2"
                       color="inherit"
-                      component={ScrollLink}
-                      to="map"
-                      spy
-                      smooth
-                      duration={500}
-                    >
-                      {location}
-                    </Link>
+                    />
                   ) : (
                     <Skeleton variant="rect" width={180} height={20} />
                   )}
@@ -172,79 +199,17 @@ const GDP = ({ match, firebase }) => {
                   />
                 </Grid>
               </Grid>
-
-              <Typography component="div" className={classes.secondaryInfo}>
-                <Typography component="div" className={classes.bottomOffsetS}>
-                  <CreditCardIcon className={classes.sectionIcon} />
-                  {priceFrom ? (
-                    <Typography
-                      variant="body2"
-                      className={classes.sectionText}
-                    >
-                      {`From $${priceFrom}`}
-                    </Typography>
-                  ) : (
-                    <Skeleton
-                      variant="rect"
-                      width={100}
-                      height={17}
-                      className={classes.sectionText}
-                    />
-                  )}
-                </Typography>
-
-                <Typography component="div" className={classes.bottomOffsetS}>
-                  <HourglassEmptyIcon className={classes.sectionIcon} />
-                  {duration ? (
-                    <Typography
-                      variant="body2"
-                      className={classes.sectionText}
-                    >
-                      {`${duration} days`}
-                    </Typography>
-                  ) : (
-                    <Skeleton
-                      variant="rect"
-                      width={100}
-                      height={17}
-                      className={classes.sectionText}
-                    />
-                  )}
-                </Typography>
-
-                <Typography component="div" className={classes.bottomOffsetS}>
-                  <LanguageIcon className={classes.sectionIcon} />
-                  {languages && languages.length ? (
-                    <Typography
-                      variant="body2"
-                      className={classes.sectionText}
-                    >
-                      {formattedLanguages}
-                    </Typography>
-                  ) : (
-                    <Skeleton
-                      variant="rect"
-                      width={200}
-                      height={17}
-                      className={classes.sectionText}
-                    />
-                  )}
-                </Typography>
-              </Typography>
-
-              {renderIntroduction()}
-
-              <Divider className={classes.bottomOffsetXl} />
-
-              <div className={classes.bottomOffsetXl} id="prices">
-                <Typography
-                  component="h6"
-                  variant="h6"
-                  paragraph
-                >
-                  Prices
-                </Typography>
-
+              <MainInfoContainer
+                priceFrom={priceFrom}
+                duration={duration}
+                languages={formattedLanguages}
+                subscribers={subscribers}
+                occupation={occupation}
+              />
+              <Section containerId="introduction" divider>
+                {renderIntroduction()}
+              </Section>
+              <Section containerId="prices" label="Prices" divider>
                 {methods && methods.length ? (
                   <PriceTable methods={methods} />
                 ) : (
@@ -258,18 +223,8 @@ const GDP = ({ match, firebase }) => {
                 ) : (
                   <Skeleton variant="rect" height={14} width={230} />
                 )}
-              </div>
-
-              <Divider className={classes.bottomOffsetXl} />
-
-              <div id="map">
-                <Typography
-                  component="h6"
-                  variant="h6"
-                  paragraph
-                >
-                  Location
-                </Typography>
+              </Section>
+              <Section containerId="map" label="Location">
                 {_geoloc ? (
                   <Map
                     location={_geoloc}
@@ -281,19 +236,39 @@ const GDP = ({ match, firebase }) => {
                 ) : (
                   <Skeleton variant="rect" height={400} />
                 )}
-              </div>
+              </Section>
             </Typography>
           </Grid>
 
-          {!isMobile && (
+          {!isMobile ? (
             <Grid item md={4} className={classes.quickInfoContainer}>
               <QuickInfoContainer
                 photoURL={photoURL}
                 location={location}
                 displayName={displayName}
                 priceFrom={priceFrom}
+                status={getStatus()}
+                occupation={occupation}
+                subscribers={subscribers}
+                expanded={expandedInfoContainer}
+                sport={sport}
+                duration={duration}
+                languages={formattedLanguages}
               />
             </Grid>
+          ) : (
+            <Slide direction="up" in={stickyMobileSubscribeBtn} mountOnEnter unmountOnExit>
+              <div className={classes.mobileSubscribe}>
+                <ScrollingButton
+                  containerId="prices"
+                  offset={-80}
+                  label="SUBSCRIBE"
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                />
+              </div>
+            </Slide>
           )}
         </Grid>
       </StickyContainer>

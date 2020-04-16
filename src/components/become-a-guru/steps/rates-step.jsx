@@ -13,6 +13,7 @@ import {
   Slide,
 } from '@material-ui/core';
 import EventNoteIcon from '@material-ui/icons/EventNote';
+import PersonIcon from '@material-ui/icons/Person';
 import { ModalHeader, FormError } from '../../../core/components';
 import { addOnPosition } from '../../../core/utils';
 import {
@@ -67,6 +68,7 @@ const RatesStep = () => {
   const {
     methods,
     duration,
+    subscribers,
     ratesStepFormErrors: errors,
     activeStep,
     isIncreasingSteps,
@@ -92,7 +94,7 @@ const RatesStep = () => {
     ));
   };
 
-  const handleDurationChange = (event) => {
+  const handleInputChange = (event) => {
     dispatch(setFormValues(event.target.name, event.target.value));
   };
 
@@ -173,40 +175,74 @@ const RatesStep = () => {
               </FormError>
             </div>
 
-            <div className={classes.vspace}>
-              <Typography component="h6" variant="button">
-                Duration of the coaching programs *
-              </Typography>
-              <OutlinedInput
-                name="duration"
-                value={duration}
-                onChange={handleDurationChange}
-                margin="dense"
-                className={classes.durationInput}
-                inputProps={{
-                  className: classes.input,
-                }}
-                startAdornment={
-                  <EventNoteIcon className={classes.inputIcon} />
-              }
-                endAdornment={
-                  <InputAdornment position="end">days</InputAdornment>
-              }
-              />
-
-              {errors && errors.duration ? (
-                <FormError>
-                  {errors && errors.duration}
-                </FormError>
-              ) : (
-                <Typography variant="caption" className={classes.note} component="p">
-                  Note: This doesn&apos;t include&nbsp;
-                  <strong>Watching exercise</strong>
-                  &nbsp;method
+            <Grid
+              container
+              justify="space-between"
+              alignItems="center"
+              className={classes.vspace}
+            >
+              <Grid item>
+                <Typography component="h6" variant="button">
+                  Duration of the coaching programs *
                 </Typography>
-              )}
+                <OutlinedInput
+                  name="duration"
+                  value={duration}
+                  onChange={handleInputChange}
+                  margin="dense"
+                  className={classes.durationInput}
+                  inputProps={{
+                    className: classes.input,
+                  }}
+                  startAdornment={
+                    <EventNoteIcon className={classes.inputIcon} />
+                  }
+                  endAdornment={
+                    <InputAdornment position="end">days</InputAdornment>
+                  }
+                />
 
-            </div>
+                {errors && errors.duration ? (
+                  <FormError>
+                    {errors.duration}
+                  </FormError>
+                ) : (
+                  <Typography variant="caption" className={classes.note} component="p">
+                    Note: This doesn&apos;t include&nbsp;
+                    <strong>Watching exercise</strong>
+                  &nbsp;method
+                  </Typography>
+                )}
+              </Grid>
+
+              <Grid item>
+                <Typography component="h6" variant="button">
+                  Number of subscribers *
+                </Typography>
+                <OutlinedInput
+                  name="subscribers"
+                  value={subscribers}
+                  onChange={handleInputChange}
+                  margin="dense"
+                  inputProps={{
+                    className: classes.input,
+                  }}
+                  startAdornment={
+                    <PersonIcon className={classes.inputIcon} />
+                  }
+                />
+
+                {errors && errors.subscribers ? (
+                  <FormError>
+                    {errors.subscribers}
+                  </FormError>
+                ) : (
+                  <Typography variant="caption" className={classes.note} component="p">
+                    How many people you can train at once?
+                  </Typography>
+                )}
+              </Grid>
+            </Grid>
           </div>
         </form>
       </div>

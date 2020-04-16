@@ -85,6 +85,7 @@ export const defaultStore = {
     },
   ],
   duration: '',
+  subscribers: '',
   introduction: '',
   certificate: {
     src: null,

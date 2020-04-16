@@ -1,4 +1,4 @@
-import { SET_GURU, SET_GURU_LOADING } from './actions';
+import { SET_GURU } from './actions';
 
 export const defaultStore = {
   guru: {
@@ -20,8 +20,10 @@ export const defaultStore = {
     certificate: '',
     hasSubmittedApplication: false,
     priceFrom: 0,
+    available: undefined,
+    occupation: undefined,
+    subscribers: '',
   },
-  loading: false,
 };
 
 export default (state = defaultStore, action) => {
@@ -30,12 +32,6 @@ export default (state = defaultStore, action) => {
       return {
         ...state,
         guru: action.guru,
-      };
-
-    case SET_GURU_LOADING:
-      return {
-        ...state,
-        loading: action.loading,
       };
 
     default:

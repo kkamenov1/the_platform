@@ -16,7 +16,7 @@ import Slider from 'react-slick';
 import cloudinary from 'cloudinary-core';
 import { plpSliderConfig, FALLBACK_IMAGE } from '../../core/config';
 import { useIsMobile } from '../../core/hooks';
-import { SportBadge } from '../../core/components';
+import { Badge } from '../../core/components';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -74,6 +74,11 @@ const useStyles = makeStyles((theme) => ({
     margin: 0,
     borderRadius: 15,
   },
+
+  firstBadge: {
+    marginRight: 10,
+    display: 'inline-block',
+  },
 }));
 
 const Hit = ({
@@ -102,6 +107,8 @@ const Hit = ({
   const allImages = hit.certificate
     ? [...images, hit.certificate]
     : images;
+  const statusText = `${hit.available ? 'AVAILABLE' : 'UNAVAILABLE'}`;
+
   return (
     <Card
       className={classnames(classes.card, { [classes.mapCard]: isOnMap })}
@@ -140,7 +147,10 @@ const Hit = ({
             xs={!showMap || isMobile ? 12 : 7}
             className={classes.content}
           >
-            <SportBadge sport={hit.sport} />
+            <div className={classes.firstBadge}>
+              <Badge label={hit.sport} />
+            </div>
+            <Badge label={statusText} color={hit.available ? 'green' : 'red'} />
             <CardHeader
               avatar={(
                 <Avatar src={hit.photoURL} className={classes.avatar} />
@@ -175,7 +185,7 @@ const Hit = ({
                 ))}
               </Typography>
 
-              {hit.introduction && (
+              {/* {hit.introduction && (
               <Typography
                 variant="body2"
                 color="textSecondary"
@@ -184,7 +194,7 @@ const Hit = ({
               >
                 {hit.introduction}
               </Typography>
-              )}
+              )} */}
             </CardContent>
           </Grid>
         </Grid>
@@ -204,6 +214,9 @@ Hit.propTypes = {
     methods: PropTypes.array,
     displayName: PropTypes.string,
     duration: PropTypes.string,
+    available: PropTypes.bool,
+    occupation: PropTypes.number,
+    subscribers: PropTypes.string,
     introduction: PropTypes.string,
     languages: PropTypes.arrayOf(PropTypes.string),
     location: PropTypes.string,

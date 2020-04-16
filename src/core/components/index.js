@@ -10,7 +10,9 @@ import ModalHeader from './modal-header';
 import ImageUploader from './image-uploader';
 import Pagination from './pagination';
 import CarouselArrow from './carousel-arrow';
-import SportBadge from './sport-badge';
+import Badge from './badge';
+import ScrollingButton from './scrolling-button';
+import ScrollingLink from './scrolling-link';
 
 export {
   FormError,
@@ -25,5 +27,7 @@ export {
   ImageUploader,
   Pagination,
   CarouselArrow,
-  SportBadge,
+  Badge,
+  ScrollingButton,
+  ScrollingLink,
 };

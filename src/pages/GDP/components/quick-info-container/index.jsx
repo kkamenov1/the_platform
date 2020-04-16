@@ -1,17 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
-import { Link as ScrollLink } from 'react-scroll';
 import { Sticky } from 'react-sticky';
-import classnames from 'classnames';
-import {
-  Typography,
-  Avatar,
-  Button,
-  Link,
-} from '@material-ui/core';
+import { Typography, Avatar } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import LocationOnOutlinedIcon from '@material-ui/icons/LocationOnOutlined';
+import { ScrollingButton, ScrollingLink } from '../../../../core/components';
+import QuickInfoCollapseContainer from './quick-info-collapse-container';
 
 const useStyles = makeStyles((theme) => ({
   upper: {
@@ -64,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('md')]: {
       display: 'block',
       border: '1px solid #e4e4e4',
+      background: theme.palette.common.white,
     },
   },
 
@@ -77,6 +73,9 @@ const useStyles = makeStyles((theme) => ({
   pointer: {
     cursor: 'pointer',
   },
+  collapseContainer: {
+    marginTop: 16,
+  },
 }));
 
 const QuickInfoContainer = ({
@@ -84,6 +83,13 @@ const QuickInfoContainer = ({
   location,
   displayName,
   priceFrom,
+  expanded,
+  status,
+  occupation,
+  subscribers,
+  sport,
+  duration,
+  languages,
 }) => {
   const classes = useStyles();
 
@@ -99,17 +105,13 @@ const QuickInfoContainer = ({
                   <Typography className={classes.address}>
                     {location}
                   </Typography>
-                  <Link
+                  <ScrollingLink
+                    containerId="map"
+                    offset={-80}
+                    label="Show on map"
                     variant="body2"
-                    className={classnames(classes.address, classes.pointer)}
-                    component={ScrollLink}
-                    to="map"
-                    spy
-                    smooth
-                    duration={500}
-                  >
-                    Show on map
-                  </Link>
+                    className={classes.address}
+                  />
                 </div>
               ) : (
                 <Skeleton
@@ -146,7 +148,6 @@ const QuickInfoContainer = ({
               <Typography
                 variant="body2"
                 color="textSecondary"
-                className={classes.attribute}
                 align="center"
                 paragraph
               >
@@ -161,18 +162,23 @@ const QuickInfoContainer = ({
               />
             )}
 
-            <Button
+            <ScrollingButton
+              containerId="prices"
+              offset={-80}
+              label="SUBSCRIBE"
               variant="contained"
               color="primary"
               fullWidth
-              component={ScrollLink}
-              to="prices"
-              spy
-              smooth
-              duration={500}
-            >
-              SUBSCRIBE
-            </Button>
+            />
+            <QuickInfoCollapseContainer
+              status={status}
+              occupation={occupation}
+              subscribers={subscribers}
+              sport={sport}
+              duration={duration}
+              languages={languages}
+              expanded={expanded}
+            />
           </div>
         </div>
       )}
@@ -185,6 +191,7 @@ QuickInfoContainer.defaultProps = {
   photoURL: undefined,
   displayName: '',
   priceFrom: undefined,
+  occupation: undefined,
 };
 
 QuickInfoContainer.propTypes = {
@@ -192,6 +199,13 @@ QuickInfoContainer.propTypes = {
   photoURL: PropTypes.string,
   displayName: PropTypes.string,
   priceFrom: PropTypes.number,
+  expanded: PropTypes.bool.isRequired,
+  status: PropTypes.string.isRequired,
+  occupation: PropTypes.number,
+  subscribers: PropTypes.string.isRequired,
+  sport: PropTypes.string.isRequired,
+  duration: PropTypes.string.isRequired,
+  languages: PropTypes.string.isRequired,
 };
 
 export default QuickInfoContainer;

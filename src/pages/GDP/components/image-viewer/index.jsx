@@ -4,7 +4,7 @@ import Slider from 'react-slick';
 import cloudinary from 'cloudinary-core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Skeleton } from '@material-ui/lab';
-import { CarouselArrow } from '../../core/components';
+import { CarouselArrow } from '../../../../core/components';
 
 const useStyles = makeStyles({
   img: {
