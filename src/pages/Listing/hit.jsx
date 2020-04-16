@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   cardHeader: {
-    padding: '5px 0',
+    padding: '15px 0',
     color: theme.palette.text.primary,
   },
 
@@ -66,8 +66,14 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 
+  borderedTiles: {
+    border: `1px solid ${theme.palette.divider}`,
+    borderBottomRightRadius: 5,
+    borderBottomLeftRadius: 5,
+  },
+
   content: {
-    paddingLeft: 10,
+    padding: '0 10px',
   },
 
   mapCard: {
@@ -78,6 +84,9 @@ const useStyles = makeStyles((theme) => ({
   firstBadge: {
     marginRight: 10,
     display: 'inline-block',
+  },
+  bottomSpacing: {
+    marginBottom: 16,
   },
 }));
 
@@ -93,16 +102,32 @@ const Hit = ({
   const isMobile = useIsMobile('md');
   const minPriceAttribute = `From $${hit.priceFrom}`;
   const durationAttribute = `For ${hit.duration} days`;
-  const attributesForRegularContent = [
-    minPriceAttribute,
-    durationAttribute,
-    hit.languages.join(', '),
+  const subscribersAttribute = `${hit.occupation}/${hit.subscribers}`;
+  const mapAttributes = [
+    {
+      name: 'Subscribers',
+      value: subscribersAttribute,
+    },
+    {
+      name: 'Price',
+      value: minPriceAttribute,
+    },
   ];
+  const regularAttributes = [
+    ...mapAttributes,
+    {
+      name: 'Programs duration',
+      value: durationAttribute,
+    },
+    {
+      name: 'Languages',
+      value: hit.languages.join(', '),
+    },
+  ];
+  const attributes = isOnMap ? mapAttributes : regularAttributes;
   const cloudinaryCore = new cloudinary.Cloudinary({
     cloud_name: process.env.REACT_APP_CLOUDINARY_CLOUD_NAME,
   });
-  const attributesForMapContent = [minPriceAttribute, durationAttribute];
-  const attributes = isOnMap ? attributesForMapContent : attributesForRegularContent;
   const images = hit.images || [FALLBACK_IMAGE.src];
   const allImages = hit.certificate
     ? [...images, hit.certificate]
@@ -117,7 +142,12 @@ const Hit = ({
       onMouseLeave={() => onHitOver(null)}
     >
       <Link to={`/gurus/${hit.objectID}`} className={classes.link}>
-        <Grid container>
+        <Grid
+          container
+          className={classnames({
+            [classes.borderedTiles]: !showMap,
+          })}
+        >
           <Grid item xs={!showMap || isMobile ? 12 : 5}>
             <Slider
               ref={sliderRef}
@@ -161,40 +191,33 @@ const Hit = ({
 
             <CardContent className={classes.cardContent}>
               <Typography component="div" paragraph>
-                {attributes.map((attribute, i) => (
-                  <Typography component="span" key={`${attribute}${i}`}>
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      component="span"
-                      className={classes.attribute}
-                    >
-                      {attribute}
-                    </Typography>
-                    {i + 1 !== attributes.length && (
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      component="span"
-                      className={classes.dot}
-                    >
-                      ·
-                    </Typography>
-                    )}
-                  </Typography>
+                {attributes.map(({ name, value }, i) => (
+                  <Grid
+                    container
+                    justify="space-between"
+                    alignItems="center"
+                    key={`${value} ${i}`}
+                    className={classes.bottomSpacing}
+                  >
+                    <Grid item xs={8}>
+                      <Typography variant="body2" color="textSecondary">
+                        {name}
+                      </Typography>
+                    </Grid>
+
+                    <Grid item xs={4}>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        align="right"
+                      >
+                        {value}
+                      </Typography>
+                    </Grid>
+                  </Grid>
                 ))}
               </Typography>
 
-              {/* {hit.introduction && (
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                component="div"
-                className={classes.introduction}
-              >
-                {hit.introduction}
-              </Typography>
-              )} */}
             </CardContent>
           </Grid>
         </Grid>
