@@ -11,6 +11,7 @@ export const SET_RATES_ERRORS = 'SET_RATES_ERRORS';
 export const CLEAR_BECOMEGURU_MODAL = 'CLEAR_BECOMEGURU_MODAL';
 export const TOGGLE_BECOME_GURU_MODAL = 'TOGGLE_BECOME_GURU_MODAL';
 export const IMAGE_UPLOAD_SUCCESS = 'IMAGE_UPLOAD_SUCCESS';
+export const SET_SOCIAL_MEDIA_VALUE = 'SET_SOCIAL_MEDIA_VALUE';
 
 export const setActiveStep = (activeStep) => ({
   type: SET_ACTIVE_STEP,
@@ -34,6 +35,12 @@ export const setPersonalDetailsErrors = (errors) => ({
 
 export const setFormValues = (name, value) => ({
   type: SET_FORM_VALUES,
+  name,
+  value,
+});
+
+export const setSocialMediaValue = (name, value) => ({
+  type: SET_SOCIAL_MEDIA_VALUE,
   name,
   value,
 });

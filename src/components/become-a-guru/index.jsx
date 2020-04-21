@@ -13,7 +13,11 @@ import {
   MobileStepper,
   Button,
 } from '@material-ui/core';
-import { PersonalDetailsStep, GuruDetailsStep, RatesStep } from './steps';
+import {
+  PersonalDetailsStep,
+  GuruDetailsStep, RatesStep,
+  SocialMediaStep,
+} from './steps';
 import Finalization from './finalization';
 import {
   setActiveStep,
@@ -81,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const getSteps = () => ['Personal Information', 'GURU Information', 'Rates'];
+const getSteps = () => ['Social Media', 'Personal Information', 'GURU Information', 'Rates'];
 
 const renderStepContent = (activeStep) => {
   switch (activeStep) {
@@ -91,6 +95,8 @@ const renderStepContent = (activeStep) => {
       return <GuruDetailsStep />;
     case 2:
       return <RatesStep />;
+    case 4:
+      return <SocialMediaStep />;
     default: return null;
   }
 };

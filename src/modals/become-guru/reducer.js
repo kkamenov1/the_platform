@@ -12,6 +12,7 @@ import {
   CLEAR_BECOMEGURU_MODAL,
   TOGGLE_BECOME_GURU_MODAL,
   IMAGE_UPLOAD_SUCCESS,
+  SET_SOCIAL_MEDIA_VALUE,
 } from './actions';
 import { addFirstPossible } from '../../core/utils';
 
@@ -93,6 +94,14 @@ export const defaultStore = {
     name: null,
     publicId: null,
   },
+  socialMedia: {
+    facebook: '',
+    instagram: '',
+    snapchat: '',
+    tiktok: '',
+    skype: '',
+    discord: '',
+  },
   personalDetailsStepFormErrors: {},
   guruDetailsStepFormErrors: {},
   ratesStepFormErrors: {},
@@ -150,6 +159,15 @@ export default (state = defaultStore, action) => {
       return {
         ...state,
         [action.name]: action.value,
+      };
+
+    case SET_SOCIAL_MEDIA_VALUE:
+      return {
+        ...state,
+        socialMedia: {
+          ...state.socialMedia,
+          [action.name]: action.value,
+        },
       };
 
     case SET_GURU_DETAILS_COACHING_METHODS:
