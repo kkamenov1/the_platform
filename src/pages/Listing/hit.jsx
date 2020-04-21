@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Card,
@@ -15,12 +16,18 @@ import Slider from 'react-slick';
 import cloudinary from 'cloudinary-core';
 import { plpSliderConfig, FALLBACK_IMAGE } from '../../core/config';
 import { useIsMobile } from '../../core/hooks';
+import { Badge } from '../../core/components';
 
 const useStyles = makeStyles((theme) => ({
   card: {
     borderRadius: 0,
     boxShadow: 'none',
     margin: '24px 0',
+  },
+
+  link: {
+    textDecoration: 'none',
+    display: 'block',
   },
 
   media: {
@@ -30,18 +37,6 @@ const useStyles = makeStyles((theme) => ({
 
   attribute: {
     textTransform: 'capitalize',
-  },
-
-  labelWrapper: {
-    padding: '3px 0',
-  },
-
-  label: {
-    textTransform: 'uppercase',
-    border: `1px solid ${theme.palette.common.black}`,
-    fontWeight: theme.typography.fontWeightMedium,
-    borderRadius: 5,
-    padding: '2px 5px',
   },
 
   dot: {
@@ -59,7 +54,8 @@ const useStyles = makeStyles((theme) => ({
   },
 
   cardHeader: {
-    padding: '5px 0',
+    padding: '15px 0',
+    color: theme.palette.text.primary,
   },
 
   cardContent: {
@@ -70,13 +66,27 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 
+  borderedTiles: {
+    border: `1px solid ${theme.palette.divider}`,
+    borderBottomRightRadius: 5,
+    borderBottomLeftRadius: 5,
+  },
+
   content: {
-    paddingLeft: 10,
+    padding: '0 10px',
   },
 
   mapCard: {
     margin: 0,
     borderRadius: 15,
+  },
+
+  firstBadge: {
+    marginRight: 10,
+    display: 'inline-block',
+  },
+  bottomSpacing: {
+    marginBottom: 16,
   },
 }));
 
@@ -92,20 +102,37 @@ const Hit = ({
   const isMobile = useIsMobile('md');
   const minPriceAttribute = `From $${hit.priceFrom}`;
   const durationAttribute = `For ${hit.duration} days`;
-  const attributesForRegularContent = [
-    minPriceAttribute,
-    durationAttribute,
-    hit.languages.join(', '),
+  const subscribersAttribute = `${hit.occupation}/${hit.subscribers}`;
+  const mapAttributes = [
+    {
+      name: 'Subscribers',
+      value: subscribersAttribute,
+    },
+    {
+      name: 'Price',
+      value: minPriceAttribute,
+    },
   ];
+  const regularAttributes = [
+    ...mapAttributes,
+    {
+      name: 'Programs duration',
+      value: durationAttribute,
+    },
+    {
+      name: 'Languages',
+      value: hit.languages.join(', '),
+    },
+  ];
+  const attributes = isOnMap ? mapAttributes : regularAttributes;
   const cloudinaryCore = new cloudinary.Cloudinary({
     cloud_name: process.env.REACT_APP_CLOUDINARY_CLOUD_NAME,
   });
-  const attributesForMapContent = [minPriceAttribute, durationAttribute];
-  const attributes = isOnMap ? attributesForMapContent : attributesForRegularContent;
   const images = hit.images || [FALLBACK_IMAGE.src];
   const allImages = hit.certificate
     ? [...images, hit.certificate]
     : images;
+  const statusText = `${hit.available ? 'AVAILABLE' : 'UNAVAILABLE'}`;
 
   return (
     <Card
@@ -114,93 +141,87 @@ const Hit = ({
       onMouseEnter={() => onHitOver(hit)}
       onMouseLeave={() => onHitOver(null)}
     >
-      <Grid container>
-        <Grid item xs={!showMap || isMobile ? 12 : 5}>
-          <Slider
-            ref={sliderRef}
-            {...plpSliderConfig(
-              selectedHit && selectedHit.objectID === hit.objectID,
-            )}
-          >
-            {allImages.map((img) => {
-              const imgSrc = cloudinaryCore.url(
-                img,
-                { width: 600, crop: 'fill' },
-              );
-              return (
-                <CardMedia
-                  key={imgSrc}
-                  className={classes.media}
-                  image={imgSrc}
-                  title={hit.displayName}
-                />
-              );
-            })}
-          </Slider>
-        </Grid>
-
+      <Link to={`/gurus/${hit.objectID}`} className={classes.link}>
         <Grid
-          item
-          xs={!showMap || isMobile ? 12 : 7}
-          className={classes.content}
+          container
+          className={classnames({
+            [classes.borderedTiles]: !showMap,
+          })}
         >
-          <div className={classes.labelWrapper}>
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              component="span"
-              className={classes.label}
+          <Grid item xs={!showMap || isMobile ? 12 : 5}>
+            <Slider
+              ref={sliderRef}
+              {...plpSliderConfig(
+                selectedHit && selectedHit.objectID === hit.objectID,
+              )}
             >
-              {hit.sport}
-            </Typography>
-          </div>
-          <CardHeader
-            avatar={(
-              <Avatar src={hit.photoURL} className={classes.avatar} />
+              {allImages.map((img) => {
+                const imgSrc = cloudinaryCore.url(
+                  img,
+                  { width: 600, crop: 'fill' },
+                );
+                return (
+                  <CardMedia
+                    key={imgSrc}
+                    className={classes.media}
+                    image={imgSrc}
+                    title={hit.displayName}
+                  />
+                );
+              })}
+            </Slider>
+          </Grid>
+
+          <Grid
+            item
+            xs={!showMap || isMobile ? 12 : 7}
+            className={classes.content}
+          >
+            <div className={classes.firstBadge}>
+              <Badge label={hit.sport} />
+            </div>
+            <Badge label={statusText} color={hit.available ? 'green' : 'red'} />
+            <CardHeader
+              avatar={(
+                <Avatar src={hit.photoURL} className={classes.avatar} />
                     )}
-            title={hit.displayName}
-            className={classes.cardHeader}
-          />
+              title={hit.displayName}
+              className={classes.cardHeader}
+            />
 
-          <CardContent className={classes.cardContent}>
-            <Typography component="div" paragraph>
-              {attributes.map((attribute, i) => (
-                <Typography component="span" key={`${attribute}${i}`}>
-                  <Typography
-                    variant="body2"
-                    color="textSecondary"
-                    component="span"
-                    className={classes.attribute}
+            <CardContent className={classes.cardContent}>
+              <Typography component="div" paragraph>
+                {attributes.map(({ name, value }, i) => (
+                  <Grid
+                    container
+                    justify="space-between"
+                    alignItems="center"
+                    key={`${value} ${i}`}
+                    className={classes.bottomSpacing}
                   >
-                    {attribute}
-                  </Typography>
-                  {i + 1 !== attributes.length && (
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      component="span"
-                      className={classes.dot}
-                    >
-                      ·
-                    </Typography>
-                  )}
-                </Typography>
-              ))}
-            </Typography>
+                    <Grid item xs={8}>
+                      <Typography variant="body2" color="textSecondary">
+                        {name}
+                      </Typography>
+                    </Grid>
 
-            {hit.introduction && (
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                component="div"
-                className={classes.introduction}
-              >
-                {hit.introduction}
+                    <Grid item xs={4}>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        align="right"
+                      >
+                        {value}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                ))}
               </Typography>
-            )}
-          </CardContent>
+
+            </CardContent>
+          </Grid>
         </Grid>
-      </Grid>
+      </Link>
     </Card>
   );
 };
@@ -216,6 +237,9 @@ Hit.propTypes = {
     methods: PropTypes.array,
     displayName: PropTypes.string,
     duration: PropTypes.string,
+    available: PropTypes.bool,
+    occupation: PropTypes.number,
+    subscribers: PropTypes.string,
     introduction: PropTypes.string,
     languages: PropTypes.arrayOf(PropTypes.string),
     location: PropTypes.string,

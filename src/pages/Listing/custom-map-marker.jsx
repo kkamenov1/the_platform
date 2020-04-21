@@ -128,7 +128,7 @@ CustomMapMarker.propTypes = {
     languages: PropTypes.arrayOf(PropTypes.string),
     location: PropTypes.string,
     sport: PropTypes.string,
-    priceFrom: PropTypes.string,
+    priceFrom: PropTypes.number,
   }).isRequired,
   onHitOver: PropTypes.func.isRequired,
   selectedHit: PropTypes.shape({
@@ -140,7 +140,7 @@ CustomMapMarker.propTypes = {
     languages: PropTypes.arrayOf(PropTypes.string),
     location: PropTypes.string,
     sport: PropTypes.string,
-    priceFrom: PropTypes.string,
+    priceFrom: PropTypes.number,
   }),
 };
 

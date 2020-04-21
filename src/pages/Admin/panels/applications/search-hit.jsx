@@ -223,6 +223,15 @@ const SearchHit = ({
                 {`${hit.duration} days`}
               </Typography>
             </Typography>
+
+            <Typography component="div" paragraph>
+              <Typography variant="button">
+                Subscribers
+              </Typography>
+              <Typography variant="body2" color="textSecondary" component="div">
+                {hit.subscribers}
+              </Typography>
+            </Typography>
           </>
         )}
       </CardContent>
@@ -272,6 +281,7 @@ SearchHit.propTypes = {
     birthday: PropTypes.string.isRequired,
     sport: PropTypes.string.isRequired,
     duration: PropTypes.string.isRequired,
+    subscribers: PropTypes.string.isRequired,
     location: PropTypes.string.isRequired,
     introduction: PropTypes.string,
     displayName: PropTypes.string.isRequired,

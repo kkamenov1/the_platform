@@ -65,13 +65,13 @@ const Hits = ({
   hits,
   onHitOver,
   showMap,
-  location,
   selectedHit,
 }) => {
   const dispatch = useDispatch();
   const currentLocation = useSelector((state) => state.app.location);
   const classes = useStyles();
   const isMobile = useIsMobile('md');
+  const location = useSelector((state) => state.router.location);
 
   const handleToggleMap = (event) => {
     dispatch(toggleMap(event.target.checked));
@@ -91,7 +91,10 @@ const Hits = ({
         alignItems="center"
       >
         <Grid item xs={12} md={6} container alignItems="center">
-          <Places defaultRefinement={currentLocation} location={location} />
+          <Places
+            defaultRefinement={currentLocation}
+            query={location.state && location.state.q}
+          />
           <Fab
             size="small"
             color="inherit"
@@ -163,7 +166,6 @@ const Hits = ({
 
 Hits.defaultProps = {
   showMap: true,
-  location: undefined,
   selectedHit: null,
 };
 
@@ -171,7 +173,6 @@ Hits.propTypes = {
   hits: PropTypes.array.isRequired,
   showMap: PropTypes.bool,
   onHitOver: PropTypes.func.isRequired,
-  location: PropTypes.string,
   selectedHit: PropTypes.object,
 };
 

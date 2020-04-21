@@ -124,6 +124,7 @@ const BecomeAGuru = ({ firebase }) => {
     certificate,
     duration,
     _geoloc,
+    subscribers,
   } = becomeGuruModal;
 
   const uidgen = new UIDGenerator();
@@ -216,6 +217,7 @@ const BecomeAGuru = ({ firebase }) => {
     const formErrors = {};
     const selectedMethods = methods.filter((method) => method.selected) || [];
     const durationParsed = +duration;
+    const subscribersParsed = +subscribers;
 
     if (checkMethodsForEmptyPrices(selectedMethods)) {
       formErrors.methods = 'Please provide a price for each selected method';
@@ -227,6 +229,10 @@ const BecomeAGuru = ({ firebase }) => {
 
     if (isNaN(durationParsed) || durationParsed < 1 || durationParsed > 365) {
       formErrors.duration = 'Please enter a valid duration';
+    }
+
+    if (isNaN(subscribersParsed) || subscribersParsed < 1 || subscribersParsed > 100) {
+      formErrors.subscribers = 'Please enter a valid number';
     }
 
     if (Object.entries(formErrors).length) {
@@ -249,6 +255,9 @@ const BecomeAGuru = ({ firebase }) => {
     firebase.application(applicationUID).update({
       methods: mappedSelectedMethods,
       duration,
+      subscribers,
+      occupation: 0,
+      available: true,
       userID: auth.uid,
       photoURL: auth.photoURL,
       displayName: auth.displayName,

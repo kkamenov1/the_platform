@@ -9,9 +9,8 @@ export default createConnector({
 
   refine(props, searchState, nextValue, newValue) {
     return {
-      ...searchState,
       aroundLatLng: nextValue,
-      category: newValue,
+      q: newValue,
       boundingBox: {},
       page: 1,
       range: {},

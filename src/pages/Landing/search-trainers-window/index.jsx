@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import qs from 'qs';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Typography, Button, FormControl, TextField,
@@ -80,11 +81,14 @@ const SearchTrainersWindow = () => {
   }, [setAutocompleteInstance]);
 
   const buildUrl = () => {
-    const category = autocompleteInstance && autocompleteInstance.getVal()
-      ? `/${getCategorySlug(autocompleteInstance.getVal())}`
-      : '';
-    const sportQueryString = sport ? `?sport=${sport}` : '';
-    return `/gurus${category}${sportQueryString}`;
+    const qsObj = {
+      q: autocompleteInstance && autocompleteInstance.getVal() ? getCategorySlug(autocompleteInstance.getVal()) : undefined,
+      sport: sport || undefined,
+    };
+
+    return `/gurus${qs.stringify(qsObj, {
+      addQueryPrefix: true,
+    })}`;
   };
 
   return (
