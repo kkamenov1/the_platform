@@ -59,7 +59,7 @@ const SocialMediaStep = () => {
   return (
     <Slide
       direction={isIncreasingSteps ? 'left' : 'right'}
-      in={activeStep === 0}
+      in={activeStep === 3}
       mountOnEnter
       unmountOnExit
     >

@@ -21,7 +21,7 @@ const Finalization = () => {
   return (
     <Slide
       direction={isIncreasingSteps ? 'left' : 'right'}
-      in={activeStep > 2}
+      in={activeStep > 3}
       mountOnEnter
       unmountOnExit
     >

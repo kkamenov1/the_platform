@@ -85,7 +85,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const getSteps = () => ['Social Media', 'Personal Information', 'GURU Information', 'Rates'];
+const getSteps = () => [
+  'Personal Information',
+  'GURU Information',
+  'Rates',
+  'Social Media',
+];
 
 const renderStepContent = (activeStep) => {
   switch (activeStep) {
@@ -95,7 +100,7 @@ const renderStepContent = (activeStep) => {
       return <GuruDetailsStep />;
     case 2:
       return <RatesStep />;
-    case 4:
+    case 3:
       return <SocialMediaStep />;
     default: return null;
   }
@@ -131,6 +136,7 @@ const BecomeAGuru = ({ firebase }) => {
     duration,
     _geoloc,
     subscribers,
+    socialMedia,
   } = becomeGuruModal;
 
   const uidgen = new UIDGenerator();
@@ -246,13 +252,6 @@ const BecomeAGuru = ({ firebase }) => {
       return false;
     }
 
-    // prevent user from submitting another application while having 1 pending
-    firebase.user(auth.uid).set({
-      hasSubmittedApplication: true,
-    }, { merge: true }).then(() => {
-      dispatch(setApplicationSubmitted(true));
-    });
-
     const mappedSelectedMethods = selectedMethods.map((item) => ({
       name: item.name,
       price: item.price,
@@ -274,6 +273,19 @@ const BecomeAGuru = ({ firebase }) => {
     return true;
   };
 
+  const submitSocialMediaStep = () => {
+    firebase.application(applicationUID).update({
+      socialMedia,
+    }).then(() => {
+      // prevent user from submitting another application while having 1 pending
+      firebase.user(auth.uid).set({
+        hasSubmittedApplication: true,
+      }, { merge: true }).then(() => {
+        dispatch(setApplicationSubmitted(true));
+      });
+    });
+  };
+
   const handleNext = () => {
     if (activeStep === 0 && submitPersonalDetailsStep()) {
       dispatch(setActiveStep(activeStep + 1));
@@ -282,14 +294,22 @@ const BecomeAGuru = ({ firebase }) => {
 
     if (activeStep === 1 && submitGuruDetailsStep()) {
       dispatch(setActiveStep(activeStep + 1));
+      dispatch(setFormValues('isIncreasingSteps', true));
     }
 
     if (activeStep === 2 && submitRatesStep()) {
       dispatch(setActiveStep(activeStep + 1));
+      dispatch(setFormValues('isIncreasingSteps', true));
+    }
+
+    if (activeStep === 3) {
+      submitSocialMediaStep();
+      dispatch(setActiveStep(activeStep + 1));
+      dispatch(setFormValues('isIncreasingSteps', true));
       dispatch(setFormValues('isFormFinalized', true));
     }
 
-    if (activeStep > 2) {
+    if (activeStep > 3) {
       dispatch(toggleBecomeGuruModal(false));
       dispatch(clearBecomeGuruModal());
     }
@@ -304,7 +324,7 @@ const BecomeAGuru = ({ firebase }) => {
     if (activeStep === steps.length - 1) {
       return 'Finish';
     }
-    if (activeStep > 2) {
+    if (activeStep > 3) {
       return 'Close';
     }
 
@@ -350,22 +370,26 @@ const BecomeAGuru = ({ firebase }) => {
           </div>
 
           {isMobile && (
-          <MobileStepper
-            steps={steps.length + 1}
-            position="bottom"
-            variant="text"
-            activeStep={activeStep}
-            nextButton={(
-              <Button size="small" onClick={handleNext}>
-                {generateButtonLabel()}
-              </Button>
-            )}
-            backButton={(
-              <Button size="small" onClick={handleBack} disabled={activeStep <= 0 || activeStep >= 3}>
-                Back
-              </Button>
-            )}
-          />
+            <MobileStepper
+              steps={steps.length + 1}
+              position="bottom"
+              variant="text"
+              activeStep={activeStep}
+              nextButton={(
+                <Button size="small" onClick={handleNext}>
+                  {generateButtonLabel()}
+                </Button>
+              )}
+              backButton={(
+                <Button
+                  size="small"
+                  onClick={handleBack}
+                  disabled={activeStep <= 0 || activeStep > 3}
+                >
+                  Back
+                </Button>
+              )}
+            />
           )}
 
           <Grid
@@ -375,17 +399,17 @@ const BecomeAGuru = ({ firebase }) => {
             alignItems="center"
           >
             <Grid item>
-              {activeStep > 0 && activeStep < 3 && (
-              <Fab
-                variant="extended"
-                size="medium"
-                color="inherit"
-                aria-label="back"
-                onClick={handleBack}
-                className={classnames(classes.fab, classes.backBtn)}
-              >
-                Back
-              </Fab>
+              {activeStep > 0 && activeStep <= 3 && (
+                <Fab
+                  variant="extended"
+                  size="medium"
+                  color="inherit"
+                  aria-label="back"
+                  onClick={handleBack}
+                  className={classnames(classes.fab, classes.backBtn)}
+                >
+                  Back
+                </Fab>
               )}
             </Grid>
 

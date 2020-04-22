@@ -169,7 +169,7 @@ const ImageUploader = ({
                 })}
                 component="span"
                 disableRipple
-                onClick={() => showWidget(widget)}
+                onClick={showWidget}
               >
                 <PhotoCamera className={classes.addPhotoIcon} />
               </Button>
