@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { Slide } from '@material-ui/core';
-import { ModalHeader } from '../../core/components';
+import { ModalHeader } from '../../../core/components';
 
 const useStyles = makeStyles({
   img: {
@@ -12,11 +12,11 @@ const useStyles = makeStyles({
 
 const Finalization = () => {
   const classes = useStyles();
-  const becomeGuruModal = useSelector((state) => state.becomeGuruModal);
+  const application = useSelector((state) => state.application);
   const {
     activeStep,
     isIncreasingSteps,
-  } = becomeGuruModal;
+  } = application;
 
   return (
     <Slide

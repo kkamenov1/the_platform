@@ -16,7 +16,7 @@ import {
 import {
   setFormValues,
   setGuruDetailsErrors,
-} from '../../../modals/become-guru/actions';
+} from '../actions';
 import sports from '../../../constants/sports';
 import { MAX_IMAGE_SIZE } from '../../../constants/files';
 import api from '../../../api';
@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 const GuruDetailsStep = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const becomeGuruModal = useSelector((state) => state.becomeGuruModal);
+  const application = useSelector((state) => state.application);
   const auth = useSelector((state) => state.app.auth);
   const {
     introduction,
@@ -46,7 +46,7 @@ const GuruDetailsStep = () => {
     guruDetailsStepFormErrors: errors,
     activeStep,
     isIncreasingSteps,
-  } = becomeGuruModal;
+  } = application;
 
   const handleChange = (event) => {
     if (event.target.value.length <= 300) {

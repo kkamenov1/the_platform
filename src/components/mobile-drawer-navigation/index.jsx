@@ -19,10 +19,9 @@ import {
   PROFILE,
   DASHBOARD,
   LISTING,
+  BECOME_GURU,
 } from '../../constants/routes';
 import { toggleAuthModal } from '../../modals/auth/actions';
-import { toggleBecomeGuruModal } from '../../modals/become-guru/actions';
-import { toggleUserSubmittedApplicationModal } from '../../modals/user-submitted-application/actions';
 import { ReactComponent as GymIcon } from '../../svg/gym.svg';
 import { ReactComponent as DashboardIcon } from '../../svg/dashboard.svg';
 import { ReactComponent as ProfileIcon } from '../../svg/profile.svg';
@@ -90,16 +89,6 @@ const MobileDrawerNavigation = ({
   const classes = useStyles();
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.app.auth);
-
-  const openBecomeGuruModal = () => {
-    if (auth && !auth.hasSubmittedApplication) {
-      dispatch(toggleBecomeGuruModal(true));
-    } else if (auth && auth.hasSubmittedApplication) {
-      dispatch(toggleUserSubmittedApplicationModal(true));
-    } else {
-      dispatch(toggleAuthModal(true, SIGN_IN));
-    }
-  };
 
   const openSignInModal = () => {
     dispatch(toggleAuthModal(true, SIGN_IN));
@@ -204,10 +193,10 @@ const MobileDrawerNavigation = ({
           {!auth || (auth && !auth.isGuru) ? (
             <>
               <ListItem className={classes.listItem}>
-                <Button
-                  className={classnames(classes.navLink, classes.navBtn)}
-                  disableRipple
-                  onClick={openBecomeGuruModal}
+                <Link
+                  to={BECOME_GURU}
+                  className={classes.navLink}
+                  onClick={toggleDrawer(false)}
                 >
                   <Typography
                     component="span"
@@ -230,7 +219,7 @@ const MobileDrawerNavigation = ({
                     {' '}
                     family and start earning money today.
                   </Typography>
-                </Button>
+                </Link>
               </ListItem>
               <Divider component="li" className={classes.divider} />
             </>

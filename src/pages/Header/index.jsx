@@ -18,13 +18,12 @@ import {
   ADMIN,
   LANDING,
   LISTING,
+  BECOME_GURU,
 } from '../../constants/routes';
 import MobileDrawerNavigation from '../../components/mobile-drawer-navigation';
 import AvatarNavButton from '../../components/avatar-nav-button';
 import { toggleMobileNavigation } from './actions';
-import { toggleBecomeGuruModal } from '../../modals/become-guru/actions';
 import { toggleAuthModal } from '../../modals/auth/actions';
-import { toggleUserSubmittedApplicationModal } from '../../modals/user-submitted-application/actions';
 import {
   SIGN_IN,
   SIGN_UP,
@@ -139,16 +138,6 @@ const Header = () => {
 
   const [, ...navRoutesWithoutHome] = NavigationRoutes;
 
-  const openBecomeGuruModal = () => {
-    if (auth && !auth.hasSubmittedApplication) {
-      dispatch(toggleBecomeGuruModal(true));
-    } else if (auth && auth.hasSubmittedApplication) {
-      dispatch(toggleUserSubmittedApplicationModal(true));
-    } else {
-      dispatch(toggleAuthModal(true, SIGN_IN));
-    }
-  };
-
   const openSignInModal = () => {
     dispatch(toggleAuthModal(true, SIGN_IN));
   };
@@ -252,7 +241,8 @@ const Header = () => {
                       <Button
                         className={classes.navBtn}
                         disableRipple
-                        onClick={openBecomeGuruModal}
+                        component={Link}
+                        to={BECOME_GURU}
                       >
                         {navRoutesWithoutHome[0].name}
                       </Button>

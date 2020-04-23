@@ -1,5 +1,4 @@
 import {
-  SET_GURU_PHOTOS,
   SET_ACTIVE_STEP,
   SET_APPLICATION_UID,
   SET_GURU_LOCATION,
@@ -10,14 +9,12 @@ import {
   SET_GURU_DETAILS_ERRORS,
   SET_RATES_ERRORS,
   CLEAR_BECOMEGURU_MODAL,
-  TOGGLE_BECOME_GURU_MODAL,
   IMAGE_UPLOAD_SUCCESS,
   SET_SOCIAL_MEDIA_VALUE,
 } from './actions';
 import { addFirstPossible } from '../../core/utils';
 
 export const defaultStore = {
-  open: false,
   activeStep: 0,
   applicationUID: null,
   location: '',
@@ -104,18 +101,6 @@ export const defaultStore = {
 
 export default (state = defaultStore, action) => {
   switch (action.type) {
-    case TOGGLE_BECOME_GURU_MODAL:
-      return {
-        ...state,
-        open: action.open,
-      };
-
-    case SET_GURU_PHOTOS:
-      return {
-        ...state,
-        images: action.images,
-      };
-
     case SET_ACTIVE_STEP:
       return {
         ...state,

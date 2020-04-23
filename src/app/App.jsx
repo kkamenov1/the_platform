@@ -12,10 +12,12 @@ import {
   Admin,
   Listing,
   GDP,
+  BecomeGuru,
+  Application,
 } from '../pages';
-import BecomeGuruModal from '../modals/become-guru';
+// import BecomeGuruModal from '../modals/become-guru';
 import AuthModal from '../modals/auth';
-import UserSubmittedApplicationModal from '../modals/user-submitted-application';
+// import UserSubmittedApplicationModal from '../modals/user-submitted-application';
 
 
 const App = ({ firebase }) => {
@@ -40,8 +42,6 @@ const App = ({ firebase }) => {
       <CssBaseline />
       <Header />
       <AuthModal />
-      <BecomeGuruModal />
-      <UserSubmittedApplicationModal />
 
       <main style={{ paddingTop: isLandingPage ? 0 : 80 }}>
         <Switch>
@@ -49,6 +49,8 @@ const App = ({ firebase }) => {
           <Route path={routes.ADMIN} component={Admin} />
           <Route exact path={routes.LISTING} component={Listing} />
           <Route path={routes.GDP} component={GDP} />
+          <Route exact path={routes.BECOME_GURU} component={BecomeGuru} />
+          <Route path={routes.BECOME_GURU_APPLY} component={Application} />
         </Switch>
       </main>
     </>

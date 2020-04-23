@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
 import UIDGenerator from 'uid-generator';
+import { Link } from 'react-router-dom';
 import {
   Stepper,
   Step,
@@ -15,10 +16,11 @@ import {
 } from '@material-ui/core';
 import {
   PersonalDetailsStep,
-  GuruDetailsStep, RatesStep,
+  GuruDetailsStep,
+  RatesStep,
   SocialMediaStep,
+  Finalization,
 } from './steps';
-import Finalization from './finalization';
 import {
   setActiveStep,
   setApplicationUID,
@@ -27,29 +29,37 @@ import {
   setRatesErrors,
   setFormValues,
   clearBecomeGuruModal,
-  toggleBecomeGuruModal,
-} from '../../modals/become-guru/actions';
+} from './actions';
 import { setApplicationSubmitted } from '../../app/actions';
 import { withFirebase } from '../../core/lib/Firebase';
 import { getMinimalPrice } from '../../core/utils';
 import { useIsMobile } from '../../core/hooks';
+import { LANDING } from '../../constants/routes';
+import UserSubmittedApplication from './user-submitted-application';
 
 const useStyles = makeStyles((theme) => ({
-  left: {
+  container: {
+    height: 'calc(100vh - 80px)',
+    backgroundColor: theme.palette.common.white,
+  },
+  aside: {
     display: 'none',
     [theme.breakpoints.up('md')]: {
       display: 'flex',
     },
   },
-  right: {
+  center: {
     position: 'relative',
     overflow: 'hidden',
   },
-  rightPanelInner: {
+  centerPanelInner: {
     padding: '42px 16px 32px 16px',
+
     [theme.breakpoints.up('md')]: {
       padding: 32,
-      height: 730,
+      height: 'calc(100vh - 150px)',
+      overflowY: 'auto',
+      overflowX: 'hidden',
     },
   },
   stepper: {
@@ -70,12 +80,16 @@ const useStyles = makeStyles((theme) => ({
   },
   controls: {
     display: 'none',
-    padding: '15px 32px',
-    width: '100%',
-    backgroundColor: theme.palette.grey['100'],
+
 
     [theme.breakpoints.up('md')]: {
       display: 'flex',
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      padding: '15px 32px',
+      width: '100%',
+      backgroundColor: theme.palette.grey['100'],
     },
   },
   img: {
@@ -119,7 +133,7 @@ const BecomeAGuru = ({ firebase }) => {
   const isMobile = useIsMobile('sm');
   const steps = getSteps();
   const auth = useSelector((state) => state.app.auth);
-  const becomeGuruModal = useSelector((state) => state.becomeGuruModal);
+  const application = useSelector((state) => state.application);
   const {
     activeStep,
     images,
@@ -137,7 +151,7 @@ const BecomeAGuru = ({ firebase }) => {
     _geoloc,
     subscribers,
     socialMedia,
-  } = becomeGuruModal;
+  } = application;
 
   const uidgen = new UIDGenerator();
 
@@ -310,7 +324,6 @@ const BecomeAGuru = ({ firebase }) => {
     }
 
     if (activeStep > 3) {
-      dispatch(toggleBecomeGuruModal(false));
       dispatch(clearBecomeGuruModal());
     }
   };
@@ -324,111 +337,153 @@ const BecomeAGuru = ({ firebase }) => {
     if (activeStep === steps.length - 1) {
       return 'Finish';
     }
-    if (activeStep > 3) {
-      return 'Close';
-    }
 
     return 'Next';
   };
 
   return (
-    <Grid container>
+    <>
+      <Grid container className={classes.container}>
+        <Grid
+          item
+          className={classes.aside}
+          xs={3}
+          container
+          justify="center"
+          alignItems="center"
+        >
+          <img
+            className={classes.img}
+            src="https://res.cloudinary.com/dl766ebzy/image/upload/v1585642658/guru-page_vsac8h.jpg"
+            alt="Become guru"
+          />
+        </Grid>
 
-      <Grid item className={classes.left} xs={4} container justify="center" alignItems="center">
-        <img
-          className={classes.img}
-          src="https://res.cloudinary.com/dl766ebzy/image/upload/v1585642658/guru-page_vsac8h.jpg"
-          alt="Become guru"
-        />
-      </Grid>
-
-      <Grid item className={classes.right} xs={12} md={8}>
-        <div>
-          <div className={classes.rightPanelInner}>
-            <Stepper
-              activeStep={activeStep}
-              className={classes.stepper}
-              alternativeLabel
-            >
-              {steps.map((label) => (
-                <Step key={label}>
-                  <StepLabel classes={{
-                    label: classes.stepLabel,
-                    active: classes.stepLabel,
-                    completed: classes.stepLabel,
-                  }}
-                  >
-                    {label}
-                  </StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-            <div className={classes.stepContent}>
-              {renderStepContent(activeStep)}
-              <Finalization />
-            </div>
-          </div>
-
-          {isMobile && (
-            <MobileStepper
-              steps={steps.length + 1}
-              position="bottom"
-              variant="text"
-              activeStep={activeStep}
-              nextButton={(
-                <Button size="small" onClick={handleNext}>
-                  {generateButtonLabel()}
-                </Button>
-              )}
-              backButton={(
-                <Button
-                  size="small"
-                  onClick={handleBack}
-                  disabled={activeStep <= 0 || activeStep > 3}
+        <Grid item className={classes.center} xs={12} md={6}>
+          {auth && auth.hasSubmittedApplication ? (
+            <UserSubmittedApplication />
+          ) : (
+            <>
+              <div className={classes.centerPanelInner}>
+                <Stepper
+                  activeStep={activeStep}
+                  className={classes.stepper}
+                  alternativeLabel
                 >
-                  Back
-                </Button>
-              )}
-            />
-          )}
+                  {steps.map((label) => (
+                    <Step key={label}>
+                      <StepLabel classes={{
+                        label: classes.stepLabel,
+                        active: classes.stepLabel,
+                        completed: classes.stepLabel,
+                      }}
+                      >
+                        {label}
+                      </StepLabel>
+                    </Step>
+                  ))}
+                </Stepper>
+                <div className={classes.stepContent}>
+                  {renderStepContent(activeStep)}
+                  <Finalization />
+                </div>
+              </div>
 
-          <Grid
-            container
-            className={classes.controls}
-            justify="space-between"
-            alignItems="center"
-          >
-            <Grid item>
-              {activeStep > 0 && activeStep <= 3 && (
-                <Fab
-                  variant="extended"
-                  size="medium"
-                  color="inherit"
-                  aria-label="back"
-                  onClick={handleBack}
-                  className={classnames(classes.fab, classes.backBtn)}
-                >
-                  Back
-                </Fab>
+              {isMobile && (
+                <MobileStepper
+                  steps={steps.length + 1}
+                  position="bottom"
+                  variant="text"
+                  activeStep={activeStep}
+                  nextButton={activeStep <= 3 ? (
+                    <Button size="small" onClick={handleNext}>
+                      {generateButtonLabel()}
+                    </Button>
+                  ) : (
+                    <Button size="small" component={Link} to={LANDING}>
+                      Go Back
+                    </Button>
+                  )}
+                  backButton={(
+                    <Button
+                      size="small"
+                      onClick={handleBack}
+                      disabled={activeStep <= 0 || activeStep > 3}
+                    >
+                      Back
+                    </Button>
+                  )}
+                />
               )}
-            </Grid>
 
-            <Grid item>
-              <Fab
-                variant="extended"
-                size="medium"
-                color="primary"
-                aria-label="continue"
-                onClick={handleNext}
-                className={classes.fab}
+              <Grid
+                container
+                className={classes.controls}
+                justify="space-between"
+                alignItems="center"
               >
-                {generateButtonLabel()}
-              </Fab>
-            </Grid>
-          </Grid>
-        </div>
+                <Grid item>
+                  {activeStep > 0 && activeStep <= 3 && (
+                  <Fab
+                    variant="extended"
+                    size="medium"
+                    color="inherit"
+                    aria-label="back"
+                    onClick={handleBack}
+                    className={classnames(classes.fab, classes.backBtn)}
+                  >
+                    Back
+                  </Fab>
+                  )}
+                </Grid>
+
+                <Grid item>
+                  {activeStep <= 3 ? (
+                    <Fab
+                      variant="extended"
+                      size="medium"
+                      color="primary"
+                      aria-label="continue"
+                      onClick={handleNext}
+                      className={classes.fab}
+                    >
+                      {generateButtonLabel()}
+                    </Fab>
+                  ) : (
+                    <Fab
+                      variant="extended"
+                      size="medium"
+                      color="primary"
+                      aria-label="continue"
+                      className={classes.fab}
+                      component={Link}
+                      to={LANDING}
+                    >
+                      Go Back
+                    </Fab>
+                  )}
+                </Grid>
+              </Grid>
+            </>
+          )}
+        </Grid>
+
+        <Grid
+          item
+          className={classes.aside}
+          xs={3}
+          container
+          justify="center"
+          alignItems="center"
+        >
+          <img
+            className={classes.img}
+            src="https://res.cloudinary.com/dl766ebzy/image/upload/v1587566233/guru-page2_yidack.jpg"
+            alt="Become guru 2"
+          />
+        </Grid>
       </Grid>
-    </Grid>
+    </>
   );
 };
 

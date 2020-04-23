@@ -26,7 +26,7 @@ import {
   setPersonalDetailsErrors,
   setGeoLocation,
   setImageUploadOnSuccess,
-} from '../../../modals/become-guru/actions';
+} from '../actions';
 import api from '../../../api';
 import { addOnPosition } from '../../../core/utils';
 import { MAX_IMAGE_SIZE } from '../../../constants/files';
@@ -70,7 +70,7 @@ const PersonalDetailsStep = () => {
   const [labelWidth, setLabelWidth] = useState(0);
 
   const auth = useSelector((state) => state.app.auth);
-  const becomeGuruModal = useSelector((state) => state.becomeGuruModal);
+  const application = useSelector((state) => state.application);
   const {
     images,
     personalDetailsStepFormErrors: errors,
@@ -81,7 +81,7 @@ const PersonalDetailsStep = () => {
     year,
     activeStep,
     isIncreasingSteps,
-  } = becomeGuruModal;
+  } = application;
 
   useEffect(() => {
     setLabelWidth(inputLabel.current.offsetWidth);

@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { ModalHeader } from '../../../core/components';
-import { setSocialMediaValue } from '../../../modals/become-guru/actions';
+import { setSocialMediaValue } from '../actions';
 
 const useStyles = makeStyles({
   outlinedInput: {
@@ -36,12 +36,12 @@ const useStyles = makeStyles({
 const SocialMediaStep = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const becomeGuruModal = useSelector((state) => state.becomeGuruModal);
+  const application = useSelector((state) => state.application);
   const {
     activeStep,
     isIncreasingSteps,
     socialMedia,
-  } = becomeGuruModal;
+  } = application;
 
   const {
     facebook,
