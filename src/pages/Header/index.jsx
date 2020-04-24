@@ -24,10 +24,7 @@ import MobileDrawerNavigation from '../../components/mobile-drawer-navigation';
 import AvatarNavButton from '../../components/avatar-nav-button';
 import { toggleMobileNavigation } from './actions';
 import { toggleAuthModal } from '../../modals/auth/actions';
-import {
-  SIGN_IN,
-  SIGN_UP,
-} from '../../constants/authModalPages';
+import { SIGN_UP } from '../../constants/authModalPages';
 import { useIsMobile } from '../../core/hooks';
 
 
@@ -139,7 +136,7 @@ const Header = () => {
   const [, ...navRoutesWithoutHome] = NavigationRoutes;
 
   const openSignInModal = () => {
-    dispatch(toggleAuthModal(true, SIGN_IN));
+    dispatch(toggleAuthModal(true));
   };
 
   const openSignUpModal = () => {

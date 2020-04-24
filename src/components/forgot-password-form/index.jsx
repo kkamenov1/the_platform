@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
 import {
   FormControl,
   TextField,
@@ -16,9 +16,9 @@ import {
   LinkStyledButton,
   FormError,
   LoadingButton,
+  ModalHeader,
 } from '../../core/components';
 import { toggleAuthModal } from '../../modals/auth/actions';
-import { SIGN_IN } from '../../constants/authModalPages';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ForgotPasswordForm = ({ firebase }) => {
+const ForgotPasswordForm = ({ firebase, open }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [email, setEmail] = useState('');
@@ -49,7 +49,7 @@ const ForgotPasswordForm = ({ firebase }) => {
   const [loading, setLoading] = useState(false);
 
   const openSignInModal = () => {
-    dispatch(toggleAuthModal(true, SIGN_IN));
+    dispatch(toggleAuthModal(open));
   };
 
   const onChange = (event) => {
@@ -75,62 +75,69 @@ const ForgotPasswordForm = ({ firebase }) => {
   };
 
   return (
-    <form>
-      <FormControl fullWidth className={classes.formControl}>
-        <TextField
-          variant="outlined"
-          name="email"
-          value={email}
-          onChange={onChange}
-          type="email"
-          error={error}
-          placeholder="Email address"
-          className={classes.input}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <EmailOutlinedIcon fontSize="small" />
-              </InputAdornment>
-            ),
-          }}
-        />
-      </FormControl>
-
-      <FormError>
-        {error && error.message}
-      </FormError>
-
-      <Grid
-        container
-        className={classes.btnContainer}
-        justify="space-between"
-        alignItems="center"
-      >
-        <Grid item>
-          <LinkStyledButton onClick={openSignInModal}>
-            <KeyboardArrowLeftIcon />
-            <Typography
-              component="span"
-              className={classes.signupText}
-            >
-              Back to Login
-            </Typography>
-          </LinkStyledButton>
-        </Grid>
-
-        <Grid item>
-          <LoadingButton
-            size="large"
-            variant="contained"
-            color="primary"
-            onClick={onSubmit}
-            label="Send reset link"
-            loading={loading}
+    <>
+      <ModalHeader
+        heading="Reset password"
+        caption={`Enter the email address associated with your account,
+              and we’ll email you a link to reset your password.`}
+      />
+      <form>
+        <FormControl fullWidth className={classes.formControl}>
+          <TextField
+            variant="outlined"
+            name="email"
+            value={email}
+            onChange={onChange}
+            type="email"
+            error={error}
+            placeholder="Email address"
+            className={classes.input}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <EmailOutlinedIcon fontSize="small" />
+                </InputAdornment>
+              ),
+            }}
           />
-        </Grid>
-      </Grid>
+        </FormControl>
 
-    </form>
+        <FormError>
+          {error && error.message}
+        </FormError>
+
+        <Grid
+          container
+          className={classes.btnContainer}
+          justify="space-between"
+          alignItems="center"
+        >
+          <Grid item>
+            <LinkStyledButton onClick={openSignInModal}>
+              <KeyboardArrowLeftIcon />
+              <Typography
+                component="span"
+                className={classes.signupText}
+              >
+                Back to Login
+              </Typography>
+            </LinkStyledButton>
+          </Grid>
+
+          <Grid item>
+            <LoadingButton
+              size="large"
+              variant="contained"
+              color="primary"
+              onClick={onSubmit}
+              label="Send reset link"
+              loading={loading}
+            />
+          </Grid>
+        </Grid>
+
+      </form>
+    </>
   );
 };
 
@@ -138,6 +145,7 @@ ForgotPasswordForm.propTypes = {
   firebase: PropTypes.shape({
     doPasswordReset: PropTypes.func.isRequired,
   }).isRequired,
+  open: PropTypes.bool.isRequired,
 };
 
 export default withFirebase(ForgotPasswordForm);

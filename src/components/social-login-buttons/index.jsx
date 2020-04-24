@@ -32,7 +32,7 @@ const SocialLoginButtons = ({ firebase }) => {
           }, { merge: true })))
       .then(() => {
         setErrorGoogle(null);
-        dispatch(toggleAuthModal(false, ''));
+        dispatch(toggleAuthModal(false));
       })
       .catch((err) => {
         setErrorGoogle(err);
@@ -53,7 +53,7 @@ const SocialLoginButtons = ({ firebase }) => {
           }, { merge: true })))
       .then(() => {
         setErrorFB(null);
-        dispatch(toggleAuthModal(false, ''));
+        dispatch(toggleAuthModal(false));
       })
       .catch((err) => {
         setErrorFB(err);

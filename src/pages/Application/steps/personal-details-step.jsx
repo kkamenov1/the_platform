@@ -191,7 +191,7 @@ const PersonalDetailsStep = () => {
   const widget = window.cloudinary.createUploadWidget({
     cloudName: process.env.REACT_APP_CLOUDINARY_CLOUD_NAME,
     uploadPreset: process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET,
-    folder: `gurus/${auth.uid}`,
+    folder: `gurus/${auth && auth.uid}`,
     maxFiles,
     resourceType: 'image',
     clientAllowedFormats: ['png', 'jpeg'],

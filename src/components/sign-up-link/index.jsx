@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -16,12 +17,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SignUpLink = () => {
+const SignUpLink = ({ open = false }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
   const onClick = () => {
-    dispatch(toggleAuthModal(true, SIGN_UP));
+    dispatch(toggleAuthModal(open, SIGN_UP));
   };
 
   return (
@@ -39,6 +40,10 @@ const SignUpLink = () => {
       </LinkStyledButton>
     </div>
   );
+};
+
+SignUpLink.propTypes = {
+  open: PropTypes.bool.isRequired,
 };
 
 export default SignUpLink;

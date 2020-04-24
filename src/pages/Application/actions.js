@@ -7,7 +7,6 @@ export const SET_FORM_VALUES = 'SET_FORM_VALUES';
 export const SET_GURU_DETAILS_COACHING_METHODS = 'SET_GURU_DETAILS_COACHING_METHODS';
 export const SET_GURU_DETAILS_ERRORS = 'SET_GURU_DETAILS_ERRORS';
 export const SET_RATES_ERRORS = 'SET_RATES_ERRORS';
-export const CLEAR_BECOMEGURU_MODAL = 'CLEAR_BECOMEGURU_MODAL';
 export const IMAGE_UPLOAD_SUCCESS = 'IMAGE_UPLOAD_SUCCESS';
 export const SET_SOCIAL_MEDIA_VALUE = 'SET_SOCIAL_MEDIA_VALUE';
 
@@ -56,10 +55,6 @@ export const setGuruDetailsErrors = (errors) => ({
 export const setRatesErrors = (errors) => ({
   type: SET_RATES_ERRORS,
   errors,
-});
-
-export const clearBecomeGuruModal = () => ({
-  type: CLEAR_BECOMEGURU_MODAL,
 });
 
 export const setGeoLocation = (geoloc) => ({

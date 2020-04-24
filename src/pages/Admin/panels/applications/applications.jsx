@@ -22,7 +22,6 @@ import {
   toggleApplicationsModal,
   setTotalApplicationsCount,
 } from './actions';
-import { setApplicationSubmitted } from '../../../../app/actions';
 
 import { withFirebase } from '../../../../core/lib/Firebase';
 
@@ -76,13 +75,6 @@ const Applications = ({ firebase }) => {
     });
   }, [query, page, pageSize, dispatch]);
 
-  const resetUserSubmittedApplication = async (userID) => {
-    await firebase.user(userID).set({
-      hasSubmittedApplication: false,
-    }, { merge: true });
-    dispatch(setApplicationSubmitted(false));
-  };
-
   useEffect(() => {
     executeQuery();
   }, [executeQuery]);
@@ -111,7 +103,7 @@ const Applications = ({ firebase }) => {
   };
 
   const handleRejectApplication = async ({
-    userID, applicationUID, images, certificate,
+    applicationUID, images, certificate,
   }) => {
     await firebase.application(applicationUID).delete();
     executeQuery();
@@ -131,9 +123,6 @@ const Applications = ({ firebase }) => {
     if (modalOpen) {
       toggleModal(false, null);
     }
-
-    resetUserSubmittedApplication(userID);
-
     // TODO: SEND EMAIL TO USER FOR REJECTED APPLICATION
   };
 
@@ -152,9 +141,6 @@ const Applications = ({ firebase }) => {
     if (modalOpen) {
       toggleModal(false, null);
     }
-
-    resetUserSubmittedApplication(userID);
-
     // TODO: SEND EMAIL TO USER FOR APPROVED APPLICATION
   };
 

@@ -28,19 +28,33 @@ import {
   setGuruDetailsErrors,
   setRatesErrors,
   setFormValues,
-  clearBecomeGuruModal,
 } from './actions';
-import { setApplicationSubmitted } from '../../app/actions';
 import { withFirebase } from '../../core/lib/Firebase';
 import { getMinimalPrice } from '../../core/utils';
 import { useIsMobile } from '../../core/hooks';
 import { LANDING } from '../../constants/routes';
-import UserSubmittedApplication from './user-submitted-application';
+import AuthContent from '../../components/auth-content';
+import { BECOME_GURU_STEPS } from '../../core/config';
 
 const useStyles = makeStyles((theme) => ({
+  fullscreen: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    top: 0,
+    zIndex: theme.zIndex.modal - 1,
+    left: 0,
+    backgroundColor: '#333333',
+  },
   container: {
-    height: 'calc(100vh - 80px)',
     backgroundColor: theme.palette.common.white,
+    height: '100vh',
+    width: '100vw',
+
+    [theme.breakpoints.up('md')]: {
+      height: '50rem',
+      width: '55rem',
+    },
   },
   aside: {
     display: 'none',
@@ -48,11 +62,11 @@ const useStyles = makeStyles((theme) => ({
       display: 'flex',
     },
   },
-  center: {
+  main: {
     position: 'relative',
     overflow: 'hidden',
   },
-  centerPanelInner: {
+  mainPanelInner: {
     padding: '42px 16px 32px 16px',
 
     [theme.breakpoints.up('md')]: {
@@ -81,7 +95,6 @@ const useStyles = makeStyles((theme) => ({
   controls: {
     display: 'none',
 
-
     [theme.breakpoints.up('md')]: {
       display: 'flex',
       position: 'absolute',
@@ -90,6 +103,8 @@ const useStyles = makeStyles((theme) => ({
       padding: '15px 32px',
       width: '100%',
       backgroundColor: theme.palette.grey['100'],
+      zIndex: 100,
+      boxShadow: theme.shadows[20],
     },
   },
   img: {
@@ -97,14 +112,13 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
     objectFit: 'cover',
   },
+  authWrapper: {
+    padding: 20,
+    [theme.breakpoints.up('md')]: {
+      padding: 50,
+    },
+  },
 }));
-
-const getSteps = () => [
-  'Personal Information',
-  'GURU Information',
-  'Rates',
-  'Social Media',
-];
 
 const renderStepContent = (activeStep) => {
   switch (activeStep) {
@@ -128,12 +142,14 @@ const checkMethodsForEmptyPrices = (methods) => (
 );
 
 const BecomeAGuru = ({ firebase }) => {
+  const uidgen = new UIDGenerator();
   const classes = useStyles();
   const dispatch = useDispatch();
   const isMobile = useIsMobile('sm');
-  const steps = getSteps();
   const auth = useSelector((state) => state.app.auth);
   const application = useSelector((state) => state.application);
+  const page = useSelector((state) => state.authModal.page);
+
   const {
     activeStep,
     images,
@@ -153,7 +169,6 @@ const BecomeAGuru = ({ firebase }) => {
     socialMedia,
   } = application;
 
-  const uidgen = new UIDGenerator();
 
   const submitPersonalDetailsStep = () => {
     const formErrors = {};
@@ -287,16 +302,9 @@ const BecomeAGuru = ({ firebase }) => {
     return true;
   };
 
-  const submitSocialMediaStep = () => {
-    firebase.application(applicationUID).update({
+  const submitSocialMediaStep = async () => {
+    await firebase.application(applicationUID).update({
       socialMedia,
-    }).then(() => {
-      // prevent user from submitting another application while having 1 pending
-      firebase.user(auth.uid).set({
-        hasSubmittedApplication: true,
-      }, { merge: true }).then(() => {
-        dispatch(setApplicationSubmitted(true));
-      });
     });
   };
 
@@ -322,10 +330,6 @@ const BecomeAGuru = ({ firebase }) => {
       dispatch(setFormValues('isIncreasingSteps', true));
       dispatch(setFormValues('isFormFinalized', true));
     }
-
-    if (activeStep > 3) {
-      dispatch(clearBecomeGuruModal());
-    }
   };
 
   const handleBack = () => {
@@ -334,7 +338,7 @@ const BecomeAGuru = ({ firebase }) => {
   };
 
   const generateButtonLabel = () => {
-    if (activeStep === steps.length - 1) {
+    if (activeStep === BECOME_GURU_STEPS.length - 1) {
       return 'Finish';
     }
 
@@ -342,12 +346,12 @@ const BecomeAGuru = ({ firebase }) => {
   };
 
   return (
-    <>
-      <Grid container className={classes.container}>
+    <Grid container className={classes.fullscreen} justify="center" alignItems="center">
+      <Grid item container className={classes.container}>
         <Grid
           item
           className={classes.aside}
-          xs={3}
+          xs={4}
           container
           justify="center"
           alignItems="center"
@@ -358,19 +362,20 @@ const BecomeAGuru = ({ firebase }) => {
             alt="Become guru"
           />
         </Grid>
-
-        <Grid item className={classes.center} xs={12} md={6}>
-          {auth && auth.hasSubmittedApplication ? (
-            <UserSubmittedApplication />
+        <Grid item xs={12} md={8} className={classes.main}>
+          {!auth ? (
+            <div className={classes.authWrapper}>
+              <AuthContent page={page} />
+            </div>
           ) : (
             <>
-              <div className={classes.centerPanelInner}>
+              <div className={classes.mainPanelInner}>
                 <Stepper
                   activeStep={activeStep}
                   className={classes.stepper}
                   alternativeLabel
                 >
-                  {steps.map((label) => (
+                  {BECOME_GURU_STEPS.map((label) => (
                     <Step key={label}>
                       <StepLabel classes={{
                         label: classes.stepLabel,
@@ -391,7 +396,7 @@ const BecomeAGuru = ({ firebase }) => {
 
               {isMobile && (
                 <MobileStepper
-                  steps={steps.length + 1}
+                  steps={BECOME_GURU_STEPS.length + 1}
                   position="bottom"
                   variant="text"
                   activeStep={activeStep}
@@ -467,23 +472,8 @@ const BecomeAGuru = ({ firebase }) => {
             </>
           )}
         </Grid>
-
-        <Grid
-          item
-          className={classes.aside}
-          xs={3}
-          container
-          justify="center"
-          alignItems="center"
-        >
-          <img
-            className={classes.img}
-            src="https://res.cloudinary.com/dl766ebzy/image/upload/v1587566233/guru-page2_yidack.jpg"
-            alt="Become guru 2"
-          />
-        </Grid>
       </Grid>
-    </>
+    </Grid>
   );
 };
 

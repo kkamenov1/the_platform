@@ -8,7 +8,6 @@ import {
   SET_GURU_DETAILS_COACHING_METHODS,
   SET_GURU_DETAILS_ERRORS,
   SET_RATES_ERRORS,
-  CLEAR_BECOMEGURU_MODAL,
   IMAGE_UPLOAD_SUCCESS,
   SET_SOCIAL_MEDIA_VALUE,
 } from './actions';
@@ -170,7 +169,7 @@ export default (state = defaultStore, action) => {
         },
       };
 
-    case CLEAR_BECOMEGURU_MODAL:
+    case '@@router/LOCATION_CHANGE':
       return defaultStore;
 
     case IMAGE_UPLOAD_SUCCESS:

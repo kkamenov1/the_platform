@@ -1,8 +1,9 @@
 import { TOGGLE_AUTH_MODAL } from './actions';
+import { SIGN_IN } from '../../constants/authModalPages';
 
 export const defaultStore = {
   open: false,
-  page: '',
+  page: SIGN_IN,
 };
 
 export default (state = defaultStore, action) => {

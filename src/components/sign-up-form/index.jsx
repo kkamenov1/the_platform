@@ -14,7 +14,6 @@ import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
 import PermIdentityOutlinedIcon from '@material-ui/icons/PermIdentityOutlined';
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
 import VisibilityOffOutlinedIcon from '@material-ui/icons/VisibilityOffOutlined';
-import { SIGN_IN, POST_SIGN_UP } from '../../constants/authModalPages';
 import { withFirebase } from '../../core/lib/Firebase';
 import SocialLoginButtons from '../social-login-buttons';
 import {
@@ -64,7 +63,7 @@ const INITIAL_STATE = {
 // eslint-disable-next-line no-useless-escape
 const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-const SignUpForm = ({ firebase }) => {
+const SignUpForm = ({ firebase, open }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [inputValues, setInputValues] = useState(INITIAL_STATE);
@@ -115,7 +114,6 @@ const SignUpForm = ({ firebase }) => {
         setErrorLastName(null);
 
         setLoading(false);
-        dispatch(toggleAuthModal(true, POST_SIGN_UP));
       })
       .catch((err) => {
         setError(err);
@@ -133,7 +131,7 @@ const SignUpForm = ({ firebase }) => {
   };
 
   const onLoginClick = () => {
-    dispatch(toggleAuthModal(true, SIGN_IN));
+    dispatch(toggleAuthModal(open));
   };
 
   return (
@@ -280,6 +278,7 @@ SignUpForm.propTypes = {
     doSignInWithEmailAndPassword: PropTypes.func.isRequired,
     doSendEmailVerification: PropTypes.func.isRequired,
   }).isRequired,
+  open: PropTypes.bool.isRequired,
 };
 
 export default withFirebase(SignUpForm);

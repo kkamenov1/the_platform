@@ -26,10 +26,7 @@ import { ReactComponent as GymIcon } from '../../svg/gym.svg';
 import { ReactComponent as DashboardIcon } from '../../svg/dashboard.svg';
 import { ReactComponent as ProfileIcon } from '../../svg/profile.svg';
 import { withFirebase } from '../../core/lib/Firebase';
-import {
-  SIGN_IN,
-  SIGN_UP,
-} from '../../constants/authModalPages';
+import { SIGN_UP } from '../../constants/authModalPages';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -91,7 +88,7 @@ const MobileDrawerNavigation = ({
   const auth = useSelector((state) => state.app.auth);
 
   const openSignInModal = () => {
-    dispatch(toggleAuthModal(true, SIGN_IN));
+    dispatch(toggleAuthModal(true));
   };
 
   const openSignUpModal = () => {

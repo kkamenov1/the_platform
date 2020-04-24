@@ -40,7 +40,6 @@ const fakeUser = () => {
     ],
     email: faker.internet.email(),
     emailVerified: true,
-    hasSubmittedApplication: false,
     isAdmin: false,
     isGuru: true,
     photoURL: faker.image.avatar(),
