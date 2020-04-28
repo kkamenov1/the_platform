@@ -24,9 +24,9 @@ main.use(bodyParser.json());
 main.use(bodyParser.urlencoded({ extended: false }));
 
 
-cloudinary.config({ 
-  cloud_name: functions.config().cloudinary.cloud_name, 
-  api_key: functions.config().cloudinary.api_key, 
+cloudinary.config({
+  cloud_name: functions.config().cloudinary.cloud_name,
+  api_key: functions.config().cloudinary.api_key,
   api_secret: functions.config().cloudinary.api_secret
 });
 
@@ -69,6 +69,72 @@ app.post('/delete_image', (req, res) => {
 
     res.status(200).json(result);
   });
+});
+
+app.post('/submit_application', (req, res) => {
+  const {
+    location,
+    _geoloc,
+    languages,
+    birthday,
+    images,
+    sport,
+    introduction,
+    certificate,
+    methods,
+    duration,
+    subscribers,
+    occupation,
+    available,
+    photoURL,
+    displayName,
+    priceFrom,
+    socialMedia,
+    userID
+  } = req.body;
+
+  db.collection('applications').where("userID", "==", userID)
+    .get()
+    .then((querySnapshot) => {
+      if (querySnapshot.empty) {
+        // handle submit application
+        const newApplicationRef = db.collection('applications').doc();
+        newApplicationRef.set({
+          location,
+          _geoloc,
+          languages,
+          birthday,
+          images,
+          sport,
+          introduction,
+          certificate,
+          methods,
+          duration,
+          subscribers,
+          occupation,
+          available,
+          photoURL,
+          displayName,
+          priceFrom,
+          socialMedia,
+          userID
+        });
+        res.status(200).json({ success: true });
+      }
+      else {
+        res.status(400).json({
+          success: false,
+          error: 'Application already exists'
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(400).json({
+        success: false,
+        error: err.message
+      })
+    })
+  return;
 });
 
 exports.webApi = functions.https.onRequest(main);

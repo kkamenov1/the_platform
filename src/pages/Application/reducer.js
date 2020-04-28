@@ -1,6 +1,5 @@
 import {
   SET_ACTIVE_STEP,
-  SET_APPLICATION_UID,
   SET_GURU_LOCATION,
   SET_GEO_LOCATION,
   SET_FORM_VALUES,
@@ -10,12 +9,15 @@ import {
   SET_RATES_ERRORS,
   IMAGE_UPLOAD_SUCCESS,
   SET_SOCIAL_MEDIA_VALUE,
+  SET_SUBMIT_APPLICATION_LOADING,
+  SET_GENERAL_FORM_ERROR,
 } from './actions';
 import { addFirstPossible } from '../../core/utils';
 
 export const defaultStore = {
+  submitApplicationLoading: false,
+  generalFormError: null,
   activeStep: 0,
-  applicationUID: null,
   location: '',
   _geoloc: null,
   languages: [],
@@ -95,7 +97,6 @@ export const defaultStore = {
   guruDetailsStepFormErrors: {},
   ratesStepFormErrors: {},
   isIncreasingSteps: true,
-  isFormFinalized: false,
 };
 
 export default (state = defaultStore, action) => {
@@ -104,12 +105,6 @@ export default (state = defaultStore, action) => {
       return {
         ...state,
         activeStep: action.activeStep,
-      };
-
-    case SET_APPLICATION_UID:
-      return {
-        ...state,
-        applicationUID: action.uid,
       };
 
     case SET_GURU_LOCATION:
@@ -181,6 +176,18 @@ export default (state = defaultStore, action) => {
           publicId: action.info.public_id,
           loading: false,
         }, state.images),
+      };
+
+    case SET_SUBMIT_APPLICATION_LOADING:
+      return {
+        ...state,
+        submitApplicationLoading: action.submitApplicationLoading,
+      };
+
+    case SET_GENERAL_FORM_ERROR:
+      return {
+        ...state,
+        generalFormError: action.generalFormError,
       };
 
     default:

@@ -1,5 +1,4 @@
 export const SET_ACTIVE_STEP = 'SET_ACTIVE_STEP';
-export const SET_APPLICATION_UID = 'SET_APPLICATION_UID';
 export const SET_GURU_LOCATION = 'SET_GURU_LOCATION';
 export const SET_GEO_LOCATION = 'SET_GEO_LOCATION';
 export const SET_PERSONAL_DETAILS_ERRORS = 'SET_PERSONAL_DETAILS_ERRORS';
@@ -9,15 +8,12 @@ export const SET_GURU_DETAILS_ERRORS = 'SET_GURU_DETAILS_ERRORS';
 export const SET_RATES_ERRORS = 'SET_RATES_ERRORS';
 export const IMAGE_UPLOAD_SUCCESS = 'IMAGE_UPLOAD_SUCCESS';
 export const SET_SOCIAL_MEDIA_VALUE = 'SET_SOCIAL_MEDIA_VALUE';
+export const SET_SUBMIT_APPLICATION_LOADING = 'SET_SUBMIT_APPLICATION_LOADING';
+export const SET_GENERAL_FORM_ERROR = 'SET_GENERAL_FORM_ERROR';
 
 export const setActiveStep = (activeStep) => ({
   type: SET_ACTIVE_STEP,
   activeStep,
-});
-
-export const setApplicationUID = (uid) => ({
-  type: SET_APPLICATION_UID,
-  uid,
 });
 
 export const setGuruLocation = (location) => ({
@@ -65,4 +61,14 @@ export const setGeoLocation = (geoloc) => ({
 export const setImageUploadOnSuccess = (resultInfo) => ({
   type: IMAGE_UPLOAD_SUCCESS,
   info: resultInfo,
+});
+
+export const setSubmitApplicationLoading = (submitApplicationLoading) => ({
+  type: SET_SUBMIT_APPLICATION_LOADING,
+  submitApplicationLoading,
+});
+
+export const setGeneralFormError = (generalFormError) => ({
+  type: SET_GENERAL_FORM_ERROR,
+  generalFormError,
 });

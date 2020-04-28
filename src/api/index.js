@@ -15,6 +15,51 @@ const applications = {
   },
 };
 
+const application = {
+  post: ({
+    location,
+    _geoloc,
+    languages,
+    birthday,
+    images,
+    sport,
+    introduction,
+    certificate,
+    methods,
+    duration,
+    subscribers,
+    occupation,
+    available,
+    userID,
+    photoURL,
+    displayName,
+    priceFrom,
+    socialMedia,
+  }) => client.post(
+    `${base}/submit_application`,
+    {
+      location,
+      _geoloc,
+      languages,
+      birthday,
+      images,
+      sport,
+      introduction,
+      certificate,
+      methods,
+      duration,
+      subscribers,
+      occupation,
+      available,
+      userID,
+      photoURL,
+      displayName,
+      priceFrom,
+      socialMedia,
+    },
+  ),
+};
+
 const images = {
   deleteImage: ({ publicId }) => client.post(`${base}/delete_image`, {
     publicId,
@@ -23,5 +68,6 @@ const images = {
 
 export default {
   applications,
+  application,
   images,
 };

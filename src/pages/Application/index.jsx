@@ -1,9 +1,7 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
-import UIDGenerator from 'uid-generator';
 import { Link } from 'react-router-dom';
 import {
   Stepper,
@@ -23,11 +21,12 @@ import {
 } from './steps';
 import {
   setActiveStep,
-  setApplicationUID,
   setPersonalDetailsErrors,
   setGuruDetailsErrors,
   setRatesErrors,
   setFormValues,
+  setSubmitApplicationLoading,
+  setGeneralFormError,
 } from './actions';
 import { withFirebase } from '../../core/lib/Firebase';
 import { getMinimalPrice } from '../../core/utils';
@@ -35,6 +34,7 @@ import { useIsMobile } from '../../core/hooks';
 import { LANDING } from '../../constants/routes';
 import AuthContent from '../../components/auth-content';
 import { BECOME_GURU_STEPS } from '../../core/config';
+import api from '../../api';
 
 const useStyles = makeStyles((theme) => ({
   fullscreen: {
@@ -141,15 +141,13 @@ const checkMethodsForEmptyPrices = (methods) => (
   })
 );
 
-const BecomeAGuru = ({ firebase }) => {
-  const uidgen = new UIDGenerator();
+const BecomeAGuru = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const isMobile = useIsMobile('sm');
   const auth = useSelector((state) => state.app.auth);
   const application = useSelector((state) => state.application);
   const page = useSelector((state) => state.authModal.page);
-
   const {
     activeStep,
     images,
@@ -158,7 +156,6 @@ const BecomeAGuru = ({ firebase }) => {
     day,
     month,
     year,
-    applicationUID,
     sport,
     methods,
     introduction,
@@ -169,166 +166,138 @@ const BecomeAGuru = ({ firebase }) => {
     socialMedia,
   } = application;
 
+  const selectedMethods = methods.filter((method) => method.selected) || [];
+  const durationParsed = +duration;
+  const subscribersParsed = +subscribers;
+  const filteredImages = (images || [])
+    .filter((img) => img.publicId)
+    .map((img) => img.publicId);
+  const dayParsed = parseInt(day, 10);
+  const monthParsed = parseInt(month, 10);
+  const yearParsed = parseInt(year, 10);
+  const birthDate = new Date(yearParsed, monthParsed - 1, dayParsed);
 
-  const submitPersonalDetailsStep = () => {
+
+  const validatePersonalDetailsStep = () => {
     const formErrors = {};
-    const filteredImages = (images || [])
-      .filter((img) => img.publicId)
-      .map((img) => img.publicId);
-    const dayParsed = parseInt(day, 10);
-    const monthParsed = parseInt(month, 10);
-    const yearParsed = parseInt(year, 10);
-    const birthDate = new Date(yearParsed, monthParsed - 1, dayParsed);
 
     if (!location) {
       formErrors.location = 'Please enter your location';
     }
-
     if (!languages.length) {
       formErrors.languages = 'Please select at least one language';
     }
-
     if (!filteredImages.length) {
       formErrors.images = 'Please select at least one image';
     }
-
     if (birthDate && birthDate.getMonth() + 1 !== monthParsed) {
       formErrors.birthday = 'Please enter correct birth date';
     }
-
     if (Object.entries(formErrors).length) {
       dispatch(setPersonalDetailsErrors(formErrors));
       return false;
     }
 
-    // handle the back and forward buttons to the in exact
-    // application UID and not to create a new one each time a Continue
-    // button is clicked
-    if (!applicationUID) {
-      const newApplicationUID = uidgen.generateSync();
-
-      firebase.application(newApplicationUID).set({
-        location,
-        _geoloc,
-        languages,
-        birthday: birthDate.toDateString(),
-        images: filteredImages,
-      }).then(() => {
-        dispatch(setPersonalDetailsErrors({}));
-        dispatch(setApplicationUID(newApplicationUID));
-      });
-    } else {
-      firebase.application(applicationUID).update({
-        location,
-        _geoloc,
-        languages,
-        birthday: birthDate.toDateString(),
-        images: filteredImages,
-      }).then(() => {
-        dispatch(setPersonalDetailsErrors({}));
-      });
-    }
-
+    dispatch(setPersonalDetailsErrors({}));
     return true;
   };
 
-  const submitGuruDetailsStep = () => {
+  const validateGuruDetailsStep = () => {
     const formErrors = {};
 
     if (!sport) {
       formErrors.sport = 'Please choose sport';
     }
-
     if (Object.entries(formErrors).length) {
       dispatch(setGuruDetailsErrors(formErrors));
       return false;
     }
 
-    firebase.application(applicationUID).update({
-      sport,
-      introduction,
-      certificate: certificate && certificate.publicId,
-    }).then(() => {
-      dispatch(setGuruDetailsErrors({}));
-    });
+    dispatch(setGuruDetailsErrors({}));
     return true;
   };
 
-  const submitRatesStep = () => {
+  const validateRatesStep = () => {
     const formErrors = {};
-    const selectedMethods = methods.filter((method) => method.selected) || [];
-    const durationParsed = +duration;
-    const subscribersParsed = +subscribers;
 
     if (checkMethodsForEmptyPrices(selectedMethods)) {
       formErrors.methods = 'Please provide a price for each selected method';
     }
-
     if (!selectedMethods.length) {
       formErrors.methods = 'Please select at least one method';
     }
-
     if (isNaN(durationParsed) || durationParsed < 1 || durationParsed > 365) {
       formErrors.duration = 'Please enter a valid duration';
     }
-
     if (isNaN(subscribersParsed) || subscribersParsed < 1 || subscribersParsed > 100) {
       formErrors.subscribers = 'Please enter a valid number';
     }
-
     if (Object.entries(formErrors).length) {
       dispatch(setRatesErrors(formErrors));
       return false;
     }
 
+    dispatch(setRatesErrors({}));
+    return true;
+  };
+
+  const submitAllSteps = async () => {
     const mappedSelectedMethods = selectedMethods.map((item) => ({
       name: item.name,
       price: item.price,
     }));
 
-    firebase.application(applicationUID).update({
-      methods: mappedSelectedMethods,
-      duration,
-      subscribers,
-      occupation: 0,
-      available: true,
-      userID: auth.uid,
-      photoURL: auth.photoURL,
-      displayName: auth.displayName,
-      priceFrom: getMinimalPrice(selectedMethods),
-    }).then(() => {
-      dispatch(setRatesErrors({}));
-    });
-    return true;
-  };
+    dispatch(setSubmitApplicationLoading(true));
 
-  const submitSocialMediaStep = async () => {
-    await firebase.application(applicationUID).update({
-      socialMedia,
-    });
+    try {
+      await api.application.post({
+        location,
+        _geoloc,
+        languages,
+        birthday: birthDate.toDateString(),
+        images: filteredImages,
+        sport,
+        introduction,
+        certificate: certificate && certificate.publicId,
+        methods: mappedSelectedMethods,
+        duration,
+        subscribers,
+        occupation: 0,
+        available: true,
+        userID: auth.uid,
+        photoURL: auth.photoURL,
+        displayName: auth.displayName,
+        priceFrom: getMinimalPrice(selectedMethods),
+        socialMedia,
+      });
+      dispatch(setGeneralFormError(null));
+    } catch (err) {
+      dispatch(setGeneralFormError(err.response.data.error));
+    }
+
+    dispatch(setSubmitApplicationLoading(false));
+    dispatch(setActiveStep(activeStep + 1));
   };
 
   const handleNext = () => {
-    if (activeStep === 0 && submitPersonalDetailsStep()) {
+    if (activeStep === 0 && validatePersonalDetailsStep()) {
       dispatch(setActiveStep(activeStep + 1));
       dispatch(setFormValues('isIncreasingSteps', true));
     }
 
-    if (activeStep === 1 && submitGuruDetailsStep()) {
+    if (activeStep === 1 && validateGuruDetailsStep()) {
       dispatch(setActiveStep(activeStep + 1));
       dispatch(setFormValues('isIncreasingSteps', true));
     }
 
-    if (activeStep === 2 && submitRatesStep()) {
+    if (activeStep === 2 && validateRatesStep()) {
       dispatch(setActiveStep(activeStep + 1));
       dispatch(setFormValues('isIncreasingSteps', true));
     }
 
     if (activeStep === 3) {
-      submitSocialMediaStep();
-      dispatch(setActiveStep(activeStep + 1));
+      submitAllSteps();
       dispatch(setFormValues('isIncreasingSteps', true));
-      dispatch(setFormValues('isFormFinalized', true));
     }
   };
 
@@ -341,7 +310,6 @@ const BecomeAGuru = ({ firebase }) => {
     if (activeStep === BECOME_GURU_STEPS.length - 1) {
       return 'Finish';
     }
-
     return 'Next';
   };
 
@@ -475,14 +443,6 @@ const BecomeAGuru = ({ firebase }) => {
       </Grid>
     </Grid>
   );
-};
-
-BecomeAGuru.propTypes = {
-  firebase: PropTypes.shape({
-    application: PropTypes.func.isRequired,
-    applications: PropTypes.func.isRequired,
-    user: PropTypes.func.isRequired,
-  }).isRequired,
 };
 
 export default withFirebase(BecomeAGuru);

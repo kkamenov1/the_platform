@@ -16,6 +16,7 @@ const Finalization = () => {
   const {
     activeStep,
     isIncreasingSteps,
+    generalFormError,
   } = application;
 
   return (
@@ -26,16 +27,26 @@ const Finalization = () => {
       unmountOnExit
     >
       <div>
-        <ModalHeader
-          heading="THANK YOU FOR APPLYING"
-          caption={`We will get back to you within 48 hours if we accept
-          your application. Please check your email.`}
-        />
-        <img
-          src="https://res.cloudinary.com/dl766ebzy/image/upload/v1574339507/email_c1gb9i.gif"
-          alt="check-email"
-          className={classes.img}
-        />
+        {generalFormError ? (
+          <ModalHeader
+            heading="Oops..."
+            caption="Something went wrong submitting your application"
+          />
+        ) : (
+          <>
+            <ModalHeader
+              heading="THANK YOU FOR APPLYING"
+              caption={`We will get back to you within 48 hours if we accept
+                        your application. Please check your email.`}
+            />
+            <img
+              src="https://res.cloudinary.com/dl766ebzy/image/upload/v1574339507/email_c1gb9i.gif"
+              alt="check-email"
+              className={classes.img}
+            />
+          </>
+        )}
+
       </div>
     </Slide>
   );

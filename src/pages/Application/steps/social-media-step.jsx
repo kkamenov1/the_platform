@@ -6,6 +6,7 @@ import {
   OutlinedInput,
   Typography,
   FormControl,
+  CircularProgress,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { ModalHeader } from '../../../core/components';
@@ -31,6 +32,12 @@ const useStyles = makeStyles({
     marginRight: 3,
     height: 24,
   },
+  progressWrapper: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%) !important',
+  },
 });
 
 const SocialMediaStep = () => {
@@ -41,6 +48,7 @@ const SocialMediaStep = () => {
     activeStep,
     isIncreasingSteps,
     socialMedia,
+    submitApplicationLoading,
   } = application;
 
   const {
@@ -63,194 +71,200 @@ const SocialMediaStep = () => {
       mountOnEnter
       unmountOnExit
     >
-      <div>
-        <ModalHeader
-          heading="SOCIAL MEDIA (OPTIONAL)"
-          caption="Almost done. Just a couple of social media settings."
-        />
-        <form>
-          <Grid container justify="space-between" spacing={4}>
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <Typography component="h6" variant="button">
-                  Facebook ID
-                </Typography>
-                <OutlinedInput
-                  name="facebook"
-                  margin="dense"
-                  onChange={handleInputChange}
-                  value={facebook}
-                  className={classes.outlinedInput}
-                  inputProps={{
-                    className: classes.input,
-                  }}
-                  startAdornment={(
-                    <Grid
-                      container
-                      alignItems="center"
-                      className={classes.adornment}
-                    >
-                      <Grid item className={classes.icon}>
-                        <img
-                          alt="facebook"
-                          src="https://img.icons8.com/ios-filled/24/3b5998/facebook-f.png"
-                        />
+      {submitApplicationLoading ? (
+        <div className={classes.progressWrapper}>
+          <CircularProgress size={80} />
+        </div>
+      ) : (
+        <div>
+          <ModalHeader
+            heading="SOCIAL MEDIA (OPTIONAL)"
+            caption="Almost done. Just a couple of social media settings."
+          />
+          <form>
+            <Grid container justify="space-between" spacing={4}>
+              <Grid item xs={12} md={6}>
+                <FormControl fullWidth>
+                  <Typography component="h6" variant="button">
+                    Facebook ID
+                  </Typography>
+                  <OutlinedInput
+                    name="facebook"
+                    margin="dense"
+                    onChange={handleInputChange}
+                    value={facebook}
+                    className={classes.outlinedInput}
+                    inputProps={{
+                      className: classes.input,
+                    }}
+                    startAdornment={(
+                      <Grid
+                        container
+                        alignItems="center"
+                        className={classes.adornment}
+                      >
+                        <Grid item className={classes.icon}>
+                          <img
+                            alt="facebook"
+                            src="https://img.icons8.com/ios-filled/24/3b5998/facebook-f.png"
+                          />
+                        </Grid>
+                        <Grid item>/</Grid>
                       </Grid>
-                      <Grid item>/</Grid>
-                    </Grid>
                   )}
-                />
-              </FormControl>
+                  />
+                </FormControl>
 
-              <FormControl fullWidth>
-                <Typography component="h6" variant="button">
-                  Snapchat ID
-                </Typography>
-                <OutlinedInput
-                  name="snapchat"
-                  margin="dense"
-                  value={snapchat}
-                  onChange={handleInputChange}
-                  className={classes.outlinedInput}
-                  inputProps={{
-                    className: classes.input,
-                  }}
-                  startAdornment={(
-                    <Grid
-                      container
-                      alignItems="center"
-                      className={classes.adornment}
-                    >
-                      <Grid item className={classes.icon}>
-                        <img
-                          alt="snapchat"
-                          src="https://img.icons8.com/ios/24/000000/snapchat.png"
-                        />
+                <FormControl fullWidth>
+                  <Typography component="h6" variant="button">
+                    Snapchat ID
+                  </Typography>
+                  <OutlinedInput
+                    name="snapchat"
+                    margin="dense"
+                    value={snapchat}
+                    onChange={handleInputChange}
+                    className={classes.outlinedInput}
+                    inputProps={{
+                      className: classes.input,
+                    }}
+                    startAdornment={(
+                      <Grid
+                        container
+                        alignItems="center"
+                        className={classes.adornment}
+                      >
+                        <Grid item className={classes.icon}>
+                          <img
+                            alt="snapchat"
+                            src="https://img.icons8.com/ios/24/000000/snapchat.png"
+                          />
+                        </Grid>
+                        <Grid item>/</Grid>
                       </Grid>
-                      <Grid item>/</Grid>
-                    </Grid>
                   )}
-                />
-              </FormControl>
+                  />
+                </FormControl>
 
-              <FormControl fullWidth>
-                <Typography component="h6" variant="button">
-                  Skype ID
-                </Typography>
-                <OutlinedInput
-                  name="skype"
-                  margin="dense"
-                  value={skype}
-                  onChange={handleInputChange}
-                  className={classes.outlinedInput}
-                  inputProps={{
-                    className: classes.input,
-                  }}
-                  startAdornment={(
-                    <Grid
-                      container
-                      alignItems="center"
-                      className={classes.adornment}
-                    >
-                      <Grid item className={classes.icon}>
-                        <img alt="skype" src="https://img.icons8.com/offices/24/000000/skype.png" />
+                <FormControl fullWidth>
+                  <Typography component="h6" variant="button">
+                    Skype ID
+                  </Typography>
+                  <OutlinedInput
+                    name="skype"
+                    margin="dense"
+                    value={skype}
+                    onChange={handleInputChange}
+                    className={classes.outlinedInput}
+                    inputProps={{
+                      className: classes.input,
+                    }}
+                    startAdornment={(
+                      <Grid
+                        container
+                        alignItems="center"
+                        className={classes.adornment}
+                      >
+                        <Grid item className={classes.icon}>
+                          <img alt="skype" src="https://img.icons8.com/offices/24/000000/skype.png" />
+                        </Grid>
+                        <Grid item>/</Grid>
                       </Grid>
-                      <Grid item>/</Grid>
-                    </Grid>
-                  )}
-                />
-              </FormControl>
+                    )}
+                  />
+                </FormControl>
 
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <FormControl fullWidth>
+                  <Typography component="h6" variant="button">
+                    Instagram ID
+                  </Typography>
+                  <OutlinedInput
+                    name="instagram"
+                    margin="dense"
+                    value={instagram}
+                    onChange={handleInputChange}
+                    className={classes.outlinedInput}
+                    inputProps={{
+                      className: classes.input,
+                    }}
+                    startAdornment={(
+                      <Grid
+                        container
+                        alignItems="center"
+                        className={classes.adornment}
+                      >
+                        <Grid item className={classes.icon}>
+                          <img alt="instagram" src="https://img.icons8.com/color/24/000000/instagram-new.png" />
+                        </Grid>
+                        <Grid item>/</Grid>
+                      </Grid>
+                    )}
+                  />
+                </FormControl>
+
+                <FormControl fullWidth>
+                  <Typography component="h6" variant="button">
+                    TikTok ID
+                  </Typography>
+                  <OutlinedInput
+                    name="tiktok"
+                    margin="dense"
+                    value={tiktok}
+                    onChange={handleInputChange}
+                    className={classes.outlinedInput}
+                    inputProps={{
+                      className: classes.input,
+                    }}
+                    startAdornment={(
+                      <Grid
+                        container
+                        alignItems="center"
+                        className={classes.adornment}
+                      >
+                        <Grid item className={classes.icon}>
+                          <img alt="TikTok" src="https://img.icons8.com/color/24/000000/tiktok.png" />
+                        </Grid>
+                        <Grid item>/</Grid>
+                      </Grid>
+                    )}
+                  />
+                </FormControl>
+
+                <FormControl fullWidth>
+                  <Typography component="h6" variant="button">
+                    Discord Username
+                  </Typography>
+                  <OutlinedInput
+                    name="discord"
+                    margin="dense"
+                    value={discord}
+                    onChange={handleInputChange}
+                    className={classes.outlinedInput}
+                    inputProps={{
+                      className: classes.input,
+                    }}
+                    startAdornment={(
+                      <Grid
+                        container
+                        alignItems="center"
+                        className={classes.adornment}
+                      >
+                        <Grid item className={classes.icon}>
+                          <img alt="discord" src="https://img.icons8.com/color/24/000000/discord-logo.png" />
+                        </Grid>
+                        <Grid item>/</Grid>
+                      </Grid>
+                  )}
+                  />
+                </FormControl>
+              </Grid>
             </Grid>
-
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <Typography component="h6" variant="button">
-                  Instagram ID
-                </Typography>
-                <OutlinedInput
-                  name="instagram"
-                  margin="dense"
-                  value={instagram}
-                  onChange={handleInputChange}
-                  className={classes.outlinedInput}
-                  inputProps={{
-                    className: classes.input,
-                  }}
-                  startAdornment={(
-                    <Grid
-                      container
-                      alignItems="center"
-                      className={classes.adornment}
-                    >
-                      <Grid item className={classes.icon}>
-                        <img alt="instagram" src="https://img.icons8.com/color/24/000000/instagram-new.png" />
-                      </Grid>
-                      <Grid item>/</Grid>
-                    </Grid>
-                  )}
-                />
-              </FormControl>
-
-              <FormControl fullWidth>
-                <Typography component="h6" variant="button">
-                  TikTok ID
-                </Typography>
-                <OutlinedInput
-                  name="tiktok"
-                  margin="dense"
-                  value={tiktok}
-                  onChange={handleInputChange}
-                  className={classes.outlinedInput}
-                  inputProps={{
-                    className: classes.input,
-                  }}
-                  startAdornment={(
-                    <Grid
-                      container
-                      alignItems="center"
-                      className={classes.adornment}
-                    >
-                      <Grid item className={classes.icon}>
-                        <img alt="TikTok" src="https://img.icons8.com/color/24/000000/tiktok.png" />
-                      </Grid>
-                      <Grid item>/</Grid>
-                    </Grid>
-                  )}
-                />
-              </FormControl>
-
-              <FormControl fullWidth>
-                <Typography component="h6" variant="button">
-                  Discord Username
-                </Typography>
-                <OutlinedInput
-                  name="discord"
-                  margin="dense"
-                  value={discord}
-                  onChange={handleInputChange}
-                  className={classes.outlinedInput}
-                  inputProps={{
-                    className: classes.input,
-                  }}
-                  startAdornment={(
-                    <Grid
-                      container
-                      alignItems="center"
-                      className={classes.adornment}
-                    >
-                      <Grid item className={classes.icon}>
-                        <img alt="discord" src="https://img.icons8.com/color/24/000000/discord-logo.png" />
-                      </Grid>
-                      <Grid item>/</Grid>
-                    </Grid>
-                  )}
-                />
-              </FormControl>
-            </Grid>
-          </Grid>
-        </form>
-      </div>
+          </form>
+        </div>
+      )}
     </Slide>
   );
 };
