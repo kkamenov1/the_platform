@@ -150,7 +150,7 @@ const BecomeAGuru = () => {
   const page = useSelector((state) => state.authModal.page);
   const {
     activeStep,
-    images,
+    image,
     location,
     languages,
     day,
@@ -169,9 +169,6 @@ const BecomeAGuru = () => {
   const selectedMethods = methods.filter((method) => method.selected) || [];
   const durationParsed = +duration;
   const subscribersParsed = +subscribers;
-  const filteredImages = (images || [])
-    .filter((img) => img.publicId)
-    .map((img) => img.publicId);
   const dayParsed = parseInt(day, 10);
   const monthParsed = parseInt(month, 10);
   const yearParsed = parseInt(year, 10);
@@ -187,8 +184,8 @@ const BecomeAGuru = () => {
     if (!languages.length) {
       formErrors.languages = 'Please select at least one language';
     }
-    if (!filteredImages.length) {
-      formErrors.images = 'Please select at least one image';
+    if (!image.publicId) {
+      formErrors.image = 'Please add an image';
     }
     if (birthDate && birthDate.getMonth() + 1 !== monthParsed) {
       formErrors.birthday = 'Please enter correct birth date';
@@ -255,7 +252,7 @@ const BecomeAGuru = () => {
         _geoloc,
         languages,
         birthday: birthDate.toDateString(),
-        images: filteredImages,
+        image: image && image.publicId,
         sport,
         introduction,
         certificate: certificate && certificate.publicId,

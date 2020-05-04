@@ -103,23 +103,21 @@ const Applications = ({ firebase }) => {
   };
 
   const handleRejectApplication = async ({
-    applicationUID, images, certificate,
+    applicationUID,
+    image,
+    certificate,
   }) => {
     await firebase.application(applicationUID).delete();
     executeQuery();
     triggerSnackbar('error', 'Application deleted');
 
-    /* DELETE UPLOADED IMAGES IN THE STORAGE */
-    if (images && images.length) {
-      images.forEach(async (image) => {
-        await api.images.deleteImage({ publicId: image });
-      });
+    /* DELETE UPLOADED IMAGES IN CLOUDINARY */
+    if (image) {
+      await api.assets.delete({ publicId: image });
     }
-
     if (certificate) {
-      await api.images.deleteImage({ publicId: certificate });
+      await api.assets.delete({ publicId: certificate });
     }
-
     if (modalOpen) {
       toggleModal(false, null);
     }

@@ -7,12 +7,18 @@ import {
   SET_GURU_DETAILS_COACHING_METHODS,
   SET_GURU_DETAILS_ERRORS,
   SET_RATES_ERRORS,
-  IMAGE_UPLOAD_SUCCESS,
   SET_SOCIAL_MEDIA_VALUE,
   SET_SUBMIT_APPLICATION_LOADING,
   SET_GENERAL_FORM_ERROR,
+  GURU_IMAGE_LOADING,
+  GURU_IMAGE_LOADED,
+  GURU_IMAGE_ADDED,
+  GURU_IMAGE_REMOVED,
+  GURU_CERTIFICATE_IMAGE_LOADING,
+  GURU_CERTIFICATE_IMAGE_LOADED,
+  GURU_CERTIFICATE_IMAGE_ADDED,
+  GURU_CERTIFICATE_IMAGE_REMOVED,
 } from './actions';
-import { addFirstPossible } from '../../core/utils';
 
 export const defaultStore = {
   submitApplicationLoading: false,
@@ -24,32 +30,12 @@ export const defaultStore = {
   day: '',
   month: '',
   year: '',
-  images: [
-    {
-      src: null,
-      name: null,
-      publicId: null,
-      loading: false,
-    },
-    {
-      src: null,
-      name: null,
-      publicId: null,
-      loading: false,
-    },
-    {
-      src: null,
-      name: null,
-      publicId: null,
-      loading: false,
-    },
-    {
-      src: null,
-      name: null,
-      publicId: null,
-      loading: false,
-    },
-  ],
+  image: {
+    size: null,
+    name: null,
+    publicId: null,
+    loading: false,
+  },
   sport: '',
   methods: [
     {
@@ -87,10 +73,10 @@ export const defaultStore = {
   subscribers: '',
   introduction: '',
   certificate: {
-    src: null,
-    loading: false,
+    size: null,
     name: null,
     publicId: null,
+    loading: false,
   },
   socialMedia: {},
   personalDetailsStepFormErrors: {},
@@ -167,17 +153,6 @@ export default (state = defaultStore, action) => {
     case '@@router/LOCATION_CHANGE':
       return defaultStore;
 
-    case IMAGE_UPLOAD_SUCCESS:
-      return {
-        ...state,
-        images: addFirstPossible({
-          src: action.info.secure_url,
-          name: action.info.original_filename,
-          publicId: action.info.public_id,
-          loading: false,
-        }, state.images),
-      };
-
     case SET_SUBMIT_APPLICATION_LOADING:
       return {
         ...state,
@@ -188,6 +163,86 @@ export default (state = defaultStore, action) => {
       return {
         ...state,
         generalFormError: action.generalFormError,
+      };
+
+    case GURU_IMAGE_LOADING:
+      return {
+        ...state,
+        image: {
+          ...state.image,
+          loading: true,
+        },
+      };
+
+    case GURU_IMAGE_LOADED:
+      return {
+        ...state,
+        image: {
+          ...state.image,
+          loading: false,
+        },
+      };
+
+    case GURU_IMAGE_ADDED:
+      return {
+        ...state,
+        image: {
+          ...state.image,
+          size: action.size,
+          name: action.name,
+          publicId: action.publicId,
+        },
+      };
+
+    case GURU_IMAGE_REMOVED:
+      return {
+        ...state,
+        image: {
+          ...state.image,
+          size: null,
+          name: null,
+          publicId: null,
+        },
+      };
+
+    case GURU_CERTIFICATE_IMAGE_LOADING:
+      return {
+        ...state,
+        certificate: {
+          ...state.certificate,
+          loading: true,
+        },
+      };
+
+    case GURU_CERTIFICATE_IMAGE_LOADED:
+      return {
+        ...state,
+        certificate: {
+          ...state.certificate,
+          loading: false,
+        },
+      };
+
+    case GURU_CERTIFICATE_IMAGE_ADDED:
+      return {
+        ...state,
+        certificate: {
+          ...state.certificate,
+          size: action.size,
+          name: action.name,
+          publicId: action.publicId,
+        },
+      };
+
+    case GURU_CERTIFICATE_IMAGE_REMOVED:
+      return {
+        ...state,
+        certificate: {
+          ...state.certificate,
+          size: null,
+          name: null,
+          publicId: null,
+        },
       };
 
     default:

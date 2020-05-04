@@ -1,198 +1,141 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
-import { Image, Transformation } from 'cloudinary-react';
-import {
-  Fab,
-  Button,
-  List,
-  ListItem,
-  CircularProgress,
-  Grid,
-} from '@material-ui/core';
-import PhotoCamera from '@material-ui/icons/PhotoCamera';
+import { makeStyles } from '@material-ui/core/styles';
+import { Typography, Grid } from '@material-ui/core';
 import ClearIcon from '@material-ui/icons/Clear';
+import { KILOBYTE } from '../../../constants/files';
 
-const useStyles = makeStyles((theme) => ({
-  photoListItem: {
-    paddingLeft: 0,
+const useStyles = makeStyles({
+  preview: {
+    display: 'inline-block',
+    marginLeft: 20,
+    fontSize: 14,
   },
-  imageWrapper: {
-    backgroundColor: theme.palette.grey['200'],
-    border: `1px dashed ${theme.palette.primary.main}`,
-  },
-  addPhotoBtn: {
-    width: 65,
-    height: 65,
-    border: `1px solid ${theme.palette.common.white}`,
-
-    [theme.breakpoints.up('sm')]: {
-      width: 85,
-      height: 85,
-    },
-
-    [theme.breakpoints.up('md')]: {
-      width: 100,
-      height: 100,
-    },
-  },
-  fullWidth: {
-    width: '100% !important',
-  },
-  addPhotoIcon: {
-    width: 20,
-    height: 20,
-    fill: theme.palette.primary.main,
-
-    [theme.breakpoints.up('md')]: {
-      width: 25,
-      height: 25,
-    },
-  },
-  imageWrapperInner: {
-    position: 'relative',
-
-    '&:hover > button': {
-      display: 'block',
-    },
-  },
-  deleteImageBtn: {
-    backgroundColor: theme.palette.primary.main,
-    position: 'absolute',
-    top: -10,
-    right: -10,
-    width: 25,
-    height: 25,
-    minHeight: 0,
-    display: 'none',
-
+  uploadBtn: {
+    border: '1px solid #dde1e4',
+    borderRadius: 3,
+    outline: 'none',
+    color: '#3b3b3b',
+    backgroundColor: '#F0F0F0',
+    fontWeight: 500,
+    fontSize: 14,
+    padding: 13,
+    transition: 'border .15s',
+    cursor: 'pointer',
     '&:hover': {
-      backgroundColor: theme.palette.primary.main,
+      border: '1px solid #bac1c5',
+      transition: 'border .15s',
     },
   },
-  deleteIcon: {
-    width: 'inherit',
-    height: 'inherit',
+  upload: {
+    backgroundColor: '#f0f0f0',
+    borderRadius: 3,
+    color: '#019aff',
+    padding: 12,
   },
-  image: {
-    width: 65,
-    height: 65,
-    objectFit: 'cover',
-    display: 'block',
-    margin: 'auto',
-
-    [theme.breakpoints.up('sm')]: {
-      width: 85,
-      height: 85,
-    },
-
-    [theme.breakpoints.up('md')]: {
-      width: 100,
-      height: 100,
-    },
+  text: {
+    lineHeight: '45px',
   },
-  progressWrapper: {
-    width: 65,
-    height: 65,
-
-    [theme.breakpoints.up('sm')]: {
-      width: 85,
-      height: 85,
-    },
-
-    [theme.breakpoints.up('md')]: {
-      width: 100,
-      height: 100,
+  size: {
+    fontWeight: 500,
+  },
+  imageName: {
+    maxWidth: 150,
+    display: 'inline-block',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    '-webkit-box-orient': 'vertical',
+    '-webkit-line-clamp': 1,
+    fontWeight: 500,
+    fontSize: 14,
+  },
+  closeIconWrapper: {
+    height: 25,
+    cursor: 'pointer',
+  },
+  closeIcon: {
+    '& > svg': {
+      fontSize: 16,
+      color: '#768792',
     },
   },
-  progress: {
-    width: '20px !important',
-    height: '20px !important',
-  },
-  photoList: {
-    display: 'inline-flex',
-    paddingTop: 0,
-    paddingBottom: 0,
-  },
-}));
+});
 
 const ImageUploader = ({
-  images,
-  widget,
-  fullWidth,
+  image,
+  onImageChange,
   onImageRemove,
+  inputId,
 }) => {
   const classes = useStyles();
 
-  const showWidget = () => {
-    widget.open();
-  };
-
   return (
-    <List className={classes.photoList}>
-      {images.map((image, index) => (
-        <ListItem className={classes.photoListItem} key={index}>
-          <div className={classnames(classes.imageWrapper, {
-            [classes.fullWidth]: fullWidth,
-          })}
+    <div>
+      <input
+        accept="image/*"
+        style={{ display: 'none' }}
+        id={inputId}
+        type="file"
+        onChange={onImageChange}
+      />
+
+      <label htmlFor={inputId}>
+        <Typography component="span" className={classes.uploadBtn}>
+          Upload an image
+        </Typography>
+      </label>
+
+      {image.publicId ? (
+        <>
+          <Typography
+            component="div"
+            className={classnames(classes.preview, classes.upload)}
           >
-            {image.publicId ? (
-              <div className={classes.imageWrapperInner}>
-                <Fab
-                  color="primary"
-                  aria-label="add"
-                  className={classes.deleteImageBtn}
-                  onClick={() => onImageRemove(image.publicId)}
-                >
-                  <ClearIcon className={classes.deleteIcon} />
-                </Fab>
-                <Image publicId={image.publicId} className={classes.image}>
-                  <Transformation width="150" height="150" gravity="auto" crop="thumb" />
-                </Image>
-              </div>
-            ) : image.loading ? (
-              <Grid
-                container
-                alignItems="center"
-                justify="center"
-                className={classnames(classes.progressWrapper, {
-                  [classes.fullWidth]: fullWidth,
-                })}
-              >
-                <CircularProgress className={classes.progress} color="primary" />
+            <Grid container spacing={1} alignItems="center">
+              <Grid item className={classes.imageName}>
+                {image.name}
               </Grid>
-            ) : (
-              <Button
-                className={classnames(classes.addPhotoBtn, {
-                  [classes.fullWidth]: fullWidth,
-                })}
-                component="span"
-                disableRipple
-                onClick={showWidget}
+              <Grid
+                item
+                className={classes.closeIconWrapper}
+                onClick={() => onImageRemove(image.publicId)}
               >
-                <PhotoCamera className={classes.addPhotoIcon} />
-              </Button>
-            )}
-          </div>
-        </ListItem>
-      ))}
-    </List>
+                <Typography component="span" className={classes.closeIcon}>
+                  <ClearIcon />
+                </Typography>
+              </Grid>
+            </Grid>
+          </Typography>
+          <Typography
+            component="div"
+            className={classnames(classes.preview, classes.text, classes.size)}
+          >
+            {`${(image.size / KILOBYTE).toFixed(2)} KB`}
+          </Typography>
+        </>
+      ) : (
+        <Typography
+          component="div"
+          className={classnames(classes.preview, classes.text)}
+        >
+          No file selected.
+        </Typography>
+      )}
+    </div>
   );
 };
 
-ImageUploader.defaultProps = {
-  fullWidth: false,
-};
-
 ImageUploader.propTypes = {
-  images: PropTypes.arrayOf(PropTypes.shape({
-    src: PropTypes.string,
+  image: PropTypes.shape({
     name: PropTypes.string,
-  })).isRequired,
-  fullWidth: PropTypes.bool,
-  widget: PropTypes.object.isRequired,
+    publicId: PropTypes.string,
+    size: PropTypes.number,
+  }).isRequired,
+  onImageChange: PropTypes.func.isRequired,
   onImageRemove: PropTypes.func.isRequired,
+  inputId: PropTypes.string.isRequired,
 };
 
 export default ImageUploader;

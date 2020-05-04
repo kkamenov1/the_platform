@@ -38,7 +38,7 @@ Hits.propTypes = {
     userID: PropTypes.string.isRequired,
     certificate: PropTypes.string,
     photoURL: PropTypes.string,
-    images: PropTypes.arrayOf(PropTypes.string).isRequired,
+    image: PropTypes.string.isRequired,
   })).isRequired,
   handleRejectApplication: PropTypes.func.isRequired,
   handleApproveApplication: PropTypes.func.isRequired,

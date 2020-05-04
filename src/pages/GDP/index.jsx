@@ -104,8 +104,7 @@ const GDP = ({ match, firebase }) => {
 
   const {
     languages,
-    images,
-    certificate,
+    image,
     sport,
     displayName,
     photoURL,
@@ -164,7 +163,7 @@ const GDP = ({ match, firebase }) => {
       <StickyContainer>
         <Grid container className={classes.content} spacing={isMobile ? 0 : 3}>
           <Grid item xs={12} md={8}>
-            <ImageViewer images={images} certificate={certificate} />
+            <ImageViewer image={image} />
             <Typography component="div" className={classes.details}>
               <div className={classes.firstBadge}>
                 <Badge label={sport} />

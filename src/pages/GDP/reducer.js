@@ -2,7 +2,7 @@ import { SET_GURU } from './actions';
 
 export const defaultStore = {
   guru: {
-    images: [],
+    image: '',
     birthday: '',
     sport: '',
     isAdmin: false,

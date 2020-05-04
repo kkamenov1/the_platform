@@ -128,10 +128,10 @@ const Hit = ({
   const cloudinaryCore = new cloudinary.Cloudinary({
     cloud_name: process.env.REACT_APP_CLOUDINARY_CLOUD_NAME,
   });
-  const images = hit.images || [FALLBACK_IMAGE.src];
+  const image = hit.image || FALLBACK_IMAGE.src;
   const allImages = hit.certificate
-    ? [...images, hit.certificate]
-    : images;
+    ? [image, hit.certificate]
+    : [image];
   const statusText = `${hit.available ? 'AVAILABLE' : 'UNAVAILABLE'}`;
 
   return (
@@ -246,7 +246,7 @@ Hit.propTypes = {
     sport: PropTypes.string,
     photoURL: PropTypes.string,
     certificate: PropTypes.string,
-    images: PropTypes.arrayOf(PropTypes.string),
+    image: PropTypes.string,
     priceFrom: PropTypes.number,
   }).isRequired,
   onHitOver: PropTypes.func.isRequired,

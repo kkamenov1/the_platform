@@ -6,6 +6,8 @@ import {
   TextField,
   FormControl,
   Slide,
+  CircularProgress,
+  Grid,
 } from '@material-ui/core';
 import {
   ModalHeader,
@@ -16,9 +18,13 @@ import {
 import {
   setFormValues,
   setGuruDetailsErrors,
+  guruCertificateImageLoading,
+  guruCertificateImageLoaded,
+  guruCertificateImageAdded,
+  guruCertificateImageRemoved,
 } from '../actions';
 import sports from '../../../constants/sports';
-import { MAX_IMAGE_SIZE } from '../../../constants/files';
+import { MAX_IMAGE_SIZE, KILOBYTE } from '../../../constants/files';
 import api from '../../../api';
 
 const useStyles = makeStyles((theme) => ({
@@ -32,7 +38,13 @@ const useStyles = makeStyles((theme) => ({
   note: {
     fontSize: theme.typography.pxToRem(10),
   },
+  loadingProgressImage: {
+    height: 16,
+    marginLeft: 8,
+  },
 }));
+
+const CERTIFICATE_PHOTO_INPUT_ID = 'certificate-photo';
 
 const GuruDetailsStep = () => {
   const classes = useStyles();
@@ -54,84 +66,90 @@ const GuruDetailsStep = () => {
     }
   };
 
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    if (file) {
+      if (!file.type.match('image')) {
+        dispatch(setGuruDetailsErrors({
+          ...errors,
+          certificate: 'Selected file should be an image',
+        }));
+        return;
+      }
+
+      const selectedFileMegabytes = file.size / KILOBYTE / KILOBYTE;
+
+      if (selectedFileMegabytes > MAX_IMAGE_SIZE) {
+        dispatch(setGuruDetailsErrors({
+          ...errors,
+          certificate: 'Selected file size should not be more than 5MB',
+        }));
+        return;
+      }
+
+      reader.readAsDataURL(file);
+      reader.onerror = (error) => {
+        dispatch(setGuruDetailsErrors({
+          ...errors,
+          certificate: `File could not be read: + ${error}`,
+        }));
+      };
+
+      reader.onloadstart = () => {
+        dispatch(guruCertificateImageLoading());
+      };
+
+      reader.onloadend = async () => {
+        try {
+          const response = await api.assets.upload({
+            img: reader.result,
+            userID: auth && auth.uid,
+          });
+          dispatch(guruCertificateImageAdded(
+            file.size,
+            file.name,
+            response.data.public_id,
+          ));
+          dispatch(guruCertificateImageLoaded());
+          dispatch(setGuruDetailsErrors({
+            ...errors,
+            certificate: null,
+          }));
+        } catch (error) {
+          dispatch(guruCertificateImageLoaded());
+          dispatch(setGuruDetailsErrors({
+            ...errors,
+            certificate: 'Failed to upload the image. Please try again!',
+          }));
+        }
+      };
+    }
+    document.getElementById(CERTIFICATE_PHOTO_INPUT_ID).value = '';
+  };
+
   const handleImageRemove = async (publicId) => {
-    const {
-      src,
-      name,
-      publicId: id,
-    } = certificate;
+    dispatch(guruCertificateImageLoading());
+    try {
+      const response = await api.assets.delete({ publicId });
 
-    const withLoadingImage = {
-      src: null,
-      name: null,
-      publicId: null,
-      loading: true,
-    };
+      if (response.data.result !== 'ok') {
+        throw new Error('API Error');
+      }
 
-    dispatch(setGuruDetailsErrors({ ...errors, certificate: null }));
-    dispatch(setFormValues(
-      'certificate',
-      withLoadingImage,
-    ));
-
-    const response = await api.images.deleteImage({ publicId });
-
-    if (response.data.result === 'ok') {
-      const withDeletedImage = {
-        src: null,
-        name: null,
-        publicId: null,
-        loading: false,
-      };
-      dispatch(setFormValues(
-        'certificate',
-        withDeletedImage,
-      ));
-    } else {
-      const withOldImage = {
-        src,
-        name,
-        publicId: id,
-        loading: false,
-      };
-      dispatch(setFormValues(
-        'certificate',
-        withOldImage,
-      ));
       dispatch(setGuruDetailsErrors({
         ...errors,
-        certificate: 'There was an error deleting the image. Please try again!',
+        certificate: null,
+      }));
+      dispatch(guruCertificateImageRemoved());
+    } catch (err) {
+      dispatch(setGuruDetailsErrors({
+        ...errors,
+        certificate: 'Failed to delete the image. Please try again!',
       }));
     }
+    dispatch(guruCertificateImageLoaded());
   };
-
-  const checkUploadResult = (resultEvent) => {
-    if (resultEvent.event === 'success') {
-      const { info } = resultEvent;
-      dispatch(setFormValues(
-        'certificate',
-        {
-          loading: false,
-          src: info.secure_url,
-          name: info.original_filename,
-          publicId: info.public_id,
-        },
-      ));
-    }
-  };
-
-  const widget = window.cloudinary.createUploadWidget({
-    cloudName: process.env.REACT_APP_CLOUDINARY_CLOUD_NAME,
-    uploadPreset: process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET,
-    folder: `gurus/${auth.uid}`,
-    maxFiles: 1,
-    resourceType: 'image',
-    clientAllowedFormats: ['png', 'jpeg'],
-    maxFileSize: MAX_IMAGE_SIZE,
-    multiple: false,
-  }, (error, result) => {
-    checkUploadResult(result);
-  });
 
   return (
     <Slide
@@ -179,14 +197,25 @@ const GuruDetailsStep = () => {
 
           <div className={classes.vspace}>
             <Typography component="h6" variant="button">
-              CERTIFICATION
+              <Grid container alignItems="center">
+                <Grid item>
+                  CERTIFICATION
+                </Grid>
+                <Grid item>
+                  {certificate.loading && (
+                  <div className={classes.loadingProgressImage}>
+                    <CircularProgress size={16} />
+                  </div>
+                  )}
+                </Grid>
+              </Grid>
             </Typography>
             <FormControl fullWidth className={classes.formControl}>
               <ImageUploader
-                images={[certificate]}
-                widget={widget}
+                image={certificate}
+                onImageChange={handleImageChange}
                 onImageRemove={handleImageRemove}
-                fullWidth
+                inputId={CERTIFICATE_PHOTO_INPUT_ID}
               />
             </FormControl>
 
