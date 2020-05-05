@@ -105,15 +105,13 @@ const SignUpForm = ({ firebase, open }) => {
           isGuru: false,
           isAdmin: false,
         }, { merge: true })))
-      .then(() => firebase.doSendEmailVerification())
       .then(() => {
         setInputValues(INITIAL_STATE);
-
         setError(null);
         setErrorFirstName(null);
         setErrorLastName(null);
-
         setLoading(false);
+        dispatch(toggleAuthModal(false));
       })
       .catch((err) => {
         setError(err);

@@ -40,6 +40,7 @@ const Section = ({
 Section.defaultProps = {
   label: '',
   divider: false,
+  children: undefined,
 };
 
 Section.propTypes = {
@@ -49,7 +50,7 @@ Section.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,
-  ]).isRequired,
+  ]),
 };
 
 export default Section;

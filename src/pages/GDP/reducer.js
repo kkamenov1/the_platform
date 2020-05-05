@@ -22,6 +22,7 @@ export const defaultStore = {
     available: undefined,
     occupation: undefined,
     subscribers: '',
+    socialMedia: null,
   },
 };
 

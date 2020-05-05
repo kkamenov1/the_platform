@@ -52,10 +52,6 @@ const useStyles = makeStyles((theme) => ({
   infoWrapper: {
     width: 270,
     cursor: 'pointer',
-
-    '&:hover div[class*="arrowWrapper"]': {
-      display: 'block',
-    },
   },
 }));
 

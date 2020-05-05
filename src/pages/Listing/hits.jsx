@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 import {
   Divider,
   Grid,
@@ -48,6 +49,16 @@ const useStyles = makeStyles((theme) => ({
 
   container: {
     marginTop: 80,
+  },
+
+  containerWithoutMap: {
+    maxWidth: 1280,
+    margin: '100px auto 0 auto',
+  },
+
+  item: {
+    padding: '0 8px',
+    marginBottom: 24,
   },
 
   noResultsContainer: {
@@ -124,7 +135,12 @@ const Hits = ({
         )}
       </Grid>
       {hits && hits.length ? (
-        <Grid container spacing={!showMap || isMobile ? 4 : 0} className={classes.container}>
+        <Grid
+          container
+          className={classnames(classes.container, {
+            [classes.containerWithoutMap]: !showMap,
+          })}
+        >
           {hits.map((hit, i) => (
             <Grid
               item
@@ -133,6 +149,9 @@ const Hits = ({
               sm={!showMap || isMobile ? 6 : 12}
               md={!showMap || isMobile ? 4 : 12}
               lg={!showMap ? 3 : 12}
+              className={classnames({
+                [classes.item]: !showMap,
+              })}
             >
               <Hit hit={hit} onHitOver={onHitOver} showMap={showMap} selectedHit={selectedHit} />
               {showMap && !isMobile && <Divider />}

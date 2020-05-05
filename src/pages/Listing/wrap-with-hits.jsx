@@ -20,7 +20,6 @@ const useStyles = makeStyles((theme) => ({
 
   hitsContainer: {
     width: 840,
-    padding: '0 24px 24px 24px',
     backgroundColor: theme.palette.common.white,
   },
 
