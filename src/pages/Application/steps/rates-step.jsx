@@ -19,7 +19,7 @@ import { addOnPosition } from '../../../core/utils';
 import {
   setGuruDetailsCoachingMethods,
   setFormValues,
-} from '../../../modals/become-guru/actions';
+} from '../actions';
 
 const useStyles = makeStyles((theme) => ({
   input: {
@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
 const RatesStep = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const becomeGuruModal = useSelector((state) => state.becomeGuruModal);
+  const application = useSelector((state) => state.application);
 
   const {
     methods,
@@ -72,7 +72,7 @@ const RatesStep = () => {
     ratesStepFormErrors: errors,
     activeStep,
     isIncreasingSteps,
-  } = becomeGuruModal;
+  } = application;
 
   const handleRatesChange = (index) => (event) => {
     dispatch(setGuruDetailsCoachingMethods(

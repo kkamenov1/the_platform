@@ -40,7 +40,6 @@ class Firebase {
             /* if further information is needed from authUser ==> provide it here */
             uid: authUser.uid,
             email: authUser.email,
-            emailVerified: authUser.emailVerified,
             providerData: authUser.providerData,
             photoURL: authUser.photoURL,
             ...dbUser,

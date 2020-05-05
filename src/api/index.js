@@ -3,7 +3,6 @@ import qs from 'qs';
 
 const PROJECT = process.env.REACT_APP_PROJECT_ID;
 const client = axios.create();
-
 const base = `https://${PROJECT}.firebaseapp.com/api/v1`;
 
 const applications = {
@@ -15,13 +14,62 @@ const applications = {
   },
 };
 
-const images = {
-  deleteImage: ({ publicId }) => client.post(`${base}/delete_image`, {
-    publicId,
+const application = {
+  post: ({
+    location,
+    _geoloc,
+    languages,
+    birthday,
+    image,
+    sport,
+    introduction,
+    certificate,
+    methods,
+    duration,
+    subscribers,
+    occupation,
+    available,
+    userID,
+    photoURL,
+    displayName,
+    priceFrom,
+    socialMedia,
+  }) => client.post(
+    `${base}/submit_application`,
+    {
+      location,
+      _geoloc,
+      languages,
+      birthday,
+      image,
+      sport,
+      introduction,
+      certificate,
+      methods,
+      duration,
+      subscribers,
+      occupation,
+      available,
+      userID,
+      photoURL,
+      displayName,
+      priceFrom,
+      socialMedia,
+    },
+  ),
+};
+
+const assets = {
+  delete: ({ publicId }) => client.delete(`${base}/assets/${publicId}`),
+
+  upload: ({ img, userID }) => client.post(`${base}/assets`, {
+    img,
+    userID,
   }),
 };
 
 export default {
   applications,
-  images,
+  application,
+  assets,
 };

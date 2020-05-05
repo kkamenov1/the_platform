@@ -11,6 +11,7 @@ import {
   TextField,
   Grid,
   Slide,
+  CircularProgress,
 } from '@material-ui/core';
 import { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import {
@@ -25,11 +26,13 @@ import {
   setFormValues,
   setPersonalDetailsErrors,
   setGeoLocation,
-  setImageUploadOnSuccess,
-} from '../../../modals/become-guru/actions';
+  guruImageLoading,
+  guruImageLoaded,
+  guruImageAdded,
+  guruImageRemoved,
+} from '../actions';
 import api from '../../../api';
-import { addOnPosition } from '../../../core/utils';
-import { MAX_IMAGE_SIZE } from '../../../constants/files';
+import { MAX_IMAGE_SIZE, KILOBYTE } from '../../../constants/files';
 
 const useStyles = makeStyles({
   chips: {
@@ -49,6 +52,10 @@ const useStyles = makeStyles({
   label: {
     transform: 'translate(14px, 12px) scale(1)',
   },
+  loadingProgressImage: {
+    height: 16,
+    marginLeft: 8,
+  },
 });
 
 const ITEM_HEIGHT = 48;
@@ -61,6 +68,7 @@ const MenuProps = {
     },
   },
 };
+const GURU_PHOTO_INPUT_ID = 'guru-photo';
 
 
 const PersonalDetailsStep = () => {
@@ -68,11 +76,10 @@ const PersonalDetailsStep = () => {
   const dispatch = useDispatch();
   const inputLabel = React.useRef(null);
   const [labelWidth, setLabelWidth] = useState(0);
-
   const auth = useSelector((state) => state.app.auth);
-  const becomeGuruModal = useSelector((state) => state.becomeGuruModal);
+  const application = useSelector((state) => state.application);
   const {
-    images,
+    image,
     personalDetailsStepFormErrors: errors,
     location,
     languages,
@@ -81,7 +88,7 @@ const PersonalDetailsStep = () => {
     year,
     activeStep,
     isIncreasingSteps,
-  } = becomeGuruModal;
+  } = application;
 
   useEffect(() => {
     setLabelWidth(inputLabel.current.offsetWidth);
@@ -115,90 +122,90 @@ const PersonalDetailsStep = () => {
     dispatch(setPersonalDetailsErrors({ ...errors, [e.target.name]: null }));
   };
 
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    if (file) {
+      if (!file.type.match('image')) {
+        dispatch(setPersonalDetailsErrors({
+          ...errors,
+          image: 'Selected file should be an image',
+        }));
+        return;
+      }
+
+      const selectedFileMegabytes = file.size / KILOBYTE / KILOBYTE;
+
+      if (selectedFileMegabytes > MAX_IMAGE_SIZE) {
+        dispatch(setPersonalDetailsErrors({
+          ...errors,
+          image: 'Selected file size should not be more than 5MB',
+        }));
+        return;
+      }
+
+      reader.readAsDataURL(file);
+      reader.onerror = (error) => {
+        dispatch(setPersonalDetailsErrors({
+          ...errors,
+          image: `File could not be read: + ${error}`,
+        }));
+      };
+
+      reader.onloadstart = () => {
+        dispatch(guruImageLoading());
+      };
+
+      reader.onloadend = async () => {
+        try {
+          const response = await api.assets.upload({
+            img: reader.result,
+            userID: auth && auth.uid,
+          });
+          dispatch(guruImageAdded(
+            file.size,
+            file.name,
+            response.data.public_id,
+          ));
+          dispatch(guruImageLoaded());
+          dispatch(setPersonalDetailsErrors({
+            ...errors,
+            image: null,
+          }));
+        } catch (error) {
+          dispatch(guruImageLoaded());
+          dispatch(setPersonalDetailsErrors({
+            ...errors,
+            image: 'Failed to upload the image. Please try again!',
+          }));
+        }
+      };
+    }
+    document.getElementById(GURU_PHOTO_INPUT_ID).value = '';
+  };
+
   const handleImageRemove = async (publicId) => {
-    const pos = images.findIndex((image) => image.publicId === publicId);
-    const {
-      src,
-      name,
-      publicId: id,
-    } = images[pos];
+    dispatch(guruImageLoading());
+    try {
+      const response = await api.assets.delete({ publicId });
 
-    const arrayWithLoadingImage = [...addOnPosition(
-      pos,
-      {
-        src: null,
-        name: null,
-        publicId: null,
-        loading: true,
-      },
-      images,
-    )];
+      if (response.data.result !== 'ok') {
+        throw new Error('API Error');
+      }
 
-    dispatch(setPersonalDetailsErrors({ ...errors, images: null }));
-    dispatch(setFormValues(
-      'images',
-      arrayWithLoadingImage,
-    ));
-
-    const response = await api.images.deleteImage({ publicId });
-
-    if (response.data.result === 'ok') {
-      const arrayWithDeletedImage = [...addOnPosition(
-        pos,
-        {
-          src: null,
-          name: null,
-          publicId: null,
-          loading: false,
-        },
-        images,
-      )];
-      dispatch(setFormValues(
-        'images',
-        arrayWithDeletedImage,
-      ));
-    } else {
-      const arrayWithOldImage = [...addOnPosition(
-        pos,
-        {
-          src,
-          name,
-          publicId: id,
-          loading: false,
-        },
-        images,
-      )];
-      dispatch(setFormValues(
-        'images',
-        arrayWithOldImage,
-      ));
       dispatch(setPersonalDetailsErrors({
         ...errors,
-        images: 'There was an error deleting the image. Please try again!',
+        image: null,
+      }));
+      dispatch(guruImageRemoved());
+    } catch (err) {
+      dispatch(setPersonalDetailsErrors({
+        ...errors,
+        image: 'Failed to delete the image. Please try again!',
       }));
     }
+    dispatch(guruImageLoaded());
   };
-
-  const checkUploadResult = (resultEvent) => {
-    if (resultEvent.event === 'success') {
-      const { info } = resultEvent;
-      dispatch(setImageUploadOnSuccess(info));
-    }
-  };
-
-  const maxFiles = images.filter((image) => !(image.publicId)).length;
-
-  const widget = window.cloudinary.createUploadWidget({
-    cloudName: process.env.REACT_APP_CLOUDINARY_CLOUD_NAME,
-    uploadPreset: process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET,
-    folder: `gurus/${auth.uid}`,
-    maxFiles,
-    resourceType: 'image',
-    clientAllowedFormats: ['png', 'jpeg'],
-    maxFileSize: MAX_IMAGE_SIZE,
-  }, (error, result) => {
-    checkUploadResult(result);
-  });
 
   return (
     <Slide
@@ -322,16 +329,28 @@ const PersonalDetailsStep = () => {
 
           <div className={classes.vspace}>
             <Typography component="h6" variant="button">
-              Photos *
+              <Grid container alignItems="center">
+                <Grid item>
+                  Guru Profile Picture *
+                </Grid>
+                <Grid item>
+                  {image.loading && (
+                    <div className={classes.loadingProgressImage}>
+                      <CircularProgress size={16} />
+                    </div>
+                  )}
+                </Grid>
+              </Grid>
             </Typography>
 
             <ImageUploader
-              images={images}
-              widget={widget}
+              image={image}
+              onImageChange={handleImageChange}
               onImageRemove={handleImageRemove}
+              inputId={GURU_PHOTO_INPUT_ID}
             />
             <FormError>
-              {errors && errors.images}
+              {errors && errors.image}
             </FormError>
           </div>
         </form>

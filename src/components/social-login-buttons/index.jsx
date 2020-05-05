@@ -32,7 +32,7 @@ const SocialLoginButtons = ({ firebase }) => {
           }, { merge: true })))
       .then(() => {
         setErrorGoogle(null);
-        dispatch(toggleAuthModal(false, ''));
+        dispatch(toggleAuthModal(false));
       })
       .catch((err) => {
         setErrorGoogle(err);
@@ -49,11 +49,10 @@ const SocialLoginButtons = ({ firebase }) => {
             email: socialAuthUser.additionalUserInfo.profile.email,
             displayName: socialAuthUser.additionalUserInfo.profile.name,
             photoURL: socialAuthUser.user.photoURL,
-            emailVerified: true,
           }, { merge: true })))
       .then(() => {
         setErrorFB(null);
-        dispatch(toggleAuthModal(false, ''));
+        dispatch(toggleAuthModal(false));
       })
       .catch((err) => {
         setErrorFB(err);

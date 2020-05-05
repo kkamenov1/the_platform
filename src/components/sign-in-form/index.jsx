@@ -46,7 +46,7 @@ const INITIAL_STATE = {
   password: '',
 };
 
-const SignInForm = ({ firebase }) => {
+const SignInForm = ({ firebase, open }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [inputValues, setInputValues] = useState(INITIAL_STATE);
@@ -55,7 +55,7 @@ const SignInForm = ({ firebase }) => {
   const [loading, setLoading] = useState(false);
 
   const openForgotPasswordModal = () => {
-    dispatch(toggleAuthModal(true, FORGOT_PASSWORD));
+    dispatch(toggleAuthModal(open, FORGOT_PASSWORD));
   };
 
   const onSubmit = (event) => {
@@ -69,7 +69,7 @@ const SignInForm = ({ firebase }) => {
         setInputValues(INITIAL_STATE);
         setError(null);
         setLoading(false);
-        dispatch(toggleAuthModal(false, ''));
+        dispatch(toggleAuthModal(false));
       })
       .catch((err) => {
         setError(err);
@@ -165,7 +165,7 @@ const SignInForm = ({ firebase }) => {
         </form>
 
         <Divider className={classes.bottomDivider} />
-        <SignUpLink />
+        <SignUpLink open={open} />
       </div>
     </div>
   );
@@ -175,6 +175,7 @@ SignInForm.propTypes = {
   firebase: PropTypes.shape({
     doSignInWithEmailAndPassword: PropTypes.func.isRequired,
   }).isRequired,
+  open: PropTypes.bool.isRequired,
 };
 
 export default withFirebase(SignInForm);

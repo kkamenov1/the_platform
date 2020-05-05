@@ -1,7 +1,6 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import Slider from 'react-slick';
 import {
   Card,
   CardHeader,
@@ -18,10 +17,7 @@ import { red } from '@material-ui/core/colors';
 import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
 import cloudinary from 'cloudinary-core';
-import {
-  ADMIN_PANEL_SLIDER_CONFIG,
-  FALLBACK_IMAGE,
-} from '../../../../core/config';
+import { FALLBACK_IMAGE } from '../../../../core/config';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -61,7 +57,6 @@ const SearchHit = ({
     cloud_name: process.env.REACT_APP_CLOUDINARY_CLOUD_NAME,
   });
   const classes = useStyles();
-  const sliderRef = useRef(null);
   const Content = (
     <>
       <CardHeader
@@ -83,37 +78,22 @@ const SearchHit = ({
           </Tooltip>
         )}
       />
-      <Slider ref={sliderRef} {...ADMIN_PANEL_SLIDER_CONFIG}>
-        {showDetails && hit.images && hit.images.length ? hit.images.map((img, i) => {
-          const imgSrc = cloudinaryCore.url(
-            img,
+      {hit.image ? (
+        <CardMedia
+          className={classes.media}
+          image={cloudinaryCore.url(
+            hit.image,
             { width: 600, crop: 'fill' },
-          );
-          return (
-            <CardMedia
-              key={i}
-              className={classes.media}
-              image={imgSrc}
-              title={hit.displayName}
-            />
-          );
-        }) : !showDetails && hit.images && hit.images[0] ? (
-          <CardMedia
-            className={classes.media}
-            image={cloudinaryCore.url(
-              hit.images[0],
-              { width: 600, crop: 'fill' },
-            )}
-            title={hit.displayName}
-          />
-        ) : (
-          <CardMedia
-            className={classes.media}
-            image={FALLBACK_IMAGE.src}
-            title={FALLBACK_IMAGE.alt}
-          />
-        )}
-      </Slider>
+          )}
+          title={hit.displayName}
+        />
+      ) : (
+        <CardMedia
+          className={classes.media}
+          image={FALLBACK_IMAGE.src}
+          title={FALLBACK_IMAGE.alt}
+        />
+      )}
       <CardContent>
         <Typography component="div" paragraph>
           <Typography variant="button">
@@ -288,7 +268,7 @@ SearchHit.propTypes = {
     userID: PropTypes.string.isRequired,
     certificate: PropTypes.string,
     photoURL: PropTypes.string,
-    images: PropTypes.arrayOf(PropTypes.string).isRequired,
+    image: PropTypes.string.isRequired,
     slideIndex: PropTypes.number,
   }).isRequired,
   handleRejectApplication: PropTypes.func.isRequired,

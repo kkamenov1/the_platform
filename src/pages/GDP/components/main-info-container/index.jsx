@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Typography, Grid } from '@material-ui/core';
+import { Typography, Grid, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Skeleton } from '@material-ui/lab';
 import LanguageIcon from '@material-ui/icons/Language';
@@ -8,14 +8,19 @@ import CreditCardIcon from '@material-ui/icons/CreditCard';
 import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 import InfoLine from './info-line';
+import SocialMediaInfoLine from './social-media-info-line';
 
 const useStyles = makeStyles({
   secondaryInfo: {
-    marginTop: 24,
+    margin: '24px 0',
   },
   sectionIcon: {
     fontSize: 14,
     marginRight: 10,
+  },
+  verticalLine: {
+    top: 0,
+    left: '50%',
   },
 });
 
@@ -25,6 +30,7 @@ const MainInfoContainer = ({
   languages,
   subscribers,
   occupation,
+  socialMedia,
 }) => {
   const classes = useStyles();
 
@@ -34,8 +40,8 @@ const MainInfoContainer = ({
       className={classes.secondaryInfo}
       id="secondary-info"
     >
-      <Grid container justify="space-between">
-        <Grid item xs={12} sm={6}>
+      <Grid container justify="space-between" style={{ position: 'relative' }}>
+        <Grid item xs={12} sm={6} style={{ paddingRight: 16 }}>
           <InfoLine
             icon={<PersonOutlineIcon className={classes.sectionIcon} />}
             label="Subscribers"
@@ -86,8 +92,60 @@ const MainInfoContainer = ({
           </InfoLine>
         </Grid>
 
-        <Grid item xs={12} sm={6} />
+        {socialMedia ? (
+          <>
+            {Object.keys(socialMedia).length ? (
+              <Divider
+                orientation="vertical"
+                absolute
+                className={classes.verticalLine}
+              />
+            ) : null}
 
+            <Grid item xs={12} sm={6} style={{ paddingLeft: 16 }}>
+              <SocialMediaInfoLine
+                name="facebook"
+                value={socialMedia.facebook}
+              />
+
+              <SocialMediaInfoLine
+                name="instagram"
+                value={socialMedia.instagram}
+              />
+
+              <SocialMediaInfoLine
+                name="skype"
+                value={socialMedia.skype}
+              />
+
+              <SocialMediaInfoLine
+                name="snapchat"
+                value={socialMedia.snapchat}
+              />
+
+              <SocialMediaInfoLine
+                name="tiktok"
+                value={socialMedia.tiktok}
+              />
+
+              <SocialMediaInfoLine
+                name="discord"
+                value={socialMedia.discord}
+              />
+            </Grid>
+          </>
+        ) : (
+          <>
+            <Divider
+              orientation="vertical"
+              absolute
+              className={classes.verticalLine}
+            />
+            <Grid item xs={12} sm={6} style={{ paddingLeft: 16 }}>
+              <Skeleton variant="rect" height={160} />
+            </Grid>
+          </>
+        )}
       </Grid>
     </Typography>
   );
@@ -99,6 +157,7 @@ MainInfoContainer.defaultProps = {
   languages: '',
   subscribers: '',
   occupation: undefined,
+  socialMedia: {},
 };
 
 MainInfoContainer.propTypes = {
@@ -107,6 +166,14 @@ MainInfoContainer.propTypes = {
   languages: PropTypes.string,
   subscribers: PropTypes.string,
   occupation: PropTypes.number,
+  socialMedia: PropTypes.shape({
+    facebook: PropTypes.string,
+    skype: PropTypes.string,
+    snapchat: PropTypes.string,
+    instagram: PropTypes.string,
+    tiktok: PropTypes.string,
+    discord: PropTypes.string,
+  }),
 };
 
 export default MainInfoContainer;

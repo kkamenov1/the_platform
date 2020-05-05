@@ -12,9 +12,8 @@ import {
   CardContent,
   Avatar,
 } from '@material-ui/core';
-import Slider from 'react-slick';
 import cloudinary from 'cloudinary-core';
-import { plpSliderConfig, FALLBACK_IMAGE } from '../../core/config';
+import { FALLBACK_IMAGE } from '../../core/config';
 import { useIsMobile } from '../../core/hooks';
 import { Badge } from '../../core/components';
 
@@ -22,7 +21,10 @@ const useStyles = makeStyles((theme) => ({
   card: {
     borderRadius: 0,
     boxShadow: 'none',
-    margin: '24px 0',
+    padding: '24px',
+  },
+  cardWithoutMap: {
+    padding: 0,
   },
 
   link: {
@@ -81,12 +83,33 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 15,
   },
 
+  badgesWrapper: {
+    marginTop: 8,
+  },
+
   firstBadge: {
     marginRight: 10,
     display: 'inline-block',
   },
   bottomSpacing: {
     marginBottom: 16,
+  },
+  selected: {
+    backgroundColor: theme.palette.grey[100],
+  },
+  attrValue: {
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+  certifiedBadge: {
+    position: 'absolute',
+    top: 10,
+    left: 0,
+    backgroundColor: theme.palette.common.white,
+    padding: '0 8px',
+    fontSize: 10,
+    fontWeight: 500,
   },
 }));
 
@@ -98,7 +121,6 @@ const Hit = ({
   selectedHit,
 }) => {
   const classes = useStyles();
-  const sliderRef = React.useRef(null);
   const isMobile = useIsMobile('md');
   const minPriceAttribute = `From $${hit.priceFrom}`;
   const durationAttribute = `For ${hit.duration} days`;
@@ -128,48 +150,49 @@ const Hit = ({
   const cloudinaryCore = new cloudinary.Cloudinary({
     cloud_name: process.env.REACT_APP_CLOUDINARY_CLOUD_NAME,
   });
-  const images = hit.images || [FALLBACK_IMAGE.src];
-  const allImages = hit.certificate
-    ? [...images, hit.certificate]
-    : images;
+  const image = hit.image || FALLBACK_IMAGE.src;
   const statusText = `${hit.available ? 'AVAILABLE' : 'UNAVAILABLE'}`;
 
   return (
-    <Card
-      className={classnames(classes.card, { [classes.mapCard]: isOnMap })}
-      key={hit.objectID}
-      onMouseEnter={() => onHitOver(hit)}
-      onMouseLeave={() => onHitOver(null)}
-    >
-      <Link to={`/gurus/${hit.objectID}`} className={classes.link}>
+    <Link to={`/gurus/${hit.objectID}`} className={classes.link}>
+      <Card
+        className={classnames(classes.card, {
+          [classes.mapCard]: isOnMap,
+          [classes.cardWithoutMap]: !showMap,
+          [classes.selected]: selectedHit && selectedHit.objectID === hit.objectID && !isOnMap,
+        })}
+        key={hit.objectID}
+        onMouseEnter={() => onHitOver(hit)}
+        onMouseLeave={() => onHitOver(null)}
+      >
         <Grid
           container
           className={classnames({
             [classes.borderedTiles]: !showMap,
           })}
         >
-          <Grid item xs={!showMap || isMobile ? 12 : 5}>
-            <Slider
-              ref={sliderRef}
-              {...plpSliderConfig(
-                selectedHit && selectedHit.objectID === hit.objectID,
+          <Grid
+            item
+            xs={!showMap || isMobile ? 12 : 5}
+            style={{ position: 'relative' }}
+          >
+            {hit.certificate && (
+              <Typography
+                component="div"
+                variant="caption"
+                className={classes.certifiedBadge}
+              >
+                CERTIFIED
+              </Typography>
+            )}
+            <CardMedia
+              className={classes.media}
+              image={cloudinaryCore.url(
+                image,
+                { width: 600, crop: 'fill' },
               )}
-            >
-              {allImages.map((img) => {
-                const imgSrc = cloudinaryCore.url(
-                  img,
-                  { width: 600, crop: 'fill' },
-                );
-                return (
-                  <CardMedia
-                    key={imgSrc}
-                    className={classes.media}
-                    image={imgSrc}
-                    title={hit.displayName}
-                  />
-                );
-              })}
-            </Slider>
+              title={hit.displayName}
+            />
           </Grid>
 
           <Grid
@@ -177,14 +200,19 @@ const Hit = ({
             xs={!showMap || isMobile ? 12 : 7}
             className={classes.content}
           >
-            <div className={classes.firstBadge}>
-              <Badge label={hit.sport} />
+            <div className={classnames({
+              [classes.badgesWrapper]: !showMap,
+            })}
+            >
+              <div className={classes.firstBadge}>
+                <Badge label={hit.sport} />
+              </div>
+              <Badge label={statusText} color={hit.available ? 'green' : 'red'} />
             </div>
-            <Badge label={statusText} color={hit.available ? 'green' : 'red'} />
             <CardHeader
               avatar={(
                 <Avatar src={hit.photoURL} className={classes.avatar} />
-                    )}
+              )}
               title={hit.displayName}
               className={classes.cardHeader}
             />
@@ -210,6 +238,7 @@ const Hit = ({
                         variant="body2"
                         color="textSecondary"
                         align="right"
+                        className={classes.attrValue}
                       >
                         {value}
                       </Typography>
@@ -221,8 +250,8 @@ const Hit = ({
             </CardContent>
           </Grid>
         </Grid>
-      </Link>
-    </Card>
+      </Card>
+    </Link>
   );
 };
 
@@ -246,7 +275,7 @@ Hit.propTypes = {
     sport: PropTypes.string,
     photoURL: PropTypes.string,
     certificate: PropTypes.string,
-    images: PropTypes.arrayOf(PropTypes.string),
+    image: PropTypes.string,
     priceFrom: PropTypes.number,
   }).isRequired,
   onHitOver: PropTypes.func.isRequired,

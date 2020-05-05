@@ -61,6 +61,18 @@ const useStyles = makeStyles((theme) => ({
   bottomOffsetXl: {
     marginBottom: 24,
   },
+  imageViewer: {
+    position: 'relative',
+  },
+  certifiedBadge: {
+    position: 'absolute',
+    top: 16,
+    left: 0,
+    backgroundColor: theme.palette.common.white,
+    padding: '2px 24px',
+    fontSize: 11,
+    fontWeight: 500,
+  },
 }));
 
 const GDP = ({ match, firebase }) => {
@@ -104,8 +116,7 @@ const GDP = ({ match, firebase }) => {
 
   const {
     languages,
-    images,
-    certificate,
+    image,
     sport,
     displayName,
     photoURL,
@@ -118,6 +129,8 @@ const GDP = ({ match, firebase }) => {
     available,
     occupation,
     subscribers,
+    certificate,
+    socialMedia,
   } = guru;
   const formattedLanguages = languages.join(', ');
   const getStatus = () => {
@@ -162,9 +175,20 @@ const GDP = ({ match, firebase }) => {
   return (
     <div className={classes.wrapper}>
       <StickyContainer>
-        <Grid container className={classes.content} spacing={isMobile ? 0 : 3}>
+        <Grid container spacing={isMobile ? 0 : 3}>
           <Grid item xs={12} md={8}>
-            <ImageViewer images={images} certificate={certificate} />
+            <Typography component="div" className={classes.imageViewer}>
+              <ImageViewer image={image} />
+              {certificate && (
+              <Typography
+                component="div"
+                variant="caption"
+                className={classes.certifiedBadge}
+              >
+                CERTIFIED
+              </Typography>
+              )}
+            </Typography>
             <Typography component="div" className={classes.details}>
               <div className={classes.firstBadge}>
                 <Badge label={sport} />
@@ -205,6 +229,7 @@ const GDP = ({ match, firebase }) => {
                 languages={formattedLanguages}
                 subscribers={subscribers}
                 occupation={occupation}
+                socialMedia={socialMedia}
               />
               <Section containerId="introduction" divider>
                 {renderIntroduction()}
@@ -224,6 +249,19 @@ const GDP = ({ match, firebase }) => {
                   <Skeleton variant="rect" height={14} width={230} />
                 )}
               </Section>
+              {certificate !== null && (
+                <Section
+                  containerId="certificate"
+                  label="Certificate"
+                  divider
+                >
+                  {certificate === '' ? (
+                    <Skeleton variant="rect" height={450} />
+                  ) : (
+                    <ImageViewer image={certificate} />
+                  )}
+                </Section>
+              )}
               <Section containerId="map" label="Location">
                 {_geoloc ? (
                   <Map
