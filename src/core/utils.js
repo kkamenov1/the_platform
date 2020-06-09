@@ -27,3 +27,5 @@ export const getCategoryName = (slug) => slug
   .map(decodeURIComponent)
   .map((item) => item.split('-').join(' '))
   .join(', ');
+
+export const composeValidators = (...validators) => (value) => validators.reduce((error, validator) => error || validator(value), undefined);

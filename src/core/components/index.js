@@ -13,6 +13,7 @@ import CarouselArrow from './carousel-arrow';
 import Badge from './badge';
 import ScrollingButton from './scrolling-button';
 import ScrollingLink from './scrolling-link';
+import StandardInputLabel from './standard-input-label';
 
 export {
   FormError,
@@ -30,4 +31,5 @@ export {
   Badge,
   ScrollingButton,
   ScrollingLink,
+  StandardInputLabel,
 };

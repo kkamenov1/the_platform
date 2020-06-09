@@ -10,10 +10,6 @@ import {
   SET_SOCIAL_MEDIA_VALUE,
   SET_SUBMIT_APPLICATION_LOADING,
   SET_GENERAL_FORM_ERROR,
-  GURU_IMAGE_LOADING,
-  GURU_IMAGE_LOADED,
-  GURU_IMAGE_ADDED,
-  GURU_IMAGE_REMOVED,
   GURU_CERTIFICATE_IMAGE_LOADING,
   GURU_CERTIFICATE_IMAGE_LOADED,
   GURU_CERTIFICATE_IMAGE_ADDED,
@@ -27,9 +23,7 @@ export const defaultStore = {
   location: '',
   _geoloc: null,
   languages: [],
-  day: '',
-  month: '',
-  year: '',
+  birthday: '',
   image: {
     size: null,
     name: null,
@@ -163,46 +157,6 @@ export default (state = defaultStore, action) => {
       return {
         ...state,
         generalFormError: action.generalFormError,
-      };
-
-    case GURU_IMAGE_LOADING:
-      return {
-        ...state,
-        image: {
-          ...state.image,
-          loading: true,
-        },
-      };
-
-    case GURU_IMAGE_LOADED:
-      return {
-        ...state,
-        image: {
-          ...state.image,
-          loading: false,
-        },
-      };
-
-    case GURU_IMAGE_ADDED:
-      return {
-        ...state,
-        image: {
-          ...state.image,
-          size: action.size,
-          name: action.name,
-          publicId: action.publicId,
-        },
-      };
-
-    case GURU_IMAGE_REMOVED:
-      return {
-        ...state,
-        image: {
-          ...state.image,
-          size: null,
-          name: null,
-          publicId: null,
-        },
       };
 
     case GURU_CERTIFICATE_IMAGE_LOADING:

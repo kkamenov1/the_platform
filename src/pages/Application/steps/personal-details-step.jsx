@@ -1,38 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   FormControl,
-  InputLabel,
   Select,
   Chip,
   MenuItem,
-  Typography,
   TextField,
-  Grid,
   Slide,
-  CircularProgress,
+  FormHelperText,
 } from '@material-ui/core';
+import { Form, Field } from 'react-final-form';
 import { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import {
   PlacesAutoComplete,
-  FormError,
   ModalHeader,
   ImageUploader,
+  StandardInputLabel,
 } from '../../../core/components';
 import allLanguages from '../../../constants/languages';
 import {
   setGuruLocation,
-  setFormValues,
   setPersonalDetailsErrors,
   setGeoLocation,
-  guruImageLoading,
-  guruImageLoaded,
-  guruImageAdded,
-  guruImageRemoved,
+  setPersonalDetails,
 } from '../actions';
 import api from '../../../api';
-import { MAX_IMAGE_SIZE, KILOBYTE } from '../../../constants/files';
+import { MAX_IMAGE_SIZE } from '../../../constants/files';
 
 const useStyles = makeStyles({
   chips: {
@@ -44,17 +38,13 @@ const useStyles = makeStyles({
     height: 19,
   },
   vspace: {
-    marginTop: 10,
+    marginTop: 16,
   },
   select: {
     marginBottom: 4,
   },
-  label: {
-    transform: 'translate(14px, 12px) scale(1)',
-  },
-  loadingProgressImage: {
-    height: 16,
-    marginLeft: 8,
+  noMargin: {
+    marginTop: 0,
   },
 });
 
@@ -74,30 +64,16 @@ const GURU_PHOTO_INPUT_ID = 'guru-photo';
 const PersonalDetailsStep = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const inputLabel = React.useRef(null);
-  const [labelWidth, setLabelWidth] = useState(0);
   const auth = useSelector((state) => state.app.auth);
   const application = useSelector((state) => state.application);
   const {
-    image,
     personalDetailsStepFormErrors: errors,
     location,
     languages,
-    day,
-    month,
-    year,
+    birthday,
     activeStep,
     isIncreasingSteps,
   } = application;
-
-  useEffect(() => {
-    setLabelWidth(inputLabel.current.offsetWidth);
-  }, []);
-
-  const handleLocationChange = (loc) => {
-    dispatch(setGuruLocation(loc));
-    dispatch(setPersonalDetailsErrors({ ...errors, location: null }));
-  };
 
   const handleLocationSelect = (loc) => {
     geocodeByAddress(loc)
@@ -105,55 +81,43 @@ const PersonalDetailsStep = () => {
       .then((latLng) => {
         dispatch(setGuruLocation(loc));
         dispatch(setGeoLocation(latLng));
-        dispatch(setPersonalDetailsErrors({ ...errors, location: null }));
+        // dispatch(setPersonalDetailsErrors({ ...errors, location: null }));
       })
       .catch((error) => {
         dispatch(setPersonalDetailsErrors({ ...errors, location: error }));
       });
   };
 
-  const handleInputChange = (e) => {
-    dispatch(setFormValues(e.target.name, e.target.value));
-
-    // handling errors
-    if (['day', 'month', 'year'].includes(e.target.name)) {
-      dispatch(setPersonalDetailsErrors({ ...errors, birthday: null }));
-    }
-    dispatch(setPersonalDetailsErrors({ ...errors, [e.target.name]: null }));
-  };
-
-  const handleImageChange = (event) => {
+  const handleImageChange = (event, input) => {
     const file = event.target.files[0];
     const reader = new FileReader();
     if (file) {
       if (!file.type.match('image')) {
-        dispatch(setPersonalDetailsErrors({
-          ...errors,
-          image: 'Selected file should be an image',
-        }));
+        input.onChange({
+          loading: false,
+          error: 'Selected file should be an image',
+        });
         return;
       }
 
-      const selectedFileMegabytes = file.size / KILOBYTE / KILOBYTE;
-
-      if (selectedFileMegabytes > MAX_IMAGE_SIZE) {
-        dispatch(setPersonalDetailsErrors({
-          ...errors,
-          image: 'Selected file size should not be more than 5MB',
-        }));
+      if (file.size > MAX_IMAGE_SIZE) {
+        input.onChange({
+          loading: false,
+          error: 'Selected file size should not be more than 5MB',
+        });
         return;
       }
 
       reader.readAsDataURL(file);
       reader.onerror = (error) => {
-        dispatch(setPersonalDetailsErrors({
-          ...errors,
-          image: `File could not be read: + ${error}`,
-        }));
+        input.onChange({
+          loading: false,
+          error: `File could not be read: + ${error}`,
+        });
       };
 
       reader.onloadstart = () => {
-        dispatch(guruImageLoading());
+        input.onChange({ loading: true });
       };
 
       reader.onloadend = async () => {
@@ -162,49 +126,66 @@ const PersonalDetailsStep = () => {
             img: reader.result,
             userID: auth && auth.uid,
           });
-          dispatch(guruImageAdded(
-            file.size,
-            file.name,
-            response.data.public_id,
-          ));
-          dispatch(guruImageLoaded());
-          dispatch(setPersonalDetailsErrors({
-            ...errors,
-            image: null,
-          }));
+          input.onChange({
+            loading: false,
+            fileSize: file.size,
+            fileName: file.name,
+            public_id: response.data.public_id,
+          });
         } catch (error) {
-          dispatch(guruImageLoaded());
-          dispatch(setPersonalDetailsErrors({
-            ...errors,
-            image: 'Failed to upload the image. Please try again!',
-          }));
+          input.onChange({
+            loading: false,
+            error: 'Failed to upload the image. Please try again!',
+          });
         }
       };
     }
     document.getElementById(GURU_PHOTO_INPUT_ID).value = '';
   };
 
-  const handleImageRemove = async (publicId) => {
-    dispatch(guruImageLoading());
+  const handleImageRemove = async (publicId, input) => {
+    input.onChange({ loading: true });
     try {
       const response = await api.assets.delete({ publicId });
-
       if (response.data.result !== 'ok') {
         throw new Error('API Error');
       }
 
-      dispatch(setPersonalDetailsErrors({
-        ...errors,
-        image: null,
-      }));
-      dispatch(guruImageRemoved());
+      input.onChange({
+        loading: false,
+        public_id: null,
+        fileName: null,
+        fileSize: null,
+        error: null,
+      });
     } catch (err) {
-      dispatch(setPersonalDetailsErrors({
-        ...errors,
-        image: 'Failed to delete the image. Please try again!',
-      }));
+      input.onChange({
+        ...input.value,
+        loading: false,
+        error: 'Failed to delete the image. Please try again!',
+      });
     }
-    dispatch(guruImageLoaded());
+  };
+
+  const handleFormSubmit = (data) => {
+    dispatch(setPersonalDetails(data));
+  };
+
+  const validate = (values) => {
+    const err = {};
+    if (!values.location) {
+      err.location = 'Required';
+    }
+    if (!values.languages.length) {
+      err.languages = 'Required';
+    }
+    if (!values.birthday) {
+      err.birthday = 'Required';
+    }
+    if (!values.image.public_id) {
+      err.image = 'Required';
+    }
+    return err;
   };
 
   return (
@@ -219,141 +200,130 @@ const PersonalDetailsStep = () => {
           heading="APPLY TO BECOME A GURU"
           caption="Earn money by coaching other people"
         />
-        <form>
-          <PlacesAutoComplete
-            value={location}
-            onChange={handleLocationChange}
-            onSelect={handleLocationSelect}
-            shouldFetchSuggestions={location.length > 1}
-          />
-          <FormError>
-            {errors && errors.location}
-          </FormError>
-
-          <FormControl fullWidth variant="outlined">
-            <InputLabel
-              htmlFor="select-multiple-language"
-              ref={inputLabel}
-              className={classes.label}
-            >
-              Languages *
-            </InputLabel>
-            <Select
-              multiple
-              value={languages}
-              onChange={handleInputChange}
-              labelWidth={labelWidth}
-              className={classes.select}
-              margin="dense"
-              inputProps={{
-                id: 'select-multiple-language',
-                name: 'languages',
-              }}
-              renderValue={(selected) => (
-                <div className={classes.chips}>
-                  {selected.map((value) => (
-                    <Chip
-                      key={value}
-                      label={value}
-                      className={classes.chip}
-                      color="primary"
+        <Form
+          onSubmit={handleFormSubmit}
+          validate={validate}
+          initialValues={application}
+        >
+          {({ handleSubmit, values }) => (
+            <form onSubmit={handleSubmit} noValidate>
+              <Field name="location">
+                {({ input, meta }) => (
+                  <>
+                    <StandardInputLabel
+                      required
+                      error={Boolean(meta.touched && meta.error)}
+                    >
+                      Location
+                    </StandardInputLabel>
+                    <PlacesAutoComplete
+                      {...input}
+                      onSelect={(loc) => handleLocationSelect(loc, input)}
+                      error={Boolean(meta.touched && meta.error)}
+                      helperText={
+                        (meta.touched && meta.error)
+                        || 'Let your clients know your location'
+                      }
+                      onBlur={(e) => input.onBlur(e)}
                     />
-                  ))}
-                </div>
-              )}
-              MenuProps={MenuProps}
-            >
-              {allLanguages.map((language) => (
-                <MenuItem key={language} value={language}>
-                  {language}
-                </MenuItem>
-              ))}
-            </Select>
-            <FormError>
-              {errors && errors.languages}
-            </FormError>
-          </FormControl>
+                  </>
+                )}
+              </Field>
 
-          <div className={classes.vspace}>
-            <Typography component="h6" variant="button">
-              Birthday
-            </Typography>
+              <div className={classes.vspace}>
 
-            <Grid container spacing={1}>
-              <Grid item xs={3} md={2}>
-                <TextField
-                  variant="outlined"
-                  name="day"
-                  value={day}
-                  onChange={handleInputChange}
-                  type="text"
-                  label="DD"
-                  required
-                  margin="dense"
-                  inputProps={{ maxLength: 2 }}
-                />
-              </Grid>
-
-              <Grid item xs={3} md={2}>
-                <TextField
-                  variant="outlined"
-                  name="month"
-                  value={month}
-                  onChange={handleInputChange}
-                  type="text"
-                  label="MM"
-                  required
-                  margin="dense"
-                  inputProps={{ maxLength: 2 }}
-                />
-              </Grid>
-
-              <Grid item xs={4}>
-                <TextField
-                  variant="outlined"
-                  name="year"
-                  value={year}
-                  onChange={handleInputChange}
-                  type="text"
-                  label="YYYY"
-                  required
-                  margin="dense"
-                  inputProps={{ maxLength: 4 }}
-                />
-              </Grid>
-            </Grid>
-            <FormError>
-              {errors && errors.birthday}
-            </FormError>
-          </div>
-
-          <div className={classes.vspace}>
-            <Typography component="h6" variant="button">
-              <Grid container alignItems="center">
-                <Grid item>
-                  Guru Profile Picture *
-                </Grid>
-                <Grid item>
-                  {image.loading && (
-                    <div className={classes.loadingProgressImage}>
-                      <CircularProgress size={16} />
-                    </div>
+                <Field name="languages">
+                  {({ input, meta }) => (
+                    <>
+                      <StandardInputLabel
+                        required
+                        error={Boolean(meta.touched && meta.error)}
+                      >
+                        Languages
+                      </StandardInputLabel>
+                      <FormControl fullWidth variant="outlined">
+                        <Select
+                          multiple
+                          className={classes.select}
+                          margin="dense"
+                          inputProps={{
+                            ...input,
+                            onBlur: (e) => input.onBlur(e),
+                          }}
+                          error={Boolean(meta.touched && meta.error)}
+                          renderValue={(selected) => (
+                            <div className={classes.chips}>
+                              {selected.map((value) => (
+                                <Chip
+                                  key={value}
+                                  label={value}
+                                  className={classes.chip}
+                                  color="primary"
+                                />
+                              ))}
+                            </div>
+                          )}
+                          MenuProps={MenuProps}
+                        >
+                          {allLanguages.map((language) => (
+                            <MenuItem key={language} value={language}>
+                              {language}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        {meta.touched && meta.error && (
+                          <FormHelperText
+                            required
+                            error={Boolean(meta.touched && meta.error)}
+                          >
+                            {meta.error}
+                          </FormHelperText>
+                        )}
+                      </FormControl>
+                    </>
                   )}
-                </Grid>
-              </Grid>
-            </Typography>
+                </Field>
+              </div>
 
-            <ImageUploader
-              image={image}
-              onImageChange={handleImageChange}
-              onImageRemove={handleImageRemove}
-              inputId={GURU_PHOTO_INPUT_ID}
-            />
-            <FormError>
-              {errors && errors.image}
-            </FormError>
-          </div>
-        </form>
+              <div className={classes.vspace}>
+                <Field name="birthday">
+                  {({ input, meta }) => (
+                    <>
+                      <StandardInputLabel
+                        required
+                        error={Boolean(meta.touched && meta.error)}
+                      >
+                        Birthday
+                      </StandardInputLabel>
+                      <TextField
+                        variant="outlined"
+                        {...input}
+                        margin="dense"
+                        type="date"
+                        className={classes.noMargin}
+                        error={Boolean(meta.touched && meta.error)}
+                        helperText={(meta.touched && meta.error)}
+                        inputProps={{
+                          onBlur: (e) => input.onBlur(e),
+                        }}
+                      />
+                    </>
+                  )}
+                </Field>
+              </div>
+
+              <div className={classes.vspace}>
+                <ImageUploader
+                  onImageChange={handleImageChange}
+                  onImageRemove={handleImageRemove}
+                  inputId={GURU_PHOTO_INPUT_ID}
+                  label="Guru Profile Picture *"
+                />
+              </div>
+              <pre>{JSON.stringify(values, 0, 2)}</pre>
+            </form>
+          )}
+        </Form>
       </div>
     </Slide>
   );
