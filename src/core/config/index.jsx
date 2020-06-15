@@ -23,6 +23,7 @@ const BECOME_GURU_STEPS = [
   'Rates',
   'Social Media',
 ];
+const GURU_INTRODUCTION_MAX_FIELD_LENGTH = 300;
 
 export {
   plpSliderConfig,
@@ -33,4 +34,5 @@ export {
   HITS_PER_PAGE_LISTING,
   GDP_MAP_OPTIONS,
   BECOME_GURU_STEPS,
+  GURU_INTRODUCTION_MAX_FIELD_LENGTH,
 };

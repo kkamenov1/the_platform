@@ -10,7 +10,7 @@ import { Field } from 'react-final-form';
 import { KILOBYTE } from '../../../constants/files';
 import FormError from '../form-error';
 import StandardInputLabel from '../standard-input-label';
-import { validateImage } from '../../form-validators/personal-details-step';
+import { validateImage } from '../../form-validators/image';
 
 const useStyles = makeStyles({
   preview: {
@@ -61,6 +61,7 @@ const ImageUploader = ({
   onImageRemove,
   inputId,
   label,
+  name,
 }) => {
   const classes = useStyles();
   const inputRef = React.useRef(null);
@@ -72,7 +73,7 @@ const ImageUploader = ({
   return (
     <div>
       <Field
-        name="image"
+        name={name}
         validate={validateImage}
       >
         {({ input, meta }) => (
@@ -166,6 +167,7 @@ ImageUploader.propTypes = {
   onImageRemove: PropTypes.func.isRequired,
   inputId: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
 };
 
 export default ImageUploader;

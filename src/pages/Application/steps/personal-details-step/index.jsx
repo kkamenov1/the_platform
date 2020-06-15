@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -17,16 +17,16 @@ import {
   ModalHeader,
   ImageUploader,
   StandardInputLabel,
-} from '../../../core/components';
-import allLanguages from '../../../constants/languages';
+} from '../../../../core/components';
+import allLanguages from '../../../../constants/languages';
+import { setPersonalDetails } from './actions';
+import { setActiveStep, setIncreasingSteps } from '../../actions';
+import api from '../../../../api';
+import { MAX_IMAGE_SIZE } from '../../../../constants/files';
+import ActionBar from '../../action-bar';
 import {
-  setGuruLocation,
-  setPersonalDetailsErrors,
-  setGeoLocation,
-  setPersonalDetails,
-} from '../actions';
-import api from '../../../api';
-import { MAX_IMAGE_SIZE } from '../../../constants/files';
+  validate18YearOldDate,
+} from '../../../../core/form-validators/personal-details-step';
 
 const useStyles = makeStyles({
   chips: {
@@ -65,28 +65,19 @@ const PersonalDetailsStep = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.app.auth);
-  const application = useSelector((state) => state.application);
-  const {
-    personalDetailsStepFormErrors: errors,
-    location,
-    languages,
-    birthday,
-    activeStep,
-    isIncreasingSteps,
-  } = application;
+  const personalDetails = useSelector((state) => state.application.personalDetails);
+  const activeStep = useSelector((state) => state.application.general.activeStep);
+  const isIncreasingSteps = useSelector((state) => state.application.general.isIncreasingSteps);
+  let handleCoordsChange;
 
-  const handleLocationSelect = (loc) => {
-    geocodeByAddress(loc)
-      .then((results) => getLatLng(results[0]))
-      .then((latLng) => {
-        dispatch(setGuruLocation(loc));
-        dispatch(setGeoLocation(latLng));
-        // dispatch(setPersonalDetailsErrors({ ...errors, location: null }));
-      })
-      .catch((error) => {
-        dispatch(setPersonalDetailsErrors({ ...errors, location: error }));
-      });
-  };
+  const [location, setLocation] = useState('');
+  useEffect(() => {
+    if (location) {
+      geocodeByAddress(location)
+        .then((results) => getLatLng(results[0]))
+        .then(handleCoordsChange);
+    }
+  }, [location, handleCoordsChange]);
 
   const handleImageChange = (event, input) => {
     const file = event.target.files[0];
@@ -169,6 +160,8 @@ const PersonalDetailsStep = () => {
 
   const handleFormSubmit = (data) => {
     dispatch(setPersonalDetails(data));
+    dispatch(setActiveStep(activeStep + 1));
+    dispatch(setIncreasingSteps(true));
   };
 
   const validate = (values) => {
@@ -203,9 +196,9 @@ const PersonalDetailsStep = () => {
         <Form
           onSubmit={handleFormSubmit}
           validate={validate}
-          initialValues={application}
+          initialValues={personalDetails}
         >
-          {({ handleSubmit, values }) => (
+          {({ handleSubmit, invalid }) => (
             <form onSubmit={handleSubmit} noValidate>
               <Field name="location">
                 {({ input, meta }) => (
@@ -218,20 +211,29 @@ const PersonalDetailsStep = () => {
                     </StandardInputLabel>
                     <PlacesAutoComplete
                       {...input}
-                      onSelect={(loc) => handleLocationSelect(loc, input)}
+                      onSelect={(loc) => {
+                        setLocation(loc);
+                        input.onChange(loc);
+                      }}
                       error={Boolean(meta.touched && meta.error)}
                       helperText={
-                        (meta.touched && meta.error)
-                        || 'Let your clients know your location'
-                      }
+                          (meta.touched && meta.error)
+                          || 'Let your clients know your location'
+                        }
                       onBlur={(e) => input.onBlur(e)}
                     />
                   </>
                 )}
               </Field>
 
-              <div className={classes.vspace}>
+              <Field name="_geoloc">
+                {({ input }) => {
+                  handleCoordsChange = input.onChange;
+                  return null;
+                }}
+              </Field>
 
+              <div className={classes.vspace}>
                 <Field name="languages">
                   {({ input, meta }) => (
                     <>
@@ -286,7 +288,10 @@ const PersonalDetailsStep = () => {
               </div>
 
               <div className={classes.vspace}>
-                <Field name="birthday">
+                <Field
+                  name="birthday"
+                  validate={validate18YearOldDate}
+                >
                   {({ input, meta }) => (
                     <>
                       <StandardInputLabel
@@ -318,9 +323,10 @@ const PersonalDetailsStep = () => {
                   onImageRemove={handleImageRemove}
                   inputId={GURU_PHOTO_INPUT_ID}
                   label="Guru Profile Picture *"
+                  name="image"
                 />
               </div>
-              <pre>{JSON.stringify(values, 0, 2)}</pre>
+              <ActionBar disabled={invalid} />
             </form>
           )}
         </Form>

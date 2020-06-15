@@ -36,33 +36,31 @@ const SimpleSelect = ({
   }, []);
 
   return (
-    <div>
-      <FormControl variant="outlined" fullWidth className={classes.formControl}>
-        <InputLabel ref={inputLabel} htmlFor={id} className={classes.label}>
-          <Typography variant="button">{label}</Typography>
-        </InputLabel>
-        <Select
-          value={selectedValue}
-          onChange={onChange}
-          labelWidth={labelWidth}
-          margin="dense"
-          inputProps={{
-            id,
-            name,
-          }}
-          {...other}
-        >
-          <MenuItem value="">
-            <em>None</em>
+    <FormControl variant="outlined" fullWidth className={classes.formControl}>
+      <InputLabel ref={inputLabel} htmlFor={id} className={classes.label}>
+        <Typography variant="button">{label}</Typography>
+      </InputLabel>
+      <Select
+        value={selectedValue}
+        onChange={onChange}
+        labelWidth={labelWidth}
+        margin="dense"
+        inputProps={{
+          id,
+          name,
+        }}
+        {...other}
+      >
+        <MenuItem value="">
+          <em>None</em>
+        </MenuItem>
+        {options.map((option) => (
+          <MenuItem value={option.value} key={option.value}>
+            {option.name}
           </MenuItem>
-          {options.map((option) => (
-            <MenuItem value={option.value} key={option.value}>
-              {option.name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-    </div>
+        ))}
+      </Select>
+    </FormControl>
   );
 };
 

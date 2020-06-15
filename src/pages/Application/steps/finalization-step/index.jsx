@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { Slide } from '@material-ui/core';
-import { ModalHeader } from '../../../core/components';
+import { ModalHeader } from '../../../../core/components';
 
 const useStyles = makeStyles({
   img: {
@@ -10,14 +10,11 @@ const useStyles = makeStyles({
   },
 });
 
-const Finalization = () => {
+const FinalizationStep = () => {
   const classes = useStyles();
-  const application = useSelector((state) => state.application);
-  const {
-    activeStep,
-    isIncreasingSteps,
-    generalFormError,
-  } = application;
+  const activeStep = useSelector((state) => state.application.general.activeStep);
+  const isIncreasingSteps = useSelector((state) => state.application.general.isIncreasingSteps);
+  const generalFormError = useSelector((state) => state.application.general.generalFormError);
 
   return (
     <Slide
@@ -52,4 +49,4 @@ const Finalization = () => {
   );
 };
 
-export default Finalization;
+export default FinalizationStep;
