@@ -38,30 +38,34 @@ const useStyles = makeStyles({
   suggestion: {
     cursor: 'pointer',
   },
+  noMargin: {
+    marginTop: 0,
+  },
 });
 
 
-const PlacesAutoComplete = ({ value, onChange, ...rest }) => {
+const PlacesAutoComplete = ({
+  error, onBlur, helperText, ...props
+}) => {
   const classes = useStyles();
 
   return (
-    <PlacesAutocomplete
-      value={value}
-      onChange={onChange}
-      {...rest}
-    >
+    <PlacesAutocomplete {...props}>
       {({
         getInputProps, suggestions, getSuggestionItemProps, loading,
       }) => (
         <div className={classes.locationWrapper}>
           <TextField
             {...getInputProps({
-              label: 'Location',
               variant: 'outlined',
               margin: 'dense',
               fullWidth: true,
               required: true,
             })}
+            className={classes.noMargin}
+            helperText={helperText}
+            inputProps={{ onBlur }}
+            error={error}
           />
           <Paper className={classes.autoCompleteDropdown}>
             {loading && (

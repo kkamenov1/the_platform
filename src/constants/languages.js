@@ -1,4 +1,5 @@
 const languages = [
+  'English',
   'Arabic',
   'Bulgarian',
   'Chinese',
@@ -6,7 +7,6 @@ const languages = [
   'Danish',
   'Dutch',
   'Estonian',
-  'English',
   'Filipino',
   'Finnish',
   'French',
