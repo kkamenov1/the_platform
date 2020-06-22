@@ -12,6 +12,9 @@ import {
   InputAdornment,
   Slide,
   TextField,
+  FormControl,
+  FormGroup,
+  FormHelperText,
 } from '@material-ui/core';
 import EventNoteIcon from '@material-ui/icons/EventNote';
 import PersonIcon from '@material-ui/icons/Person';
@@ -20,6 +23,7 @@ import { ModalHeader, StandardInputLabel } from '../../../../core/components';
 import { setRatesDetails } from './actions';
 import { setActiveStep, setIncreasingSteps } from '../../actions';
 import ActionBar from '../../action-bar';
+import { checkMethodsForEmptyPricesMethods } from '../../../../core/form-validators/rates-step';
 
 const useStyles = makeStyles((theme) => ({
   input: {
@@ -61,7 +65,6 @@ const RatesStep = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const rates = useSelector((state) => state.application.rates);
-  const methods = useSelector((state) => state.application.rates.methods);
   const activeStep = useSelector((state) => state.application.general.activeStep);
   const isIncreasingSteps = useSelector((state) => state.application.general.isIncreasingSteps);
 
@@ -73,6 +76,9 @@ const RatesStep = () => {
     if (!values.subscribers) {
       err.subscribers = 'Required';
     }
+    if (!values.methods.some((method) => method.selected)) {
+      err.methods = 'Please select at least one';
+    }
     return err;
   };
 
@@ -80,6 +86,19 @@ const RatesStep = () => {
     dispatch(setRatesDetails(data));
     dispatch(setActiveStep(activeStep + 1));
     dispatch(setIncreasingSteps(true));
+  };
+
+  const handleMethodChange = (input, prop, i) => (e) => {
+    input.onChange(input.value.map((value, index) => {
+      if (i === index) {
+        return {
+          ...value,
+          [prop]: prop === 'selected' ? e.target.checked : e.target.value,
+        };
+      }
+
+      return value;
+    }));
   };
 
   return (
@@ -101,7 +120,7 @@ const RatesStep = () => {
           validate={validate}
           initialValues={rates}
         >
-          {({ handleSubmit, values, invalid }) => (
+          {({ handleSubmit, invalid }) => (
             <form onSubmit={handleSubmit} noValidate>
               <Grid
                 container
@@ -118,38 +137,48 @@ const RatesStep = () => {
               </Grid>
 
               <div className={classes.methodsContainer}>
-                {methods
-                  .map(({ name }, i) => (
-                    <Grid
-                      container
-                      justify="space-between"
-                      alignItems="center"
-                      key={i}
-                    >
-                      <Grid
-                        item
-                        xs={6}
-                        className={classnames(
-                          classes.left,
-                          classes.leftItem,
-                        )}
-                      >
-
-                        <Field name={`methods.${i}.selected`} type="checkbox">
-                          {({ input }) => (
-                            <FormControlLabel
-                              label={name}
-                              control={<Checkbox {...input} color="primary" />}
-                            />
-                          )}
-                        </Field>
-                      </Grid>
-                      <Grid item xs={6} className={classes.right}>
-                        <Field name={`methods.${i}.price`}>
-                          {({ input }) => (
+                <Field
+                  name="methods"
+                  validate={checkMethodsForEmptyPricesMethods}
+                >
+                  {({ input, meta }) => (
+                    <>
+                      {input.value.map(({ name, selected, price }, i) => (
+                        <Grid
+                          container
+                          justify="space-between"
+                          alignItems="center"
+                          key={i}
+                        >
+                          <Grid
+                            item
+                            xs={6}
+                            className={classnames(
+                              classes.left,
+                              classes.leftItem,
+                            )}
+                          >
+                            <FormControl required component="fieldset">
+                              <FormGroup>
+                                <FormControlLabel
+                                  label={name}
+                                  control={(
+                                    <Checkbox
+                                      value={name}
+                                      checked={selected}
+                                      color="primary"
+                                      onChange={handleMethodChange(input, 'selected', i)}
+                                    />
+                                  )}
+                                />
+                              </FormGroup>
+                            </FormControl>
+                          </Grid>
+                          <Grid item xs={6} className={classes.right}>
                             <Input
-                              {...input}
-                              disabled={!values.methods[i].selected}
+                              value={price}
+                              onChange={handleMethodChange(input, 'price', i)}
+                              disabled={!selected}
                               inputProps={{
                                 className: classes.input,
                               }}
@@ -160,11 +189,13 @@ const RatesStep = () => {
                                 <InputAdornment position="end">USD</InputAdornment>
                               }
                             />
-                          )}
-                        </Field>
-                      </Grid>
-                    </Grid>
-                  ))}
+                          </Grid>
+                        </Grid>
+                      ))}
+                      <FormHelperText error>{!meta.pristine && meta.error}</FormHelperText>
+                    </>
+                  )}
+                </Field>
               </div>
 
               <div className={classes.vspace}>

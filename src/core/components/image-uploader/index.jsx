@@ -111,6 +111,7 @@ const ImageUploader = ({
             <Button
               onClick={(e) => triggerDialogBox(e, input)}
               variant="contained"
+              color="primary"
             >
               Upload photo
             </Button>

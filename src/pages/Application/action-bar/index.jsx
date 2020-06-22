@@ -46,7 +46,7 @@ const ActionBar = ({ disabled }) => {
       alignItems="center"
       spacing={isMobile ? 0 : 6}
     >
-      <Grid item xs={12}>
+      <Grid item xs={12} sm={6}>
         {activeStep > 0 && activeStep <= 3 && (
           <Button
             variant="contained"
@@ -62,7 +62,7 @@ const ActionBar = ({ disabled }) => {
         )}
       </Grid>
 
-      <Grid item xs={12}>
+      <Grid item xs={12} sm={6}>
         {activeStep <= 3 ? (
           <Button
             variant="contained"

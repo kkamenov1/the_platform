@@ -94,13 +94,6 @@ const renderStepContent = (activeStep) => {
   }
 };
 
-// const checkMethodsForEmptyPrices = (methods) => (
-//   methods.some((method) => {
-//     const priceParsed = +method.price;
-//     return isNaN(priceParsed) || priceParsed <= 0;
-//   })
-// );
-
 const BecomeAGuru = () => {
   const classes = useStyles();
   const auth = useSelector((state) => state.app.auth);
