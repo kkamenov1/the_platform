@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Stepper,
@@ -17,6 +18,7 @@ import {
 import { withFirebase } from '../../core/lib/Firebase';
 import AuthContent from '../../components/auth-content';
 import { BECOME_GURU_STEPS } from '../../core/config';
+
 
 const useStyles = makeStyles((theme) => ({
   fullscreen: {
@@ -96,9 +98,16 @@ const renderStepContent = (activeStep) => {
 
 const BecomeAGuru = () => {
   const classes = useStyles();
+  const history = useHistory();
   const auth = useSelector((state) => state.app.auth);
   const activeStep = useSelector((state) => state.application.general.activeStep);
   const page = useSelector((state) => state.authModal.page);
+
+  useEffect(() => {
+    if (auth && auth.isGuru) {
+      history.push('/');
+    }
+  }, [auth, history]);
 
   return (
     <Grid container className={classes.fullscreen} justify="center" alignItems="center">
