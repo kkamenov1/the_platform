@@ -78,6 +78,7 @@ const ActionBar = ({ disabled }) => {
             variant="contained"
             color="primary"
             component={Link}
+            fullWidth
             to={LANDING}
           >
             Go Back

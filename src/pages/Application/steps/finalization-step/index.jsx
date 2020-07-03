@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { Slide } from '@material-ui/core';
 import { ModalHeader } from '../../../../core/components';
+import ActionBar from '../../action-bar';
 
 const useStyles = makeStyles({
   img: {
@@ -43,7 +44,7 @@ const FinalizationStep = () => {
             />
           </>
         )}
-
+        <ActionBar />
       </div>
     </Slide>
   );
