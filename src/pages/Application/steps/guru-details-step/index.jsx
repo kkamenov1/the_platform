@@ -76,7 +76,7 @@ const GuruDetailsStep = () => {
         try {
           const response = await api.assets.upload({
             img: reader.result,
-            userID: auth && auth.uid,
+            folder: auth ? `/gurus/${auth.uid}` : '/gurus',
           });
           input.onChange({
             loading: false,

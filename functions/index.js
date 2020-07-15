@@ -61,20 +61,20 @@ app.get('/applications', (req, res) => {
 
 /* IMAGE ENDPOINTS */
 app.post('/assets', (req, res) => {
-  const { img, userID } = req.body;
+  const { img, folder } = req.body;
 
   if (!img) {
     res.status(400).json({ error: 'Please provide an image' });
   }
 
-  if (!userID) {
-    res.status(400).json({ error: 'Please provide a userID' });
+  if (!folder) {
+    res.status(400).json({ error: 'Please provide a folder' });
   }
 
   cloudinary.uploader.upload(
     img,
     {
-      folder: `gurus/${userID}`,
+      folder,
       format: 'jpg',
     },
     (err, result) => {
@@ -159,6 +159,51 @@ app.post('/submit_application', (req, res) => {
         res.status(400).json({
           success: false,
           error: 'Application already exists'
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(400).json({
+        success: false,
+        error: err.message
+      })
+    })
+});
+
+/* REVIEWS ENDPOINTS */
+app.post('/reviews', (req, res) => {
+  const {
+    userID,
+    imageBefore,
+    imageAfter,
+    approvedByAdmin,
+    recommend,
+    rating,
+    summary,
+    review
+  } = req.body;
+
+  db.collection('reviews').where("userID", "==", userID)
+    .get()
+    .then((querySnapshot) => {
+      if (querySnapshot.empty) {
+        const newReviewRef = db.collection('reviews').doc();
+        newReviewRef.set({
+          userID,
+          imageBefore,
+          imageAfter,
+          approvedByAdmin,
+          recommend,
+          rating,
+          summary,
+          review
+        });
+        res.status(200).json({ success: true });
+      }
+      else {
+        res.status(400).json({
+          success: false,
+          error: 'DUPLICATE_REVIEW',
         });
       }
     })

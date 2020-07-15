@@ -62,9 +62,31 @@ const application = {
 const assets = {
   delete: ({ publicId }) => client.delete(`${base}/assets/${publicId}`),
 
-  upload: ({ img, userID }) => client.post(`${base}/assets`, {
+  upload: ({ img, folder }) => client.post(`${base}/assets`, {
     img,
+    folder,
+  }),
+};
+
+const reviews = {
+  post: ({
     userID,
+    imageBefore,
+    imageAfter,
+    approvedByAdmin,
+    recommend,
+    rating,
+    summary,
+    review,
+  }) => client.post(`${base}/reviews`, {
+    userID,
+    imageBefore,
+    imageAfter,
+    approvedByAdmin,
+    recommend,
+    rating,
+    summary,
+    review,
   }),
 };
 
@@ -72,4 +94,5 @@ export default {
   applications,
   application,
   assets,
+  reviews,
 };

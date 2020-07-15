@@ -9,6 +9,7 @@ import authModal from './modals/auth/reducer';
 import admin from './pages/Admin/reducer';
 import listing from './pages/Listing/reducer';
 import gdp from './pages/GDP/reducer';
+import review from './pages/WriteReview/reducer';
 
 const createRootReducer = (history) => combineReducers({
   router: connectRouter(history),
@@ -19,6 +20,7 @@ const createRootReducer = (history) => combineReducers({
   admin,
   listing,
   gdp,
+  review,
 });
 
 export default createRootReducer;

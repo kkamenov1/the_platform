@@ -14,6 +14,7 @@ import {
   GDP,
   BecomeGuru,
   Application,
+  WriteReview,
 } from '../pages';
 import AuthModal from '../modals/auth';
 
@@ -45,7 +46,8 @@ const App = ({ firebase }) => {
           <Route exact path={routes.LANDING} component={Landing} />
           <Route path={routes.ADMIN} component={Admin} />
           <Route exact path={routes.LISTING} component={Listing} />
-          <Route path={routes.GDP} component={GDP} />
+          <Route exact path={routes.GDP} component={GDP} />
+          <Route path={routes.WRITE_REVIEW} component={WriteReview} />
           <Route exact path={routes.BECOME_GURU} component={BecomeGuru} />
           <Route path={routes.BECOME_GURU_APPLY} component={Application} />
         </Switch>
