@@ -89,7 +89,7 @@ class Firebase {
 
   reviews = () => this.db.collection('reviews');
 
-  review = (uid) => this.db.collection('applications').doc(uid);
+  review = (uid) => this.db.collection('reviews').doc(uid);
 }
 
 export default Firebase;

@@ -85,6 +85,8 @@ const SocialMediaStep = () => {
       photoURL: auth.photoURL,
       displayName: auth.displayName,
       priceFrom: getMinimalPrice(selectedMethods),
+      rating: 0,
+      ratingCount: 0,
     };
 
     try {

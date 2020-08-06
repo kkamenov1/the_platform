@@ -34,6 +34,8 @@ const application = {
     displayName,
     priceFrom,
     socialMedia,
+    rating,
+    ratingCount,
   }) => client.post(
     `${base}/submit_application`,
     {
@@ -55,6 +57,8 @@ const application = {
       displayName,
       priceFrom,
       socialMedia,
+      rating,
+      ratingCount,
     },
   ),
 };
@@ -69,24 +73,43 @@ const assets = {
 };
 
 const reviews = {
+  get: ({
+    query,
+    page,
+    pageSize,
+    approved,
+  }) => {
+    const queryString = qs.stringify({
+      q: query, page, pageSize, approved,
+    });
+
+    return client.get(
+      `${base}/reviews${queryString && `?${queryString}`}`,
+    );
+  },
+
   post: ({
-    userID,
     imageBefore,
     imageAfter,
-    approvedByAdmin,
+    approved,
     recommend,
     rating,
     summary,
     review,
+    date,
+    guruInfo,
+    userInfo,
   }) => client.post(`${base}/reviews`, {
-    userID,
     imageBefore,
     imageAfter,
-    approvedByAdmin,
+    approved,
     recommend,
     rating,
     summary,
     review,
+    date,
+    guruInfo,
+    userInfo,
   }),
 };
 

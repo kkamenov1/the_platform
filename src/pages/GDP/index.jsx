@@ -180,13 +180,13 @@ const GDP = ({ match, firebase }) => {
             <Typography component="div" className={classes.imageViewer}>
               <ImageViewer image={image} />
               {certificate && (
-              <Typography
-                component="div"
-                variant="caption"
-                className={classes.certifiedBadge}
-              >
-                CERTIFIED
-              </Typography>
+                <Typography
+                  component="div"
+                  variant="caption"
+                  className={classes.certifiedBadge}
+                >
+                  CERTIFIED
+                </Typography>
               )}
             </Typography>
             <Typography component="div" className={classes.details}>

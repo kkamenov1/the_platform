@@ -17,7 +17,7 @@ import {
   TextField,
   Link,
 } from '@material-ui/core';
-import { Link as NavigationLink } from 'react-router-dom';
+import { Link as NavigationLink, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   toggleReviewGuidelinesModal,
@@ -103,6 +103,7 @@ const labels = {
 const ReviewForm = ({ guru }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const { id } = useParams();
   const auth = useSelector((state) => state.app.auth);
   const reviewGuidelinesModalOpen = useSelector((state) => state.review.reviewGuidelinesModalOpen);
   const photoRequirementsModalOpen = useSelector((state) => state.review.photoRequirementsModalOpen);
@@ -114,11 +115,20 @@ const ReviewForm = ({ guru }) => {
     dispatch(setFormStatus(REVIEW_PAGE_FORM_STATUS.FORM_SUBMIT_REVIEW_LOADING));
     const body = {
       ...data,
-      recommend: Boolean(data.recommend),
+      recommend: data.recommend === 'true',
       imageBefore: data.imageBefore ? data.imageBefore.public_id : null,
       imageAfter: data.imageAfter ? data.imageAfter.public_id : null,
-      userID: auth.uid,
-      approvedByAdmin: false,
+      approved: false,
+      guruInfo: {
+        id,
+        name: guru.displayName,
+      },
+      userInfo: {
+        id: auth.uid,
+        name: auth.displayName,
+        photoURL: auth.photoURL,
+      },
+      date: new Date(),
     };
 
     try {
@@ -150,6 +160,16 @@ const ReviewForm = ({ guru }) => {
     }
     if (values.review && values.review.length < 50) {
       err.review = 'Write at least 50 characters and help others make a better choice.';
+    }
+    if ((values.imageBefore && values.imageBefore.public_id)
+      && ((values.imageAfter && !values.imageAfter.public_id) || !values.imageAfter)
+    ) {
+      err.imageAfter = 'You need to provide photo';
+    }
+    if (((values.imageBefore && !values.imageBefore.public_id) || !values.imageBefore)
+      && (values.imageAfter && values.imageAfter.public_id)
+    ) {
+      err.imageBefore = 'You need to provide photo';
     }
     return err;
   };

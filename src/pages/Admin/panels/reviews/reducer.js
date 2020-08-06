@@ -1,11 +1,10 @@
 import {
-  SET_APPLICATIONS,
-  SET_APPLICATIONS_LOADING,
-  SET_TOTAL_APPLICATIONS_COUNT,
-  SET_PAGE,
-  SET_PAGE_SIZE,
-  SET_QUERY,
-  TOGGLE_APPLICATIONS_MODAL,
+  SET_REVIEWS,
+  SET_REVIEWS_LOADING,
+  SET_TOTAL_REVIEWS_COUNT,
+  SET_PAGE_REVIEWS,
+  SET_PAGE_SIZE_REVIEWS,
+  SET_QUERY_REVIEWS,
 } from './actions';
 
 export const defaultStore = {
@@ -15,55 +14,46 @@ export const defaultStore = {
   page: 1,
   pageSize: 8,
   query: '',
-  modalOpen: false,
-  selectedHit: null,
 };
 
 export default (state = defaultStore, action) => {
   switch (action.type) {
-    case SET_APPLICATIONS:
+    case SET_REVIEWS:
       return {
         ...state,
         hits: action.hits,
       };
 
-    case SET_APPLICATIONS_LOADING:
+    case SET_REVIEWS_LOADING:
       return {
         ...state,
         loading: action.loading,
       };
 
-    case SET_TOTAL_APPLICATIONS_COUNT:
+    case SET_TOTAL_REVIEWS_COUNT:
       return {
         ...state,
         count: action.count,
       };
 
-    case SET_PAGE:
+    case SET_PAGE_REVIEWS:
       return {
         ...state,
         page: action.page,
       };
 
-    case SET_PAGE_SIZE:
+    case SET_PAGE_SIZE_REVIEWS:
       return {
         ...state,
         pageSize: action.pageSize,
         page: 1,
       };
 
-    case SET_QUERY:
+    case SET_QUERY_REVIEWS:
       return {
         ...state,
         query: action.query,
         page: 1,
-      };
-
-    case TOGGLE_APPLICATIONS_MODAL:
-      return {
-        ...state,
-        modalOpen: action.open,
-        selectedHit: action.selectedHit,
       };
 
     default:
