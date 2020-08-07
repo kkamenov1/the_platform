@@ -231,17 +231,17 @@ app.post('/reviews', (req, res) => {
   } = req.body;
 
   db.collection('reviews')
-    .where("userInfo.id", "==", userInfo.id)
+    .where("guruInfo.id", "==", guruInfo.id)
     .get()
     .then((querySnapshot) => {
-      let userHasUnapprovedReviews = false;
+      let userHasUnapprovedReviewForSpecifiedGuru = false;
       querySnapshot.forEach((doc) => {
-        if (!doc.data().approved) {
-          userHasUnapprovedReviews = true;
+        if (doc.data().userInfo.id === userInfo.id && !doc.data().approved) {
+          userHasUnapprovedReviewForSpecifiedGuru = true;
           return;
         }
       });
-      const userCanSubmitReview = querySnapshot.empty || !userHasUnapprovedReviews;
+      const userCanSubmitReview = querySnapshot.empty || !userHasUnapprovedReviewForSpecifiedGuru;
 
       if (userCanSubmitReview) {
         const newReviewRef = db.collection('reviews').doc();
@@ -284,7 +284,7 @@ exports.deleteReview = functions.firestore.document('reviews/{reviewId}')
       const userDoc = await transaction.get(userRef);
       const newRatingCount = userDoc.data().ratingCount - 1;
       const oldRatingTotal = userDoc.data().rating * userDoc.data().ratingCount;
-      const newAvgRating = (oldRatingTotal - ratingVal) / newRatingCount;
+      const newAvgRating = (oldRatingTotal - ratingVal) / (newRatingCount || 1);
 
       // Update user info
       transaction.update(userRef, {
