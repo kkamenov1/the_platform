@@ -7,6 +7,7 @@ import { Skeleton } from '@material-ui/lab';
 import LocationOnOutlinedIcon from '@material-ui/icons/LocationOnOutlined';
 import { ScrollingButton, ScrollingLink } from '../../../../core/components';
 import QuickInfoCollapseContainer from './quick-info-collapse-container';
+import Ratings from '../ratings';
 
 const useStyles = makeStyles((theme) => ({
   upper: {
@@ -14,30 +15,25 @@ const useStyles = makeStyles((theme) => ({
     position: 'relative',
     background: 'url(https://res.cloudinary.com/dl766ebzy/image/upload/v1586259091/navi_dqp54m.png) 50% 0 no-repeat',
   },
-
   userAddress: {
     padding: '10px 15px',
     borderRadius: 3,
     background: 'white',
     position: 'relative',
   },
-
   addressWrapper: {
     width: 170,
     display: 'inline-block',
     verticalAlign: 'top',
     lineHeight: '14px',
   },
-
   address: {
     fontSize: 12,
     lineHeight: '14px',
   },
-
   icon: {
     margin: '2px 7px 0 0',
   },
-
   avatar: {
     position: 'absolute',
     width: 80,
@@ -48,25 +44,23 @@ const useStyles = makeStyles((theme) => ({
     left: '50%',
     border: '3px solid white',
   },
-
   bottom: {
     padding: '60px 20px 20px 20px',
   },
-
   wrapper: {
     display: 'none',
-
     [theme.breakpoints.up('md')]: {
       display: 'block',
       border: '1px solid #e4e4e4',
       background: theme.palette.common.white,
     },
   },
-
   priceSkeleton: {
     marginBottom: 16,
   },
-
+  ratings: {
+    marginBottom: 6,
+  },
   nameSkeleton: {
     marginBottom: 6,
   },
@@ -90,8 +84,34 @@ const QuickInfoContainer = ({
   sport,
   duration,
   languages,
+  rating,
+  ratingCount,
 }) => {
   const classes = useStyles();
+
+  const renderRatings = () => {
+    if (rating && ratingCount > 0) {
+      return (
+        <ScrollingLink
+          containerId="reviews"
+          offset={-80}
+          variant="body2"
+          color="inherit"
+          underline="none"
+        >
+          <Ratings rating={rating} ratingCount={ratingCount} />
+        </ScrollingLink>
+      );
+    }
+    if (ratingCount === 0) {
+      return (
+        <ScrollingLink containerId="reviews" offset={-80} variant="body2">
+          Write review
+        </ScrollingLink>
+      );
+    }
+    return <Skeleton variant="rect" height={20} />;
+  };
 
   return (
     <Sticky topOffset={-100}>
@@ -108,10 +128,11 @@ const QuickInfoContainer = ({
                   <ScrollingLink
                     containerId="map"
                     offset={-80}
-                    label="Show on map"
                     variant="body2"
                     className={classes.address}
-                  />
+                  >
+                    Show on map
+                  </ScrollingLink>
                 </div>
               ) : (
                 <Skeleton
@@ -132,7 +153,7 @@ const QuickInfoContainer = ({
           </div>
           <div className={classes.bottom}>
             {displayName ? (
-              <Typography component="h4" align="center" gutterBottom>
+              <Typography component="h4" align="center">
                 {displayName}
               </Typography>
             ) : (
@@ -143,7 +164,9 @@ const QuickInfoContainer = ({
                 className={classes.nameSkeleton}
               />
             )}
-
+            <Typography component="div" align="center" className={classes.ratings}>
+              {renderRatings()}
+            </Typography>
             {priceFrom ? (
               <Typography
                 variant="body2"
@@ -192,6 +215,8 @@ QuickInfoContainer.defaultProps = {
   displayName: '',
   priceFrom: undefined,
   occupation: undefined,
+  rating: undefined,
+  ratingCount: undefined,
 };
 
 QuickInfoContainer.propTypes = {
@@ -206,6 +231,8 @@ QuickInfoContainer.propTypes = {
   sport: PropTypes.string.isRequired,
   duration: PropTypes.string.isRequired,
   languages: PropTypes.string.isRequired,
+  rating: PropTypes.number,
+  ratingCount: PropTypes.number,
 };
 
 export default QuickInfoContainer;

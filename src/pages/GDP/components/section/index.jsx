@@ -4,8 +4,14 @@ import { Typography, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
+  heading: {
+    fontWeight: 700,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    marginBottom: 40,
+  },
   bottomOffsetXl: {
-    marginBottom: 24,
+    marginBottom: 40,
   },
 });
 
@@ -22,9 +28,9 @@ const Section = ({
       <div className={classes.bottomOffsetXl} id={containerId}>
         {label && (
           <Typography
-            component="h6"
-            variant="h6"
-            paragraph
+            component="h2"
+            variant="h5"
+            className={classes.heading}
           >
             {label}
           </Typography>

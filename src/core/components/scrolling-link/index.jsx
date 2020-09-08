@@ -7,7 +7,7 @@ const ScrollingLink = ({
   containerId,
   offset = 0,
   duration = 300,
-  label,
+  children,
   className = '',
   ...linkProps
 }) => (
@@ -22,7 +22,7 @@ const ScrollingLink = ({
     duration={duration}
     {...linkProps}
   >
-    {label}
+    {children}
   </Link>
 );
 
@@ -36,7 +36,10 @@ ScrollingLink.propTypes = {
   containerId: PropTypes.string.isRequired,
   offset: PropTypes.number,
   duration: PropTypes.number,
-  label: PropTypes.string.isRequired,
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+  ]).isRequired,
   className: PropTypes.string,
 };
 

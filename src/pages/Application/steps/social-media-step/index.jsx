@@ -87,6 +87,13 @@ const SocialMediaStep = () => {
       priceFrom: getMinimalPrice(selectedMethods),
       rating: 0,
       ratingCount: 0,
+      ratingBreakdown: {
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+      },
     };
 
     try {

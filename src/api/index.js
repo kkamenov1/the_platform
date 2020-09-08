@@ -36,6 +36,7 @@ const application = {
     socialMedia,
     rating,
     ratingCount,
+    ratingBreakdown,
   }) => client.post(
     `${base}/submit_application`,
     {
@@ -59,6 +60,7 @@ const application = {
       socialMedia,
       rating,
       ratingCount,
+      ratingBreakdown,
     },
   ),
 };
@@ -75,12 +77,13 @@ const assets = {
 const reviews = {
   get: ({
     query,
-    page,
-    pageSize,
+    offset,
+    limit,
     approved,
+    rating,
   }) => {
     const queryString = qs.stringify({
-      q: query, page, pageSize, approved,
+      q: query, offset, limit, approved, rating,
     });
 
     return client.get(
@@ -111,6 +114,8 @@ const reviews = {
     guruInfo,
     userInfo,
   }),
+
+  getRecommendationPercentage: (guruID) => client.get(`${base}/reviews/${guruID}/recommendation`),
 };
 
 export default {

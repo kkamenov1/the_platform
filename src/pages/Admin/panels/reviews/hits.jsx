@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Grid } from '@material-ui/core';
-import { ReviewContent } from '../../../../core/components';
+import Hit from './hit';
 
 const Hits = ({
   hits,
@@ -11,8 +11,8 @@ const Hits = ({
   <Grid container spacing={4}>
     {hits.map((hit) => (
       <Grid item xs={12} sm={6} md={4} lg={3} key={hit.reviewUID}>
-        <ReviewContent
-          {...hit}
+        <Hit
+          hit={hit}
           handleApproveReview={handleApproveReview}
           handleRejectReview={handleRejectReview}
         />

@@ -38,16 +38,16 @@ const WriteReview = ({ firebase }) => {
   const guru = useSelector((state) => state.review.guru);
   const auth = useSelector((state) => state.app.auth);
   const page = useSelector((state) => state.authModal.page);
-  const { id } = useParams();
+  const { guruID } = useParams();
 
   useEffect(() => {
     if (auth) {
       (async () => {
-        const guruDoc = await firebase.user(id).get();
+        const guruDoc = await firebase.user(guruID).get();
         dispatch(setGuru(guruDoc.data()));
       })();
     }
-  }, [dispatch, firebase, id, auth]);
+  }, [dispatch, firebase, guruID, auth]);
 
   return (
     <div className={classes.outer}>
