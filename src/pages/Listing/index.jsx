@@ -29,12 +29,17 @@ const routeStateDefaultValues = {
   sport: undefined,
   languages: undefined,
   duration: '',
+  rating: undefined,
   hitsPerPage: '10',
   boundingBox: {},
 };
 
 const urlToSearchState = async (location) => {
-  const queryParameters = qs.parse(location.search.slice(1));
+  const queryParameters = qs.parse(
+    decodeURIComponent(location.search.slice(1)), {
+      comma: true,
+    },
+  );
   const {
     q = '',
     page = 1,
@@ -43,13 +48,14 @@ const urlToSearchState = async (location) => {
     languages = [],
     duration,
     priceFrom,
+    rating = [],
     hitsPerPage,
     boundingBox = {},
   } = queryParameters;
-
   const allSports = Array.isArray(sport) ? sport : [sport].filter(Boolean);
   const allMethods = Array.isArray(methods) ? methods : [methods].filter(Boolean);
   const allLanguages = Array.isArray(languages) ? languages : [languages].filter(Boolean);
+  const allRatings = Array.isArray(rating) ? rating : [rating].filter(Boolean);
 
   const searchState = {
     range: {},
@@ -61,24 +67,30 @@ const urlToSearchState = async (location) => {
 
   if (allSports.length) {
     searchState.refinementList = {
-      sport: allSports.map(decodeURIComponent),
+      sport: allSports,
     };
   }
 
   if (allMethods.length) {
     searchState.refinementList = {
-      [methods.name]: allMethods.map(decodeURIComponent),
+      [methods.name]: allMethods,
     };
   }
 
   if (allLanguages.length) {
     searchState.refinementList = {
-      languages: allLanguages.map(decodeURIComponent),
+      languages: allLanguages,
+    };
+  }
+
+  if (allRatings.length) {
+    searchState.refinementList = {
+      rating: allRatings,
     };
   }
 
   if (priceFrom) {
-    const [min, max = undefined] = priceFrom.split(':');
+    const { min, max } = priceFrom;
     searchState.range.priceFrom = {
       min: min || undefined,
       max: max || undefined,
@@ -86,7 +98,7 @@ const urlToSearchState = async (location) => {
   }
 
   if (duration) {
-    const [min, max = undefined] = duration.split(':');
+    const { min, max } = duration;
     searchState.range.duration = {
       min: min || undefined,
       max: max || undefined,
@@ -142,28 +154,20 @@ const Listing = ({ location }) => {
     setSelectedHit(hit);
   };
 
-  const createURL = (updatedSearchState) => {
+  const createURL = (state) => {
     const queryParameters = {};
-
     const routeState = {
-      page: String(updatedSearchState.page),
-      sport: updatedSearchState.refinementList && updatedSearchState.refinementList.sport,
-      languages: updatedSearchState.refinementList && updatedSearchState.refinementList.languages,
-      priceFrom:
-        updatedSearchState.range
-          && updatedSearchState.range.priceFrom
-          && `${updatedSearchState.range.priceFrom.min || ''}:${updatedSearchState.range.priceFrom.max
-          || ''}`,
-      methods: updatedSearchState.refinementList && updatedSearchState.refinementList['methods.name'],
-      duration:
-        updatedSearchState.range
-          && updatedSearchState.range.duration
-          && `${updatedSearchState.range.duration.min || ''}:${updatedSearchState.range.duration.max
-          || ''}`,
+      page: String(state.page),
+      sport: state.refinementList && state.refinementList.sport,
+      languages: state.refinementList && state.refinementList.languages,
+      priceFrom: state.range && state.range.priceFrom,
+      methods: state.refinementList && state.refinementList['methods.name'],
+      duration: state.range && state.range.duration,
       hitsPerPage:
-        (updatedSearchState.hitsPerPage && String(updatedSearchState.hitsPerPage)) || undefined,
-      boundingBox: updatedSearchState.boundingBox && updatedSearchState.boundingBox,
-      q: updatedSearchState.q && updatedSearchState.q,
+        (state.hitsPerPage && String(state.hitsPerPage)) || undefined,
+      boundingBox: state.boundingBox && state.boundingBox,
+      q: state.q && state.q,
+      rating: state.refinementList && state.refinementList.rating,
     };
 
     if (
@@ -204,6 +208,13 @@ const Listing = ({ location }) => {
 
     if (routeState.duration && routeState.duration !== routeStateDefaultValues.duration) {
       queryParameters.duration = routeState.duration;
+    }
+
+    if (
+      routeState.rating
+      && routeState.rating !== routeStateDefaultValues.rating
+    ) {
+      queryParameters.rating = routeState.rating.map(encodeURIComponent);
     }
 
     if (

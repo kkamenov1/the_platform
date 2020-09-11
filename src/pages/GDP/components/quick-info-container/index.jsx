@@ -5,9 +5,12 @@ import { Sticky } from 'react-sticky';
 import { Typography, Avatar } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import LocationOnOutlinedIcon from '@material-ui/icons/LocationOnOutlined';
-import { ScrollingButton, ScrollingLink } from '../../../../core/components';
+import {
+  ScrollingButton,
+  ScrollingLink,
+  RatingWithCount,
+} from '../../../../core/components';
 import QuickInfoCollapseContainer from './quick-info-collapse-container';
-import Ratings from '../ratings';
 
 const useStyles = makeStyles((theme) => ({
   upper: {
@@ -99,7 +102,7 @@ const QuickInfoContainer = ({
           color="inherit"
           underline="none"
         >
-          <Ratings rating={rating} ratingCount={ratingCount} />
+          <RatingWithCount rating={rating} ratingCount={ratingCount} />
         </ScrollingLink>
       );
     }

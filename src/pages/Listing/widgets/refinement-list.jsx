@@ -1,48 +1,42 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { makeStyles } from '@material-ui/core/styles';
 import { connectRefinementList } from 'react-instantsearch-dom';
-import {
-  Switch, Grid, Typography, Divider,
-} from '@material-ui/core';
+import { Switch, Grid, Typography } from '@material-ui/core';
 
-const RefinementList = ({
-  items,
-  refine,
-  header,
-  divider,
-}) => (
-  <>
-    <div style={{ padding: '24px 0' }}>
-      {header && (
-        <Typography
-          variant="button"
-          component="h6"
-          gutterBottom
-        >
-          {header}
-        </Typography>
-      )}
-      {items.map((item) => {
+const useStyles = makeStyles({
+  refinementValue: {
+    textTransform: 'capitalize',
+  },
+});
+
+const RefinementList = ({ items, refine }) => {
+  const classes = useStyles();
+  const sortedItems = items.sort((a, b) => a.label - b.label);
+
+  return (
+    <>
+      {sortedItems.map(({ label, value, isRefined }) => {
         const handleChange = () => {
-          refine(item.value);
+          refine(value);
         };
 
         return (
           <Grid
-            key={item.label}
+            key={label}
             container
             justify="space-between"
             alignItems="center"
           >
             <Grid item>
-              <Typography>
-                {item.label}
+              <Typography className={classes.refinementValue}>
+                {label}
               </Typography>
             </Grid>
 
             <Grid item>
               <Switch
-                checked={item.isRefined}
+                checked={isRefined}
                 onChange={handleChange}
                 color="primary"
               />
@@ -50,21 +44,17 @@ const RefinementList = ({
           </Grid>
         );
       })}
-    </div>
-    {divider && <Divider />}
-  </>
-);
+    </>
+  );
+};
 
 RefinementList.defaultProps = {
-  header: '',
-  divider: false,
+  items: [],
 };
 
 RefinementList.propTypes = {
-  items: PropTypes.array.isRequired,
+  items: PropTypes.array,
   refine: PropTypes.func.isRequired,
-  header: PropTypes.string,
-  divider: PropTypes.bool,
 };
 
 export default connectRefinementList(RefinementList);

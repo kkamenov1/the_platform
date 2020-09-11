@@ -15,7 +15,7 @@ import {
 import cloudinary from 'cloudinary-core';
 import { FALLBACK_IMAGE } from '../../core/config';
 import { useIsMobile } from '../../core/hooks';
-import { Badge } from '../../core/components';
+import { Badge, RatingWithCount } from '../../core/components';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   cardHeader: {
-    padding: '15px 0',
+    padding: '8px 0',
     color: theme.palette.text.primary,
   },
 
@@ -89,7 +89,12 @@ const useStyles = makeStyles((theme) => ({
 
   firstBadge: {
     marginRight: 10,
+    marginTop: 8,
     display: 'inline-block',
+
+    [theme.breakpoints.up('md')]: {
+      marginTop: 0,
+    },
   },
   bottomSpacing: {
     marginBottom: 16,
@@ -110,6 +115,9 @@ const useStyles = makeStyles((theme) => ({
     padding: '0 8px',
     fontSize: 10,
     fontWeight: 500,
+  },
+  ratingWrapper: {
+    marginTop: 8,
   },
 }));
 
@@ -209,6 +217,11 @@ const Hit = ({
               </div>
               <Badge label={statusText} color={hit.available ? 'green' : 'red'} />
             </div>
+
+            <div className={classes.ratingWrapper}>
+              <RatingWithCount rating={hit.rating} ratingCount={hit.ratingCount} />
+            </div>
+
             <CardHeader
               avatar={(
                 <Avatar src={hit.photoURL} className={classes.avatar} />
@@ -265,7 +278,7 @@ Hit.propTypes = {
     objectID: PropTypes.string,
     methods: PropTypes.array,
     displayName: PropTypes.string,
-    duration: PropTypes.string,
+    duration: PropTypes.number,
     available: PropTypes.bool,
     occupation: PropTypes.number,
     subscribers: PropTypes.string,
@@ -277,6 +290,8 @@ Hit.propTypes = {
     certificate: PropTypes.string,
     image: PropTypes.string,
     priceFrom: PropTypes.number,
+    rating: PropTypes.number,
+    ratingCount: PropTypes.number,
   }).isRequired,
   onHitOver: PropTypes.func.isRequired,
   showMap: PropTypes.bool.isRequired,

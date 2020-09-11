@@ -13,7 +13,7 @@ const useStyles = makeStyles({
   },
 });
 
-const Ratings = ({ rating, ratingCount }) => {
+const RatingWithCount = ({ rating, ratingCount, ...ratingProps }) => {
   const classes = useStyles();
 
   return (
@@ -24,6 +24,7 @@ const Ratings = ({ rating, ratingCount }) => {
         size="small"
         className={classes.rating}
         precision={0.5}
+        {...ratingProps}
       />
       <Typography
         component="span"
@@ -36,9 +37,9 @@ const Ratings = ({ rating, ratingCount }) => {
   );
 };
 
-Ratings.propTypes = {
+RatingWithCount.propTypes = {
   rating: PropTypes.number.isRequired,
   ratingCount: PropTypes.number.isRequired,
 };
 
-export default Ratings;
+export default RatingWithCount;

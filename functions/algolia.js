@@ -19,7 +19,11 @@ exports.updateIndex = functions.firestore.document('users/{userId}')
   .onUpdate(change => {
     const newData = change.after.data();
     const objectID = change.after.id;
-    return index.saveObject({ ...newData, objectID });
+    return index.saveObject({
+      ...newData,
+      rating: Math.floor(newData.rating), // algolia works with whole numbers
+      objectID
+    });
   })
 
 exports.deleteFromIndex = functions.firestore.document('users/{userId}')

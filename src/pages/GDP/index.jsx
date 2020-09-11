@@ -32,13 +32,13 @@ import {
   Badge,
   ScrollingButton,
   ScrollingLink,
+  RatingWithCount,
 } from '../../core/components';
 import {
   MainInfoContainer,
   ImageViewer,
   QuickInfoContainer,
   Section,
-  Ratings,
 } from './components';
 import api from '../../api';
 import {
@@ -231,7 +231,7 @@ const GDP = ({ firebase }) => {
           color="inherit"
           underline="none"
         >
-          <Ratings rating={rating} ratingCount={ratingCount} />
+          <RatingWithCount rating={rating} ratingCount={ratingCount} />
         </ScrollingLink>
       );
     }

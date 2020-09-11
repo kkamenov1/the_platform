@@ -15,6 +15,7 @@ import ScrollingButton from './scrolling-button';
 import ScrollingLink from './scrolling-link';
 import StandardInputLabel from './standard-input-label';
 import ReviewContent from './review-content';
+import RatingWithCount from './rating-with-count';
 
 export {
   FormError,
@@ -34,4 +35,5 @@ export {
   ScrollingLink,
   StandardInputLabel,
   ReviewContent,
+  RatingWithCount,
 };
