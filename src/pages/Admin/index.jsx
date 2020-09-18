@@ -6,7 +6,8 @@ import {
   Typography, AppBar, Tabs, Tab,
 } from '@material-ui/core';
 import SwipeableViews from 'react-swipeable-views';
-import Applications from './panels/applications/applications';
+import Applications from './panels/applications';
+import Reviews from './panels/reviews';
 
 import { withFirebase } from '../../core/lib/Firebase';
 
@@ -34,12 +35,6 @@ TabPanel.propTypes = {
   index: PropTypes.any.isRequired,
   value: PropTypes.any.isRequired,
 };
-
-
-const a11yProps = (index) => ({
-  id: `full-width-tab-${index}`,
-  'aria-controls': `full-width-tabpanel-${index}`,
-});
 
 const Admin = () => {
   const dispatch = useDispatch();
@@ -72,8 +67,8 @@ const Admin = () => {
             variant="fullWidth"
             aria-label="admin panel tabs"
           >
-            <Tab label="Applications" {...a11yProps(0)} />
-            <Tab label="Users" {...a11yProps(1)} />
+            <Tab label="Applications" />
+            <Tab label="Reviews" />
           </Tabs>
         </AppBar>
 
@@ -85,7 +80,7 @@ const Admin = () => {
             <Applications />
           </TabPanel>
           <TabPanel value={value} index={1}>
-            Users
+            <Reviews />
           </TabPanel>
         </SwipeableViews>
       </div>

@@ -61,20 +61,20 @@ app.get('/applications', (req, res) => {
 
 /* IMAGE ENDPOINTS */
 app.post('/assets', (req, res) => {
-  const { img, userID } = req.body;
+  const { img, folder } = req.body;
 
   if (!img) {
     res.status(400).json({ error: 'Please provide an image' });
   }
 
-  if (!userID) {
-    res.status(400).json({ error: 'Please provide a userID' });
+  if (!folder) {
+    res.status(400).json({ error: 'Please provide a folder' });
   }
 
   cloudinary.uploader.upload(
     img,
     {
-      folder: `gurus/${userID}`,
+      folder,
       format: 'jpg',
     },
     (err, result) => {
@@ -124,7 +124,10 @@ app.post('/submit_application', (req, res) => {
     displayName,
     priceFrom,
     socialMedia,
-    userID
+    userID,
+    rating,
+    ratingCount,
+    ratingBreakdown,
   } = req.body;
 
   db.collection('applications').where("userID", "==", userID)
@@ -151,7 +154,10 @@ app.post('/submit_application', (req, res) => {
           displayName,
           priceFrom,
           socialMedia,
-          userID
+          userID,
+          rating,
+          ratingCount,
+          ratingBreakdown,
         });
         res.status(200).json({ success: true });
       }
@@ -170,6 +176,190 @@ app.post('/submit_application', (req, res) => {
     })
 });
 
+const MAX_QUERY_LIMIT = 30;
+
+/* REVIEWS ENDPOINTS */
+app.get('/reviews', (req, res) => {
+  const query = decodeURIComponent(req.query.q || '');
+  const offset = Number(req.query.offset) || 0;
+  const limit = Number(req.query.limit) || 12;
+  const approved = req.query.approved === 'true';
+  const rating = Number(req.query.rating) || undefined;
+
+  if (limit > MAX_QUERY_LIMIT) {
+    res.status(400).json({ err: `MAXIMUM QUERY LIMIT: ${MAX_QUERY_LIMIT}`});
+  }
+
+  let reviewsCollection = db.collection('reviews');
+  if (approved) {
+    reviewsCollection = reviewsCollection.where("approved", "==", approved);
+  }
+
+  if (rating) {
+    reviewsCollection = reviewsCollection.where("rating", "==", rating);
+  }
+
+  reviewsCollection
+    .get()
+    .then((snapshot) => {
+      const reviews = [];
+
+      snapshot.forEach((doc) => {
+        reviews.push({ reviewUID: doc.id, ...doc.data() });
+      });
+
+      const result = reviews.filter((review) => {
+        const summary = sanitizeString(review.summary);
+        const guruName = sanitizeString(review.guruInfo.name);
+        const guruID = review.guruInfo.id;
+        const userID = review.userInfo.id;
+        const userName = sanitizeString(review.userInfo.name);
+
+        return summary.indexOf(sanitizeString(query)) > -1
+          || guruName.indexOf(sanitizeString(query)) > -1
+          || guruID.indexOf(query.trim()) > -1
+          || userID.indexOf(query.trim()) > -1
+          || userName.indexOf(sanitizeString(query)) > -1
+      })
+
+      const pagedResult = result.slice(offset, offset + limit)
+      res.status(200).json({ nbHits: result.length, hits: pagedResult });
+    }).catch((err) => {
+      res.status(404).json(err);
+    });
+});
+
+app.post('/reviews', (req, res) => {
+  const {
+    imageBefore,
+    imageAfter,
+    approved,
+    recommend,
+    rating,
+    summary,
+    review,
+    date,
+    guruInfo,
+    userInfo,
+  } = req.body;
+
+  db.collection('reviews')
+    .where("guruInfo.id", "==", guruInfo.id)
+    .get()
+    .then((querySnapshot) => {
+      let userHasUnapprovedReviewForSpecifiedGuru = false;
+      querySnapshot.forEach((doc) => {
+        if (doc.data().userInfo.id === userInfo.id && !doc.data().approved) {
+          userHasUnapprovedReviewForSpecifiedGuru = true;
+          return;
+        }
+      });
+      const userCanSubmitReview = querySnapshot.empty || !userHasUnapprovedReviewForSpecifiedGuru;
+
+      if (userCanSubmitReview) {
+        const newReviewRef = db.collection('reviews').doc();
+        newReviewRef.set({
+          imageBefore,
+          imageAfter,
+          approved,
+          recommend,
+          rating,
+          summary,
+          review,
+          date,
+          guruInfo,
+          userInfo,
+        });
+        res.status(200).json({ success: true });
+      }
+      else {
+        res.status(400).json({
+          success: false,
+          error: 'DUPLICATE_REVIEW',
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(400).json({
+        success: false,
+        error: err.message
+      })
+    })
+});
+
+app.get('/reviews/:guruID(*)/recommendation', (req, res) => {
+  const { guruID } = req.params;
+
+  if (!guruID) {
+    res.status(400).json({
+      error: 'Please provide guruID'
+    });
+  }
+
+  db
+    .collection('reviews')
+    .where("guruInfo.id", "==", guruID)
+    .get()
+    .then((snapshot) => {
+      const approvedReviews = [];
+      snapshot.forEach((doc) => {
+        if (doc.data().approved) {
+          approvedReviews.push({ id: doc.id, ...doc.data() });
+        }
+      });
+      console.log(approvedReviews);
+      const recommendReviews = approvedReviews.filter((review) => review.recommend);
+      const recommendationPercentage = (recommendReviews.length / approvedReviews.length) * 100;
+      res.status(200).json({ recommendationPercentage });
+    }).catch((err) => {
+      res.status(404).json(err);
+    });
+})
+
+exports.deleteReview = functions.firestore.document('reviews/{reviewId}')
+  .onDelete(async (snapshot) => {
+    const ratingVal = snapshot.data().rating;
+    const guruID = snapshot.data().guruInfo.id;
+    const userRef = db.collection('users').doc(guruID);
+
+    await db.runTransaction(async (transaction) => {
+      const userDoc = await transaction.get(userRef);
+      const newRatingCount = userDoc.data().ratingCount - 1;
+      const oldRatingTotal = userDoc.data().rating * userDoc.data().ratingCount;
+      const newAvgRating = (oldRatingTotal - ratingVal) / (newRatingCount || 1);
+
+      // Update user info
+      transaction.update(userRef, {
+        rating: newAvgRating,
+        ratingCount: newRatingCount
+      });
+    });
+  });
+
+exports.updateReview = functions.firestore.document('reviews/{reviewId}')
+  .onUpdate(async (change) => {
+    const ratingVal = change.after.data().rating;
+    const guruID = change.after.data().guruInfo.id;
+    const userRef = db.collection('users').doc(guruID);
+
+    await db.runTransaction(async (transaction) => {
+      const userDoc = await transaction.get(userRef);
+      const ratingBreakdown = userDoc.data().ratingBreakdown;
+      const newRatingCount = userDoc.data().ratingCount + 1;
+      const oldRatingTotal = userDoc.data().rating * userDoc.data().ratingCount;
+      const newAvgRating = (oldRatingTotal + ratingVal) / newRatingCount;
+
+      // Update user info
+      transaction.update(userRef, {
+        rating: newAvgRating,
+        ratingCount: newRatingCount,
+        ratingBreakdown: {
+          ...ratingBreakdown,
+          [ratingVal]: ratingBreakdown[ratingVal] + 1,
+        }
+      });
+    });
+  });
 exports.webApi = functions.https.onRequest(main);
 exports.addToIndex = addToIndex;
 exports.updateIndex = updateIndex;

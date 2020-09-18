@@ -153,7 +153,12 @@ const Hits = ({
                 [classes.item]: !showMap,
               })}
             >
-              <Hit hit={hit} onHitOver={onHitOver} showMap={showMap} selectedHit={selectedHit} />
+              <Hit
+                hit={hit}
+                onHitOver={onHitOver}
+                showMap={showMap}
+                selectedHit={selectedHit}
+              />
               {showMap && !isMobile && <Divider />}
             </Grid>
           ))}

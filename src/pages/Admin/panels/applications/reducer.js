@@ -1,5 +1,5 @@
 import {
-  SET_HITS,
+  SET_APPLICATIONS,
   SET_APPLICATIONS_LOADING,
   SET_TOTAL_APPLICATIONS_COUNT,
   SET_PAGE,
@@ -21,7 +21,7 @@ export const defaultStore = {
 
 export default (state = defaultStore, action) => {
   switch (action.type) {
-    case SET_HITS:
+    case SET_APPLICATIONS:
       return {
         ...state,
         hits: action.hits,

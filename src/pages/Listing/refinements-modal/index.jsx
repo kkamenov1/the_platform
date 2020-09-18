@@ -17,6 +17,8 @@ import {
   ClearFiltersBtn,
   RangeSlider,
   ResultsNumber,
+  RatingMenu,
+  RefinementSection,
 } from '../widgets';
 import { toggleRefinementsModal } from '../actions';
 import { useIsMobile } from '../../../core/hooks';
@@ -32,6 +34,10 @@ const useStyles = makeStyles({
 
   content: {
     padding: '0px 24px',
+  },
+
+  dialogContentText: {
+    outline: 0,
   },
 });
 
@@ -52,14 +58,9 @@ const RefinementsModal = () => {
       fullScreen={isMobile}
       open={refinementsModalOpen}
       onClose={closeModal}
-      aria-labelledby="scroll-dialog-title"
-      aria-describedby="scroll-dialog-description"
       keepMounted
     >
-      <DialogTitle
-        id="scroll-dialog-title"
-        className={classes.title}
-      >
+      <DialogTitle className={classes.title}>
         <Grid container justify="space-between" alignItems="center">
           <Grid item>
             Filters
@@ -80,15 +81,33 @@ const RefinementsModal = () => {
       </DialogTitle>
       <DialogContent dividers className={classes.content}>
         <DialogContentText
-          id="scroll-dialog-description"
           tabIndex={-1}
           component="div"
+          className={classes.dialogContentText}
         >
-          <RefinementList attribute="sport" header="Sport" divider />
-          <RangeSlider attribute="priceFrom" header="Price" divider unit="$" />
-          <RangeSlider attribute="duration" header="Duration (Days)" divider />
-          <RefinementList attribute="methods.name" header="Methods" divider />
-          <RefinementList attribute="languages" header="Languages" />
+          <RefinementSection header="Sport" divider>
+            <RefinementList attribute="sport" />
+          </RefinementSection>
+
+          <RefinementSection header="Price" divider>
+            <RangeSlider attribute="priceFrom" unit="$" />
+          </RefinementSection>
+
+          <RefinementSection header="Duration (Days)" divider>
+            <RangeSlider attribute="duration" />
+          </RefinementSection>
+
+          <RefinementSection header="Methods" divider>
+            <RefinementList attribute="methods.name" />
+          </RefinementSection>
+
+          <RefinementSection header="Languages" divider>
+            <RefinementList attribute="languages" />
+          </RefinementSection>
+
+          <RefinementSection header="Rating">
+            <RatingMenu attribute="rating" />
+          </RefinementSection>
         </DialogContentText>
       </DialogContent>
       <DialogActions className={classes.actions}>

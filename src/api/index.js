@@ -34,6 +34,9 @@ const application = {
     displayName,
     priceFrom,
     socialMedia,
+    rating,
+    ratingCount,
+    ratingBreakdown,
   }) => client.post(
     `${base}/submit_application`,
     {
@@ -55,6 +58,9 @@ const application = {
       displayName,
       priceFrom,
       socialMedia,
+      rating,
+      ratingCount,
+      ratingBreakdown,
     },
   ),
 };
@@ -62,14 +68,59 @@ const application = {
 const assets = {
   delete: ({ publicId }) => client.delete(`${base}/assets/${publicId}`),
 
-  upload: ({ img, userID }) => client.post(`${base}/assets`, {
+  upload: ({ img, folder }) => client.post(`${base}/assets`, {
     img,
-    userID,
+    folder,
   }),
+};
+
+const reviews = {
+  get: ({
+    query,
+    offset,
+    limit,
+    approved,
+    rating,
+  }) => {
+    const queryString = qs.stringify({
+      q: query, offset, limit, approved, rating,
+    });
+
+    return client.get(
+      `${base}/reviews${queryString && `?${queryString}`}`,
+    );
+  },
+
+  post: ({
+    imageBefore,
+    imageAfter,
+    approved,
+    recommend,
+    rating,
+    summary,
+    review,
+    date,
+    guruInfo,
+    userInfo,
+  }) => client.post(`${base}/reviews`, {
+    imageBefore,
+    imageAfter,
+    approved,
+    recommend,
+    rating,
+    summary,
+    review,
+    date,
+    guruInfo,
+    userInfo,
+  }),
+
+  getRecommendationPercentage: (guruID) => client.get(`${base}/reviews/${guruID}/recommendation`),
 };
 
 export default {
   applications,
   application,
   assets,
+  reviews,
 };

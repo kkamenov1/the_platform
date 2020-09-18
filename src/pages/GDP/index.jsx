@@ -11,15 +11,28 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { Skeleton } from '@material-ui/lab';
 import { StickyContainer } from 'react-sticky';
+import { useParams } from 'react-router-dom';
 import { withFirebase } from '../../core/lib/Firebase';
-import { setGuru } from './actions';
+import {
+  setGuru,
+  setGuruReviews,
+  loadMoreReviews,
+  incrementReviewsPage,
+  resetReviewsPage,
+  setStarRefinement,
+  setReviewsCount,
+  setRecommendationPercentage,
+} from './actions';
 import PriceTable from './section-components/price-table';
 import Map from './section-components/map';
+import NoReviews from './section-components/no-reviews';
+import RatingsAndReviews from './section-components/ratings-and-reviews';
 import { useIsMobile } from '../../core/hooks';
 import {
   Badge,
   ScrollingButton,
   ScrollingLink,
+  RatingWithCount,
 } from '../../core/components';
 import {
   MainInfoContainer,
@@ -27,7 +40,11 @@ import {
   QuickInfoContainer,
   Section,
 } from './components';
-
+import api from '../../api';
+import {
+  GDP_REVIEWS_PAGE_SIZE,
+  GDP_INITIAL_REVIEWS,
+} from '../../core/config';
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
@@ -75,13 +92,39 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const GDP = ({ match, firebase }) => {
+const GDP = ({ firebase }) => {
   const dispatch = useDispatch();
   const classes = useStyles();
+  const { guruID } = useParams();
   const guru = useSelector((state) => state.gdp.guru);
+  const reviewsPage = useSelector((state) => state.gdp.reviewsPage);
+  const reviewsCount = useSelector((state) => state.gdp.reviewsCount);
+  const recommendationPercentage = useSelector((state) => state.gdp.recommendationPercentage);
+  const starRatingRefinement = useSelector((state) => state.gdp.starRatingRefinement);
+  const reviews = useSelector((state) => state.gdp.reviews.slice(
+    0,
+    (reviewsPage * GDP_REVIEWS_PAGE_SIZE) + GDP_INITIAL_REVIEWS,
+  ));
   const isMobile = useIsMobile('sm');
   const [stickyMobileSubscribeBtn, setStickyMobileSubscribeBtn] = useState(false);
   const [expandedInfoContainer, setExpandedInfoContainer] = useState(false);
+  const {
+    languages,
+    image,
+    sport,
+    displayName,
+    photoURL,
+    duration,
+    introduction,
+    methods,
+    location,
+    _geoloc,
+    available,
+    certificate,
+    rating,
+    ratingCount,
+    ratingBreakdown,
+  } = guru;
 
   const handleScroll = () => {
     const pricesElement = document.getElementById('prices');
@@ -101,11 +144,35 @@ const GDP = ({ match, firebase }) => {
 
   useEffect(() => {
     (async () => {
-      const { id } = match.params;
-      const guruDoc = await firebase.user(id).get();
+      if (!guruID) {
+        return;
+      }
+
+      const guruDoc = await firebase.user(guruID).get();
       dispatch(setGuru(guruDoc.data()));
+
+      if (guruDoc.data().ratingCount) {
+        api.reviews.get({
+          query: guruID,
+          approved: true,
+          offset: 0,
+          limit: GDP_REVIEWS_PAGE_SIZE + GDP_INITIAL_REVIEWS,
+        }).then((response) => {
+          dispatch(setGuruReviews(response.data.hits));
+          dispatch(setReviewsCount(response.data.nbHits));
+        });
+
+        api.reviews.getRecommendationPercentage(guruID)
+          .then((response) => {
+            dispatch(setRecommendationPercentage(response.data.recommendationPercentage));
+          })
+          .catch((err) => {
+            console.log(err);
+            dispatch(setRecommendationPercentage(null));
+          });
+      }
     })();
-  }, [dispatch, firebase, match.params]);
+  }, [dispatch, firebase, guruID]);
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
@@ -114,24 +181,6 @@ const GDP = ({ match, firebase }) => {
     };
   }, []);
 
-  const {
-    languages,
-    image,
-    sport,
-    displayName,
-    photoURL,
-    priceFrom,
-    duration,
-    introduction,
-    methods,
-    location,
-    _geoloc,
-    available,
-    occupation,
-    subscribers,
-    certificate,
-    socialMedia,
-  } = guru;
   const formattedLanguages = languages.join(', ');
   const getStatus = () => {
     if (available === undefined) {
@@ -172,6 +221,81 @@ const GDP = ({ match, firebase }) => {
     return null;
   };
 
+  const renderRatings = () => {
+    if (rating && ratingCount > 0) {
+      return (
+        <ScrollingLink
+          containerId="reviews"
+          offset={-80}
+          variant="body2"
+          color="inherit"
+          underline="none"
+        >
+          <RatingWithCount
+            rating={Math.round(rating)}
+            ratingCount={ratingCount}
+          />
+        </ScrollingLink>
+      );
+    }
+    if (ratingCount === 0) {
+      return (
+        <div>
+          <ScrollingLink containerId="reviews" offset={-80} variant="body2">
+            Write review
+          </ScrollingLink>
+        </div>
+      );
+    }
+    return <Skeleton variant="rect" width={180} height={20} />;
+  };
+
+  const loadMore = () => {
+    dispatch(incrementReviewsPage());
+    const offset = ((reviewsPage + 1) * GDP_REVIEWS_PAGE_SIZE) + GDP_INITIAL_REVIEWS;
+
+    if (offset < reviewsCount) {
+      api.reviews.get({
+        query: guruID,
+        approved: true,
+        offset,
+        limit: GDP_REVIEWS_PAGE_SIZE,
+        rating: starRatingRefinement,
+      }).then((response) => {
+        dispatch(loadMoreReviews(response.data.hits));
+      });
+    }
+  };
+
+  const handleStarRefinementClick = (selectedRating) => {
+    dispatch(resetReviewsPage());
+    api.reviews.get({
+      query: guruID,
+      approved: true,
+      offset: 0,
+      limit: GDP_REVIEWS_PAGE_SIZE + GDP_INITIAL_REVIEWS,
+      rating: selectedRating,
+    }).then((response) => {
+      dispatch(setStarRefinement(selectedRating));
+      dispatch(setGuruReviews(response.data.hits));
+      dispatch(setReviewsCount(response.data.nbHits));
+    });
+  };
+
+  const resetStarRefinement = () => {
+    api.reviews.get({
+      query: guruID,
+      approved: true,
+      offset: 0,
+      limit: GDP_REVIEWS_PAGE_SIZE + GDP_INITIAL_REVIEWS,
+    }).then((response) => {
+      dispatch(resetReviewsPage());
+      dispatch(setStarRefinement(null));
+      dispatch(setGuruReviews(response.data.hits));
+      dispatch(setReviewsCount(response.data.nbHits));
+    });
+  };
+
   return (
     <div className={classes.wrapper}>
       <StickyContainer>
@@ -180,13 +304,13 @@ const GDP = ({ match, firebase }) => {
             <Typography component="div" className={classes.imageViewer}>
               <ImageViewer image={image} />
               {certificate && (
-              <Typography
-                component="div"
-                variant="caption"
-                className={classes.certifiedBadge}
-              >
-                CERTIFIED
-              </Typography>
+                <Typography
+                  component="div"
+                  variant="caption"
+                  className={classes.certifiedBadge}
+                >
+                  CERTIFIED
+                </Typography>
               )}
             </Typography>
             <Typography component="div" className={classes.details}>
@@ -203,14 +327,16 @@ const GDP = ({ match, firebase }) => {
                       {displayName}
                     </Typography>
                   )}
+                  {renderRatings()}
                   {location ? (
                     <ScrollingLink
                       containerId="map"
                       offset={-80}
-                      label={location}
                       variant="body2"
                       color="inherit"
-                    />
+                    >
+                      {location}
+                    </ScrollingLink>
                   ) : (
                     <Skeleton variant="rect" width={180} height={20} />
                   )}
@@ -224,12 +350,8 @@ const GDP = ({ match, firebase }) => {
                 </Grid>
               </Grid>
               <MainInfoContainer
-                priceFrom={priceFrom}
-                duration={duration}
+                {...guru}
                 languages={formattedLanguages}
-                subscribers={subscribers}
-                occupation={occupation}
-                socialMedia={socialMedia}
               />
               <Section containerId="introduction" divider>
                 {renderIntroduction()}
@@ -262,7 +384,7 @@ const GDP = ({ match, firebase }) => {
                   )}
                 </Section>
               )}
-              <Section containerId="map" label="Location">
+              <Section containerId="map" label="Location" divider>
                 {_geoloc ? (
                   <Map
                     location={_geoloc}
@@ -275,22 +397,36 @@ const GDP = ({ match, firebase }) => {
                   <Skeleton variant="rect" height={400} />
                 )}
               </Section>
+              {ratingCount ? (
+                <Section containerId="reviews" label="Ratings &amp; Reviews">
+                  <RatingsAndReviews
+                    reviews={reviews}
+                    loadMore={loadMore}
+                    reviewsCount={reviewsCount}
+                    handleStarRefinementClick={handleStarRefinementClick}
+                    resetStarRefinement={resetStarRefinement}
+                    guruID={guruID}
+                    rating={rating}
+                    ratingCount={ratingCount}
+                    ratingBreakdown={ratingBreakdown}
+                    starRatingRefinement={starRatingRefinement}
+                    recommendationPercentage={recommendationPercentage}
+                  />
+                </Section>
+              ) : (
+                <Section containerId="reviews" label="Be the first to review this guru">
+                  <NoReviews guruID={guruID} />
+                </Section>
+              )}
             </Typography>
           </Grid>
 
           {!isMobile ? (
             <Grid item md={4} className={classes.quickInfoContainer}>
               <QuickInfoContainer
-                photoURL={photoURL}
-                location={location}
-                displayName={displayName}
-                priceFrom={priceFrom}
+                {...guru}
                 status={getStatus()}
-                occupation={occupation}
-                subscribers={subscribers}
                 expanded={expandedInfoContainer}
-                sport={sport}
-                duration={duration}
                 languages={formattedLanguages}
               />
             </Grid>
@@ -315,11 +451,6 @@ const GDP = ({ match, firebase }) => {
 };
 
 GDP.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-    }).isRequired,
-  }).isRequired,
   firebase: PropTypes.shape({
     user: PropTypes.func.isRequired,
   }).isRequired,

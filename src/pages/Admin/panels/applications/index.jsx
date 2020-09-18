@@ -6,10 +6,12 @@ import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { animateScroll as scroll } from 'react-scroll';
 import api from '../../../../api';
+import {
+  SearchBox,
+  PageSizeSelector,
+  MockedHits,
+} from '../../components';
 import Hits from './hits';
-import SearchBox from './search-box';
-import PageSizeSelector from './page-size-selector';
-import MockedHits from './mocked-hits';
 import SearchHit from './search-hit';
 import { Pagination, Modal } from '../../../../core/components';
 import { useIsMobile } from '../../../../core/hooks';
@@ -194,8 +196,6 @@ const Applications = ({ firebase }) => {
           handleRejectApplication={handleRejectApplication}
           handleApproveApplication={handleApproveApplication}
           toggleModal={toggleModal}
-          loading={loading}
-          pageSize={pageSize}
         />
       )}
       <Typography align="center" component="div" className={classes.paginationWrapper}>

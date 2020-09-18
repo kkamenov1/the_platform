@@ -1,4 +1,4 @@
-export const SET_HITS = 'SET_HITS';
+export const SET_APPLICATIONS = 'SET_APPLICATIONS';
 export const SET_APPLICATIONS_LOADING = 'SET_APPLICATIONS_LOADING';
 export const SET_TOTAL_APPLICATIONS_COUNT = 'SET_TOTAL_APPLICATIONS_COUNT';
 export const SET_PAGE = 'SET_PAGE';
@@ -7,7 +7,7 @@ export const SET_QUERY = 'SET_QUERY';
 export const TOGGLE_APPLICATIONS_MODAL = 'TOGGLE_APPLICATIONS_MODAL';
 
 export const setApplications = (hits) => ({
-  type: SET_HITS,
+  type: SET_APPLICATIONS,
   hits,
 });
 

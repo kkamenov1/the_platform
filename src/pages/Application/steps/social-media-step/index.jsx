@@ -76,15 +76,25 @@ const SocialMediaStep = () => {
       image: personalDetails.image && personalDetails.image.public_id,
       ...guruDetails,
       certificate: guruDetails.certificate && guruDetails.certificate.public_id,
-      ...rates,
       methods: mappedSelectedMethods,
-      socialMedia: data,
+      duration: Number(rates.duration),
+      subscribers: Number(rates.subscribers),
       occupation: 0,
+      socialMedia: data,
       available: true,
       userID: auth.uid,
       photoURL: auth.photoURL,
       displayName: auth.displayName,
       priceFrom: getMinimalPrice(selectedMethods),
+      rating: 0,
+      ratingCount: 0,
+      ratingBreakdown: {
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+      },
     };
 
     try {
