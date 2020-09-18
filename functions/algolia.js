@@ -21,12 +21,20 @@ exports.updateIndex = functions.firestore.document('users/{userId}')
   .onUpdate(change => {
     const newData = change.after.data();
     const objectID = change.after.id;
-    return index.saveObject({
-      ...newData,
-      rating: Math.round(newData.rating), // algolia works with whole numbers
-      objectID
-    });
+
+    if (newData.isGuru) {
+      return index.saveObject({
+        ...newData,
+        rating: Math.round(newData.rating), // algolia works with whole numbers
+        objectID
+      });
+    }
   })
 
 exports.deleteFromIndex = functions.firestore.document('users/{userId}')
-  .onDelete(snapshot => index.deleteObject(snapshot.id));
+  .onDelete(snapshot => {
+    const data = snapshot.data();
+    if (data.isGuru) {
+      return index.deleteObject(snapshot.id);
+    }
+  });
