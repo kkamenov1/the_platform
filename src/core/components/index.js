@@ -16,6 +16,12 @@ import ScrollingLink from './scrolling-link';
 import StandardInputLabel from './standard-input-label';
 import ReviewContent from './review-content';
 import RatingWithCount from './rating-with-count';
+import SocialLoginButtons from './social-login-buttons';
+import SignUpLink from './sign-up-link';
+import SignUpForm from './sign-up-form';
+import SignInForm from './sign-in-form';
+import ForgotPasswordForm from './forgot-password-form';
+import AuthContent from './auth-content';
 
 export {
   FormError,
@@ -36,4 +42,10 @@ export {
   StandardInputLabel,
   ReviewContent,
   RatingWithCount,
+  SocialLoginButtons,
+  SignUpLink,
+  SignUpForm,
+  SignInForm,
+  ForgotPasswordForm,
+  AuthContent,
 };

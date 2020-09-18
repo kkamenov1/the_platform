@@ -1,9 +1,9 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Modal } from '../../core/components';
+
+import { Modal, AuthContent } from '../../core/components';
 import { useIsMobile } from '../../core/hooks';
 import { toggleAuthModal } from './actions';
-import AuthContent from '../../components/auth-content';
 
 const AuthModal = () => {
   const dispatch = useDispatch();

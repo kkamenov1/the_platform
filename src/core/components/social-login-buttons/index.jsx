@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 
 import { Typography } from '@material-ui/core';
 import { FacebookLoginButton, GoogleLoginButton } from 'react-social-login-buttons';
-import { withFirebase } from '../../core/lib/Firebase';
-import { toggleAuthModal } from '../../modals/auth/actions';
-import { FormError } from '../../core/components';
+import { withFirebase } from '../../lib/Firebase';
+import { toggleAuthModal } from '../../../modals/auth/actions';
+import FormError from '../form-error';
 
 const socialBtnStyles = {
   margin: '8px 0',

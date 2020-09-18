@@ -1,15 +1,14 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import {
-  setGuru,
-} from './actions';
+
+import { makeStyles } from '@material-ui/core/styles';
+
+import { setGuru } from './actions';
 import WriteReviewPageContent from './write-review-page-content';
 import { withFirebase } from '../../core/lib/Firebase';
-import AuthContent from '../../components/auth-content';
+import { AuthContent } from '../../core/components';
 
 const useStyles = makeStyles((theme) => ({
   outer: {

@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { toggleAuthModal } from '../../modals/auth/actions';
-import { SIGN_UP } from '../../constants/authModalPages';
-import { LinkStyledButton } from '../../core/components';
+import { toggleAuthModal } from '../../../modals/auth/actions';
+import { SIGN_UP } from '../../../constants/authModalPages';
+import LinkStyledButton from '../link-styled-button';
 
 const useStyles = makeStyles((theme) => ({
   text: {

@@ -11,14 +11,12 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
-import { withFirebase } from '../../core/lib/Firebase';
-import {
-  LinkStyledButton,
-  FormError,
-  LoadingButton,
-  ModalHeader,
-} from '../../core/components';
-import { toggleAuthModal } from '../../modals/auth/actions';
+import { withFirebase } from '../../lib/Firebase';
+import LinkStyledButton from '../link-styled-button';
+import FormError from '../form-error';
+import LoadingButton from '../loading-button';
+import ModalHeader from '../modal-header';
+import { toggleAuthModal } from '../../../modals/auth/actions';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {

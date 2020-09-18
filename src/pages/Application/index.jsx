@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Stepper,
@@ -8,6 +9,7 @@ import {
   StepLabel,
   Grid,
 } from '@material-ui/core';
+
 import {
   PersonalDetailsStep,
   GuruDetailsStep,
@@ -16,7 +18,7 @@ import {
   FinalizationStep,
 } from './steps';
 import { withFirebase } from '../../core/lib/Firebase';
-import AuthContent from '../../components/auth-content';
+import { AuthContent } from '../../core/components';
 import { BECOME_GURU_STEPS } from '../../core/config';
 
 

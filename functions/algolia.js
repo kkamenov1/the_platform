@@ -12,7 +12,9 @@ exports.addToIndex = functions.firestore.document('users/{userId}')
   .onCreate(snapshot => {
     const data = snapshot.data();
     const objectID = snapshot.id;
-    return index.saveObject({ ...data, objectID });
+    if (data.isGuru) {
+      return index.saveObject({ ...data, objectID });
+    }
   })
 
 exports.updateIndex = functions.firestore.document('users/{userId}')

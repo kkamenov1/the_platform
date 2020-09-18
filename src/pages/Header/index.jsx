@@ -20,8 +20,8 @@ import {
   LISTING,
   BECOME_GURU,
 } from '../../constants/routes';
-import MobileDrawerNavigation from '../../components/mobile-drawer-navigation';
-import AvatarNavButton from '../../components/avatar-nav-button';
+import MobileDrawerNavigation from './mobile-drawer-navigation';
+import AvatarNavButton from './avatar-nav-button';
 import { toggleMobileNavigation } from './actions';
 import { toggleAuthModal } from '../../modals/auth/actions';
 import { SIGN_UP } from '../../constants/authModalPages';

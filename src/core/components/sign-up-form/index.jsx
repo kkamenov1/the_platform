@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
+
 import {
   TextField,
   FormControl,
@@ -14,15 +15,14 @@ import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
 import PermIdentityOutlinedIcon from '@material-ui/icons/PermIdentityOutlined';
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
 import VisibilityOffOutlinedIcon from '@material-ui/icons/VisibilityOffOutlined';
-import { withFirebase } from '../../core/lib/Firebase';
+
+import { withFirebase } from '../../lib/Firebase';
 import SocialLoginButtons from '../social-login-buttons';
-import {
-  LabelDivider,
-  LinkStyledButton,
-  FormError,
-  LoadingButton,
-} from '../../core/components';
-import { toggleAuthModal } from '../../modals/auth/actions';
+import LabelDivider from '../label-divider';
+import LinkStyledButton from '../link-styled-button';
+import FormError from '../form-error';
+import LoadingButton from '../loading-button';
+import { toggleAuthModal } from '../../../modals/auth/actions';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {

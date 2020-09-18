@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+
 import SignInForm from '../sign-in-form';
 import SignUpForm from '../sign-up-form';
 import ForgotPasswordForm from '../forgot-password-form';
@@ -7,7 +8,7 @@ import {
   SIGN_IN,
   SIGN_UP,
   FORGOT_PASSWORD,
-} from '../../constants/authModalPages';
+} from '../../../constants/authModalPages';
 
 const AuthContent = ({ page, open = false }) => {
   switch (page) {
