@@ -231,7 +231,10 @@ const GDP = ({ firebase }) => {
           color="inherit"
           underline="none"
         >
-          <RatingWithCount rating={rating} ratingCount={ratingCount} />
+          <RatingWithCount
+            rating={Math.round(rating)}
+            ratingCount={ratingCount}
+          />
         </ScrollingLink>
       );
     }

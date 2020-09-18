@@ -21,7 +21,7 @@ exports.updateIndex = functions.firestore.document('users/{userId}')
     const objectID = change.after.id;
     return index.saveObject({
       ...newData,
-      rating: Math.floor(newData.rating), // algolia works with whole numbers
+      rating: Math.round(newData.rating), // algolia works with whole numbers
       objectID
     });
   })

@@ -45,16 +45,17 @@ const RatingRefinements = ({
         spacing={2}
       >
         <Grid item>
-          <Typography className={classes.outOf5}>{rating.toFixed(1)}</Typography>
+          <Typography className={classes.outOf5}>
+            {Math.round(rating).toFixed(1)}
+          </Typography>
         </Grid>
 
         <Grid item>
           <div>
             <Rating
-              value={rating}
+              value={Math.round(rating)}
               readOnly
               size="small"
-              precision={0.5}
             />
           </div>
           <div>

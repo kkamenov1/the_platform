@@ -23,7 +23,6 @@ const RatingWithCount = ({ rating, ratingCount, ...ratingProps }) => {
         readOnly
         size="small"
         className={classes.rating}
-        precision={0.5}
         {...ratingProps}
       />
       <Typography

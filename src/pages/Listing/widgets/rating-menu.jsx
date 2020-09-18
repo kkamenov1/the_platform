@@ -7,6 +7,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import { RatingWithCount } from '../../../core/components';
 
 const useStyles = makeStyles({
+  wrapper: {
+    '&:not(:last-child)': {
+      marginBottom: 8,
+    },
+  },
   btn: {
     textTransform: 'none',
     color: 'black',
@@ -34,7 +39,7 @@ const RatingMenu = ({ items, refine }) => {
       {sortedItems.map(({
         label, value, count, isRefined,
       }) => (
-        <div key={`star-refinement-${label}`}>
+        <div key={`star-refinement-${label}`} className={classes.wrapper}>
           <Button
             className={classnames(classes.btn, {
               [classes.isRefined]: isRefined,
