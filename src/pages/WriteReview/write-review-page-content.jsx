@@ -12,7 +12,7 @@ import { setFormStatus } from './actions';
 const WriteReviewPageContent = ({ guru }) => {
   const dispatch = useDispatch();
   const formStatus = useSelector((state) => state.review.formStatus);
-  const { id } = useParams();
+  const { guruID } = useParams();
 
   const handleTryAgainClick = () => {
     dispatch(setFormStatus(REVIEW_PAGE_FORM_STATUS.FORM_INITIAL));
@@ -45,7 +45,7 @@ const WriteReviewPageContent = ({ guru }) => {
             variant="contained"
             color="primary"
             component={Link}
-            to={`/gurus/${id}`}
+            to={`/gurus/${guruID}`}
           >
             RETURN
           </Button>

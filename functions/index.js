@@ -191,9 +191,7 @@ app.get('/reviews', (req, res) => {
   }
 
   let reviewsCollection = db.collection('reviews');
-  if (approved) {
-    reviewsCollection = reviewsCollection.where("approved", "==", approved);
-  }
+  reviewsCollection = reviewsCollection.where("approved", "==", approved);
 
   if (rating) {
     reviewsCollection = reviewsCollection.where("rating", "==", rating);
@@ -318,22 +316,30 @@ app.get('/reviews/:guruID(*)/recommendation', (req, res) => {
 
 exports.deleteReview = functions.firestore.document('reviews/{reviewId}')
   .onDelete(async (snapshot) => {
-    const ratingVal = snapshot.data().rating;
-    const guruID = snapshot.data().guruInfo.id;
-    const userRef = db.collection('users').doc(guruID);
-
-    await db.runTransaction(async (transaction) => {
-      const userDoc = await transaction.get(userRef);
-      const newRatingCount = userDoc.data().ratingCount - 1;
-      const oldRatingTotal = userDoc.data().rating * userDoc.data().ratingCount;
-      const newAvgRating = (oldRatingTotal - ratingVal) / (newRatingCount || 1);
-
-      // Update user info
-      transaction.update(userRef, {
-        rating: newAvgRating,
-        ratingCount: newRatingCount
+    const { approved } = snapshot.data();
+    if (approved) {
+      const ratingVal = snapshot.data().rating;
+      const guruID = snapshot.data().guruInfo.id;
+      const userRef = db.collection('users').doc(guruID);
+  
+      await db.runTransaction(async (transaction) => {
+        const userDoc = await transaction.get(userRef);
+        const ratingBreakdown = userDoc.data().ratingBreakdown;
+        const newRatingCount = userDoc.data().ratingCount - 1;
+        const oldRatingTotal = userDoc.data().rating * userDoc.data().ratingCount;
+        const newAvgRating = (oldRatingTotal - ratingVal) / (newRatingCount || 1);
+  
+        // Update user info
+        transaction.update(userRef, {
+          rating: newAvgRating,
+          ratingCount: newRatingCount,
+          ratingBreakdown: {
+            ...ratingBreakdown,
+            [ratingVal]: ratingBreakdown[ratingVal] - 1,
+          }
+        });
       });
-    });
+    }
   });
 
 exports.updateReview = functions.firestore.document('reviews/{reviewId}')

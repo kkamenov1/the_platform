@@ -103,7 +103,7 @@ const labels = {
 const ReviewForm = ({ guru }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { id } = useParams();
+  const { guruID } = useParams();
   const auth = useSelector((state) => state.app.auth);
   const reviewGuidelinesModalOpen = useSelector((state) => state.review.reviewGuidelinesModalOpen);
   const photoRequirementsModalOpen = useSelector((state) => state.review.photoRequirementsModalOpen);
@@ -120,7 +120,7 @@ const ReviewForm = ({ guru }) => {
       imageAfter: data.imageAfter ? data.imageAfter.public_id : null,
       approved: false,
       guruInfo: {
-        id,
+        id: guruID,
         name: guru.displayName,
       },
       userInfo: {

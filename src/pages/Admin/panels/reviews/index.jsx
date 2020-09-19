@@ -65,7 +65,7 @@ const Reviews = ({ firebase }) => {
     dispatch(setReviewsLoading(true));
     api.reviews.get({
       query,
-      offset: page * pageSize,
+      offset: (page - 1) * pageSize,
       limit: pageSize,
       approved: false,
     }).then((response) => {
