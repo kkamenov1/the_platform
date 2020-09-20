@@ -6,6 +6,7 @@ import GDP from './GDP';
 import BecomeGuru from './BecomeGuru';
 import Application from './Application';
 import WriteReview from './WriteReview';
+import NotFound from './NotFound';
 
 export {
   Header,
@@ -16,4 +17,5 @@ export {
   BecomeGuru,
   Application,
   WriteReview,
+  NotFound,
 };

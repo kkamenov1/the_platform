@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import { CssBaseline } from '@material-ui/core';
 import * as routes from '../constants/routes';
 import { withFirebase } from '../core/lib/Firebase';
@@ -15,6 +15,7 @@ import {
   BecomeGuru,
   Application,
   WriteReview,
+  NotFound,
 } from '../pages';
 import AuthModal from '../modals/auth';
 
@@ -50,6 +51,8 @@ const App = ({ firebase }) => {
           <Route path={routes.WRITE_REVIEW} component={WriteReview} />
           <Route exact path={routes.BECOME_GURU} component={BecomeGuru} />
           <Route path={routes.BECOME_GURU_APPLY} component={Application} />
+          <Route path={routes.NOT_FOUND} component={NotFound} />
+          <Redirect to={routes.NOT_FOUND} />
         </Switch>
       </main>
     </>
