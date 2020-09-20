@@ -21,7 +21,7 @@ const AuthModal = () => {
       open={open}
       onClose={closeModal}
     >
-      <AuthContent page={page} />
+      <AuthContent page={page} open={open} />
     </Modal>
   );
 };
