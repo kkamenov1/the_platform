@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import { StickyContainer } from 'react-sticky';
+import { useHistory, useParams } from 'react-router-dom';
+
 import {
   Grid,
   Typography,
@@ -10,8 +13,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Skeleton } from '@material-ui/lab';
-import { StickyContainer } from 'react-sticky';
-import { useParams } from 'react-router-dom';
+
 import { withFirebase } from '../../core/lib/Firebase';
 import {
   setGuru,
@@ -45,6 +47,7 @@ import {
   GDP_REVIEWS_PAGE_SIZE,
   GDP_INITIAL_REVIEWS,
 } from '../../core/config';
+import { NOT_FOUND } from '../../constants/routes';
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
@@ -96,6 +99,7 @@ const GDP = ({ firebase }) => {
   const dispatch = useDispatch();
   const classes = useStyles();
   const { guruID } = useParams();
+  const history = useHistory();
   const guru = useSelector((state) => state.gdp.guru);
   const reviewsPage = useSelector((state) => state.gdp.reviewsPage);
   const reviewsCount = useSelector((state) => state.gdp.reviewsCount);
@@ -149,6 +153,11 @@ const GDP = ({ firebase }) => {
       }
 
       const guruDoc = await firebase.user(guruID).get();
+      if (!guruDoc.exists) {
+        history.push(NOT_FOUND);
+        return;
+      }
+
       dispatch(setGuru(guruDoc.data()));
 
       if (guruDoc.data().ratingCount) {
@@ -172,7 +181,7 @@ const GDP = ({ firebase }) => {
           });
       }
     })();
-  }, [dispatch, firebase, guruID]);
+  }, [dispatch, firebase, guruID, history]);
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);

@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-
+import { useParams, useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { setGuru } from './actions';
 import WriteReviewPageContent from './write-review-page-content';
 import { withFirebase } from '../../core/lib/Firebase';
 import { AuthContent } from '../../core/components';
+import { NOT_FOUND } from '../../constants/routes';
 
 const useStyles = makeStyles((theme) => ({
   outer: {
@@ -38,15 +38,20 @@ const WriteReview = ({ firebase }) => {
   const auth = useSelector((state) => state.app.auth);
   const page = useSelector((state) => state.authModal.page);
   const { guruID } = useParams();
+  const history = useHistory();
 
   useEffect(() => {
     if (auth) {
       (async () => {
         const guruDoc = await firebase.user(guruID).get();
-        dispatch(setGuru(guruDoc.data()));
+        if (guruDoc.exists) {
+          dispatch(setGuru(guruDoc.data()));
+        } else {
+          history.push(NOT_FOUND);
+        }
       })();
     }
-  }, [dispatch, firebase, guruID, auth]);
+  }, [dispatch, firebase, guruID, auth, history]);
 
   return (
     <div className={classes.outer}>
