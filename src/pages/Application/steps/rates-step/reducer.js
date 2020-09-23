@@ -17,21 +17,6 @@ export const defaultStore = {
       selected: false,
       price: '',
     },
-    {
-      name: 'Watching exercise',
-      selected: false,
-      price: '',
-    },
-    {
-      name: 'Supplement plan',
-      selected: false,
-      price: '',
-    },
-    {
-      name: 'All',
-      selected: false,
-      price: '',
-    },
   ],
   duration: '',
   subscribers: '',

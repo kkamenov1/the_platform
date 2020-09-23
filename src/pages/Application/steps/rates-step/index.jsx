@@ -73,8 +73,14 @@ const RatesStep = () => {
     if (!values.duration) {
       err.duration = 'Required';
     }
+    if (isNaN(values.duration)) {
+      err.duration = 'Please provide a valid number';
+    }
     if (!values.subscribers) {
       err.subscribers = 'Required';
+    }
+    if (isNaN(values.subscribers)) {
+      err.subscribers = 'Please provide a valid number';
     }
     if (!values.methods.some((method) => method.selected)) {
       err.methods = 'Please select at least one';
@@ -199,45 +205,6 @@ const RatesStep = () => {
               </div>
 
               <div className={classes.vspace}>
-                <Field name="duration">
-                  {({ input, meta }) => (
-                    <>
-                      <StandardInputLabel
-                        required
-                        error={Boolean(meta.touched && meta.error)}
-                      >
-                        Duration of programs
-                      </StandardInputLabel>
-                      <TextField
-                        variant="outlined"
-                        {...input}
-                        margin="dense"
-                        fullWidth
-                        className={classes.noMargin}
-                        error={Boolean(meta.touched && meta.error)}
-                        helperText={
-                          (meta.touched && meta.error)
-                          || 'Note: This doesn\'t include Watching exercise'
-                        }
-                        inputProps={{
-                          onBlur: (e) => input.onBlur(e),
-                          className: classes.input,
-                        }}
-                        InputProps={{
-                          startAdornment: (
-                            <EventNoteIcon className={classes.inputIcon} />
-                          ),
-                          endAdornment: (
-                            <InputAdornment position="end">days</InputAdornment>
-                          ),
-                        }}
-                      />
-                    </>
-                  )}
-                </Field>
-              </div>
-
-              <div className={classes.vspace}>
                 <Field name="subscribers">
                   {({ input, meta }) => (
                     <>
@@ -265,6 +232,43 @@ const RatesStep = () => {
                         InputProps={{
                           startAdornment: (
                             <PersonIcon className={classes.inputIcon} />
+                          ),
+                        }}
+                      />
+                    </>
+                  )}
+                </Field>
+              </div>
+
+              <div className={classes.vspace}>
+                <Field name="duration">
+                  {({ input, meta }) => (
+                    <>
+                      <StandardInputLabel
+                        required
+                        error={Boolean(meta.touched && meta.error)}
+                      >
+                        Duration of programs
+                      </StandardInputLabel>
+                      <TextField
+                        variant="outlined"
+                        {...input}
+                        margin="dense"
+                        fullWidth
+                        className={classes.noMargin}
+                        error={Boolean(meta.touched && meta.error)}
+                        helperText={(meta.touched && meta.error)
+                          || 'How many days your workout and nutrition plans last?'}
+                        inputProps={{
+                          onBlur: (e) => input.onBlur(e),
+                          className: classes.input,
+                        }}
+                        InputProps={{
+                          startAdornment: (
+                            <EventNoteIcon className={classes.inputIcon} />
+                          ),
+                          endAdornment: (
+                            <InputAdornment position="end">days</InputAdornment>
                           ),
                         }}
                       />
